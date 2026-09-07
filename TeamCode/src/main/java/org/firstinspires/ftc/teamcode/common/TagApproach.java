@@ -32,15 +32,6 @@ public class TagApproach {
 
     public enum State { IDLE, APPROACHING, HOLDING, DONE, LOST, TIMED_OUT }
 
-    /** Time source, so tests can advance time by hand. Same shape as LaunchController.Clock. */
-    public interface Clock {
-        double seconds();
-    }
-
-    public static final Clock SYSTEM_CLOCK = new Clock() {
-        @Override public double seconds() { return System.nanoTime() / 1e9; }
-    };
-
     public static class Settings {
         /** Motor power per inch of forward error. */
         public double kpDrive          = 0.05;
@@ -94,7 +85,7 @@ public class TagApproach {
     private double forwardErrorInches, rightErrorInches, yawErrorDegrees;
 
     public TagApproach(Settings settings) {
-        this(settings, SYSTEM_CLOCK);
+        this(settings, Clock.SYSTEM);
     }
 
     public TagApproach(Settings settings, Clock clock) {

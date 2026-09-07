@@ -35,7 +35,7 @@ public class TagApproachTest {
         @Override public double squareUpDegrees()   { return squareUp; }
     }
 
-    static class FakeClock implements TagApproach.Clock {
+    static class FakeClock implements Clock {
         double now = 100.0;
         @Override public double seconds() { return now; }
         void advance(double sec) { now += sec; }

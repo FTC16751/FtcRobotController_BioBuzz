@@ -37,19 +37,6 @@ public class LaunchController {
     /** Where the sequence is. IDLE means ready for a new shot. */
     public enum State { IDLE, SPIN_UP, FEEDING, COOLDOWN }
 
-    /**
-     * Source of time in seconds. The robot uses the system clock; unit tests supply a fake clock
-     * they can advance by hand, so timeouts and feed windows can be tested without sleeping.
-     */
-    public interface Clock {
-        double seconds();
-    }
-
-    /** Real time, for use on the robot. */
-    public static final Clock SYSTEM_CLOCK = new Clock() {
-        @Override public double seconds() { return System.nanoTime() / 1e9; }
-    };
-
     /** Timings and thresholds. These are "how it operates" values and belong in the team's Constants. */
     public static class Settings {
         /** How long the feeder runs per shot, seconds. */
@@ -90,7 +77,7 @@ public class LaunchController {
     private String lastAbortReason = "";
 
     public LaunchController(Flywheel flywheel, Feeder feeder, Settings settings, Telemetry telemetry) {
-        this(flywheel, feeder, settings, telemetry, SYSTEM_CLOCK);
+        this(flywheel, feeder, settings, telemetry, Clock.SYSTEM);
     }
 
     /** Constructor with an explicit clock; unit tests use this with a fake clock. */
@@ -99,7 +86,7 @@ public class LaunchController {
         this.feeder = feeder;
         this.settings = settings != null ? settings : new Settings();
         this.telemetry = telemetry;
-        this.clock = clock != null ? clock : SYSTEM_CLOCK;
+        this.clock = clock != null ? clock : Clock.SYSTEM;
     }
 
     /** Seconds since the current state began. */
