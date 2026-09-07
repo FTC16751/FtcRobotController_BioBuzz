@@ -43,13 +43,10 @@ public final class P3Bot1Config {
                         .xyToleranceMm(17.0).yawToleranceRad(0.055)
                         .xyGains(0.002, 0.000002, 0.00003).xyAccel(10.0)
                         .yawGains(5.0, 0.0, 0.03).yawAccel(10.0),
-                new RobotConfig.PedroPathingConfig(
-                        4.5, -30.0, -60.0,
-                        new PIDFCoefficients(0.02, 0, 0.004, 0.02),     // translational
-                        new PIDFCoefficients(0.6, 0, 0.035, 0.01),      // heading
-                        16.0, 1.05, 80.0, 55.0,
-                        new PathConstraints(0.95, 90, 1, 1)
-                )
+                // Pedro Pathing: null means this robot does not use it, so DriveUtil2026b does not build a
+                // Follower for it (2026-09-07). The block that was here was a copy of Bot 3's estimates;
+                // run the Tuning OpMode on this chassis before adding a PedroPathingConfig.
+                null
         )
         .named("P3 Bot 1")
         .withHardware(new RobotConfig.HardwareNames()

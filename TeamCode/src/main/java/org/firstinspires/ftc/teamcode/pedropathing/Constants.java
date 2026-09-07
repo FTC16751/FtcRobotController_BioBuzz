@@ -1,57 +1,48 @@
 package org.firstinspires.ftc.teamcode.pedropathing;
 
-import org.firstinspires.ftc.teamcode.common.RobotConfig;
-import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
-import com.pedropathing.ftc.localization.Encoder;
-import com.pedropathing.ftc.localization.constants.DriveEncoderConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.common.PedroBridge;
+import org.firstinspires.ftc.teamcode.common.RobotConfig;
+import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
 
+/**
+ * The Pedro Pathing tuning entry point. Pedro's Tuning OpMode (and its vendor examples) call the
+ * one-argument createFollower(hardwareMap) and expect these static constants objects, which the
+ * Panels dashboard edits live while a tuner runs.
+ *
+ * Until 2026-09-07 this file held one robot's numbers typed by hand, and they described neither
+ * of the robots that ran them (doc/PEDRO_ON_TEST2027.md, section 1.3). Now the statics are BUILT
+ * from a RobotConfig, so the tuner always tunes the robot named in ACTIVE_CONFIG, and the finished
+ * numbers are copied back into that robot's config file (its PedroPathingConfig), where every
+ * robot class picks them up through DriveUtil2026b. Nothing Pedro-specific is typed here.
+ *
+ * To tune a different chassis: change ACTIVE_CONFIG, redeploy, run "Tuning" (Driver Station
+ * group Pedro). Robot code never uses this class; it goes through common/PedroBridge.
+ */
 public class Constants {
-    public static Pose startingPos = new Pose(9,9,0);
 
-    public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(5)
-            .forwardZeroPowerAcceleration(-34.46)
-            .lateralZeroPowerAcceleration(-64.23)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.01905, 0, 0.0035, 0.02))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.5, 0, 0.03, 0.01));
+    /** The robot the Tuning OpMode tunes. Change this one line to tune another chassis. */
+    public static final RobotConfig ACTIVE_CONFIG = Test2027BotConfig.create();
 
-    public static MecanumConstants driveConstants = new MecanumConstants()
-            .maxPower(1)
-            .rightFrontMotorName("Front_Right")
-            .rightRearMotorName("Rear_Right")
-            .leftRearMotorName("Rear_Left")
-            .leftFrontMotorName("Front_Left")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(86.71)
-            .yVelocity(60.75);
+    // Panels edits these objects live during tuning. createFollower(hardwareMap) builds the
+    // Follower from these same objects, so an edit applies on the next loop.
+    public static FollowerConstants followerConstants = PedroBridge.followerConstantsFor(ACTIVE_CONFIG);
+    public static MecanumConstants driveConstants = PedroBridge.mecanumConstantsFor(ACTIVE_CONFIG);
+    public static PinpointConstants localizerConstants = PedroBridge.pinpointConstantsFor(ACTIVE_CONFIG);
+    public static PathConstraints pathConstraints = PedroBridge.requirePedro(ACTIVE_CONFIG).pathConstraints;
 
-    public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(38)
-            .strafePodX(-168)
-            .distanceUnit(DistanceUnit.MM)
-            .hardwareMapName("odo")
-            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+    /** Where the tuner and the vendor examples put the robot at start. Pedro field frame, inches, radians. */
+    public static Pose startingPos = new Pose(72, 72, 0);
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
-
-
+    /** For the Tuning OpMode and the vendor examples: a Follower on ACTIVE_CONFIG through the live-tunable statics above. */
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .pathConstraints(pathConstraints)
@@ -60,61 +51,13 @@ public class Constants {
                 .build();
     }
 
-
-
     /**
-     * Creates a fully configured Follower instance using the provided RobotConfig profile.
-     * This method acts as a bridge between RobotConfig system and Pedro Pathing.
-     * Use this method for all new, multi-robot compatible code.
-     *
-     * @param hardwareMap The OpMode's hardwareMap.
-     * @param config The complete RobotConfig profile for the specific robot being used.
-     * @return A configured Pedro Pathing Follower.
+     * A Follower for any robot's config. Kept for the older OpModes that call it; new robot code
+     * gets its Follower from DriveUtil2026b.getFollower(), which builds it from the same config and
+     * owns the Pinpoint. Do not call this in an OpMode that also constructs a DriveUtil2026b: two
+     * Followers, or a Follower plus a DriveUtil, both opening the Pinpoint is the 2025 failure.
      */
     public static Follower createFollower(HardwareMap hardwareMap, RobotConfig config) {
-
-        // Guard clause: If the provided config doesn't have Pedro Pathing data, we can't build a follower.
-        if (config.pedroPathing == null) {
-            throw new IllegalArgumentException("Cannot create Pedro Pathing Follower: The provided RobotConfig does not contain a PedroPathingConfig.");
-        }
-
-        // 1. Configure FollowerConstants from RobotConfig.pedroPathing
-        FollowerConstants followerConfig = new FollowerConstants()
-                .mass(config.pedroPathing.followerMass)
-                .forwardZeroPowerAcceleration(config.pedroPathing.forwardZeroPowerAccel)
-                .lateralZeroPowerAcceleration(config.pedroPathing.lateralZeroPowerAccel)
-                .translationalPIDFCoefficients(config.pedroPathing.translationalPIDF)
-                .headingPIDFCoefficients(config.pedroPathing.headingPIDF);
-
-        // 2. Configure MecanumConstants from RobotConfig.drivetrain and RobotConfig.pedroPathing
-        MecanumConstants driveConfig = new MecanumConstants()
-                .maxPower(1.0)
-                .rightFrontMotorName(config.hardware.rightFront)
-                .rightRearMotorName(config.hardware.rightRear)
-                .leftRearMotorName(config.hardware.leftRear)
-                .leftFrontMotorName(config.hardware.leftFront)
-                .leftFrontMotorDirection(config.drivetrain.leftFrontDirection)
-                .leftRearMotorDirection(config.drivetrain.leftRearDirection)
-                .rightFrontMotorDirection(config.drivetrain.rightFrontDirection)
-                .rightRearMotorDirection(config.drivetrain.rightRearDirection)
-                .xVelocity(config.pedroPathing.driveMaxVelo)
-                .yVelocity(config.pedroPathing.strafeMaxVelo);
-
-        // 3. Configure PinpointConstants from RobotConfig.odometry
-        PinpointConstants localizerConfig = new PinpointConstants()
-                .forwardPodY(config.odometry.pinpointOffsetY_mm)
-                .strafePodX(config.odometry.pinpointOffsetX_mm)
-                .distanceUnit(DistanceUnit.MM)
-                .hardwareMapName(config.hardware.pinpoint)
-                .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-                .forwardEncoderDirection(config.odometry.pinpointXPodDirection)
-                .strafeEncoderDirection(config.odometry.pinpointYPodDirection);
-
-        // 4. Build the Follower using all the constructed parts from the RobotConfig object
-        return new FollowerBuilder(followerConfig, hardwareMap)
-                .pathConstraints(config.pedroPathing.pathConstraints)
-                .mecanumDrivetrain(driveConfig)
-                .pinpointLocalizer(localizerConfig)
-                .build();
+        return PedroBridge.createFollower(hardwareMap, config);
     }
 }

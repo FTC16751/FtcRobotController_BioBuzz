@@ -169,7 +169,7 @@ moves from a tape mark and ends about where it started facing the same way (forw
 forward 12, right 12, wait, right 90, back 12), `Test2027: Encoder Move Check` measures section F,
 `Test2027: Drive Square (Pinpoint)` returns to its mark within an inch with "waypoints that gave
 up" reading 0 (it now uses the non-blocking `startDriveTo` / `isBusy` pair, so this also proves
-the Intermediate tier), then section H. In the TeleOp, Back zeroes the position: push the robot
+the Intermediate tier), then section H. Then section K for Pedro Pathing (the `Drive Square (Pedro)` auto and the tuning that comes first). In the TeleOp, Back zeroes the position: push the robot
 forward by hand and the telemetry X rises, push it left and Y rises, turn it counter-clockwise
 and the heading rises; a pod direction that goes the wrong way is fixed in the config. Note anything in the README that a first-time team would have tripped on.
 
@@ -196,6 +196,32 @@ goBILDA StarterBot names are the defaults), deploy.
 If J5 sags on release, the motor's RUN_TO_POSITION hold is too weak for the load: raise
 `.power(...)` or check the gearing. If J7 never resets, the switch is wired to a DigitalChannel
 rather than a TouchSensor; configure it as a REV Touch Sensor.
+
+
+## K. Pedro Pathing on test2027bot (laptop work done 2026-09-07, never run on a robot)
+
+Prerequisite: section I's push test and `Drive Square (Pinpoint)` pass. Everything below is the
+`Tuning` OpMode (Driver Station group Pedro) with Panels open at `192.168.43.1:8001`, then the Pedro
+square. Copy every number into `Test2027BotConfig`'s `PedroPathingConfig` as you go; the Tuning
+OpMode reads that config through `pedropathing/Constants.ACTIVE_CONFIG`, so a redeploy after each
+copy keeps the tuner and the robot on the same numbers. Background: `doc/PEDRO_ON_TEST2027.md`.
+
+| # | Check | Expected |
+|---|---|---|
+| K1 | Tuning > Localization > Localization Test | push forward: x rises; push left: y rises; turn counter-clockwise: heading rises; spin in place: x and y stay within about 1 in. A pod direction that goes the wrong way is fixed in the config's `OdometryConfig` (never in Constants) and redeployed |
+| K2 | Tuning > Automatic > Forward Velocity Tuner, then Lateral Velocity Tuner (48 in clear each way) | two velocities in in/s; write them as `.velocities(forward, strafe)` |
+| K3 | Tuning > Manual > Heading Tuner | turn the robot by hand; after adjusting P in Panels it returns to its heading briskly with no oscillation; write `.headingPIDF(...)` |
+| K4 | Tuning > Automatic > Predictive Braking Tuner | kLinear and kQuadratic; write `.predictiveBraking(0.1, kLinear, kQuadratic).centripetalScaling(0)` |
+| K5 | Tuning > Tests > Line | 48 in out and back repeatedly with no overshoot; raise kP toward 0.3 until it jitters, then back off |
+| K6 | Tuning > Tests > Triangle, then Circle | straight legs; a smooth circle facing the centre |
+| K7 | `Test2027: Drive Square (Pedro)` from a tape mark | returns within 1 in (the "off the mark" line), "stuck false", time written down |
+| K8 | `Test2027: Drive Square (Pinpoint)` from the same mark, same session | returns within 1 in; time written down. The two times are the input to the executor decision in `doc/DRIVE_STRATEGY_REVIEW.md` |
+| K9 | `Test2027: Teleop (RUN ME)` after K7 | drives as before; telemetry X/Y/heading still track a push (the Follower owns the Pinpoint, TeleOp still drives through moveRobot) |
+
+If K1 disagrees with section I's push test on the same robot, the bridge (`common/PedroBridge`)
+is wrong, not the pods. If the robot drives away from the line in K5, check the config's motor
+directions against the Localization Test first; Pedro uses the same four directions as the TeleOp.
+Weigh the robot before K4 and put the kilograms in `.mass(...)`.
 
 
 ## Results

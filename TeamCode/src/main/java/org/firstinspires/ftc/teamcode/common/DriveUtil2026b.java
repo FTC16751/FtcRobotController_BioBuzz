@@ -3,7 +3,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.MM;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -19,7 +21,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.pedropathing.Constants;
 
 
 import java.util.Arrays;
@@ -117,7 +118,7 @@ public class DriveUtil2026b {
 
     // --- Enums ---
     private enum Direction { x, y, h }
-    private enum DriveState { IDLE, DRIVING_TO_POINT_PINPOINT, ALIGNING_TO_APRILTAG }
+    private enum DriveState { IDLE, DRIVING_TO_POINT_PINPOINT, ALIGNING_TO_APRILTAG, FOLLOWING_PATH, HOLDING_POINT }
     private DriveState driveState = DriveState.IDLE;
 
     /**
@@ -126,8 +127,15 @@ public class DriveUtil2026b {
      * Kept so they compile. Do not use in new code.
      */
     public double heading           = 0;
-    // The Follower can be null if this robot doesn't use it.
-    //public final Follower follower;
+
+    // --- Pedro Pathing (optional). Built in the constructor when config.pedroPathing is set. The
+    //     Follower then OWNS the Pinpoint: it opens and configures the device once, and the public
+    //     `pinpoint` field above is that same object, so driveTo, the getters, telemetry and the tag
+    //     approach all read what Pedro reads. Never build a second Follower or open the Pinpoint
+    //     again in a robot class: two owners with two sets of pod offsets on one device is what
+    //     made Pedro look broken in 2025 (doc/PEDRO_ON_TEST2027.md). Null on robots without Pedro.
+    private final Follower follower;
+    private boolean pathHoldEnd = false;     // followPath(chain, true): hold the last pose after arriving
 
     // =================================================================================
     // SECTION 2: CONSTRUCTOR & INITIALIZATION
@@ -144,20 +152,19 @@ public class DriveUtil2026b {
         // Initialize all hardware components
         initializeIMU(hardwareMap);
         initMotors(hardwareMap);
-        initOdo(hardwareMap);
 
-//        if (config.pedroPathing != null) {
-//            // This robot wants smooth driving. Create the Follower.
-//            this.follower = Constants.createFollower(hardwareMap, config);
-//            this.follower.setStartingPose(new Pose(0, 0, 0));
-//            this.follower.startTeleopDrive(true);
-//            telemetry.log().add("DriveUtil: Initialized with Pedro Pathing Follower.");
-//        } else {
-//            // This robot does NOT use Pedro. The follower remains null.
-//            this.follower = null;
-//            telemetry.log().add("DriveUtil: Initialized in Simple PID Mode.");
-//           ;
-//        }
+        if (config.pedroPathing != null && config.hardware.pinpoint != null) {
+            // Pedro first, so it opens and configures the Pinpoint from the same config (names,
+            // directions, pod offsets); then borrow that device instead of opening it a second time.
+            PinpointLocalizer localizer = PedroBridge.createPinpointLocalizer(hardwareMap, config);
+            follower = PedroBridge.createFollower(hardwareMap, config, localizer);
+            pinpoint = localizer.getPinpoint();
+            localizer.resetIMU();                  // same resetPosAndIMU the non-Pedro path does
+            telemetry.addData("DriveUtil", "Pedro Pathing follower built; it owns the Pinpoint");
+        } else {
+            follower = null;
+            initOdo(hardwareMap);
+        }
     }
 
     private void initMotors(HardwareMap hardwareMap) {
@@ -358,7 +365,14 @@ public class DriveUtil2026b {
 
     /** Tell the odometry where the robot is, for example the start tile at the beginning of an auto. */
     public void setPosition(double xInches, double yInches, double headingDegrees) {
-        if (pinpoint != null) pinpoint.setPosition(pose(xInches, yInches, headingDegrees));
+        if (pinpoint == null) return;
+        if (follower != null) {
+            // Through Pedro, so its cached pose and the Pinpoint agree at once. Same axes: x forward,
+            // y left, heading counter-clockwise; Pedro's Pose takes radians.
+            follower.setPose(new Pose(xInches, yInches, Math.toRadians(headingDegrees)));
+        } else {
+            pinpoint.setPosition(pose(xInches, yInches, headingDegrees));
+        }
     }
 
     /** Make here (0, 0) facing heading 0. Instant; the IMU is not recalibrated (see resetPosAndIMU). */
@@ -428,14 +442,74 @@ public class DriveUtil2026b {
         driveToTagAsync(sighting, tagId, standoffInches, defaultHoldTimeSec);
     }
 
-    /** Abandon whatever async move is running (waypoint or tag) and stop the wheels. Safe when idle. */
+    /** Abandon whatever async move is running (waypoint, tag or Pedro path) and stop the wheels. Safe when idle. */
     public void cancel() {
-        if (driveState == DriveState.ALIGNING_TO_APRILTAG) tagApproach.stop();
+        switch (driveState) {
+            case ALIGNING_TO_APRILTAG:
+                tagApproach.stop();
+                break;
+            case FOLLOWING_PATH:
+                lastMoveSucceeded = false;          // abandoned before it arrived
+                endPedroMove();
+                return;
+            case HOLDING_POINT:
+                endPedroMove();                     // the move had arrived; releasing the hold is not a failure
+                return;
+            default:
+                break;
+        }
         if (driveState != DriveState.IDLE) {
             stopRobot();
             lastMoveSucceeded = false;
             driveState = DriveState.IDLE;
         }
+    }
+
+    // ---------------------------------------------------------------------------------
+    // ADVANCED: Pedro Pathing paths. Only on robots whose config has a PedroPathingConfig.
+    // ---------------------------------------------------------------------------------
+
+    /**
+     * Follow a Pedro Pathing path chain, non-blocking: build the chain with
+     * getFollower().pathBuilder(), call this, then poll isBusy() while update() runs each loop.
+     * Poses are Pedro's (inches, radians, x forward / y left / counter-clockwise like the Pinpoint).
+     * With holdEnd true the robot keeps holding the last pose after arriving (for shooting) until
+     * cancel() or the next move; isBusy() is false while holding. Without Pedro in the config this
+     * does nothing and lastMoveSucceeded() reads false.
+     */
+    public void followPath(PathChain chain, boolean holdEnd) {
+        cancel();
+        if (follower == null) {
+            lastMoveSucceeded = false;
+            return;
+        }
+        // Pedro's tuning assumes plain power, not the velocity control RUN_USING_ENCODER adds.
+        setMotorMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        pathHoldEnd = holdEnd;
+        follower.followPath(chain, holdEnd);
+        driveState = DriveState.FOLLOWING_PATH;
+    }
+
+    /** Follow a path chain and stop at the end (no hold). */
+    public void followPath(PathChain chain) {
+        followPath(chain, false);
+    }
+
+    /** True if this robot's config includes Pedro Pathing, so followPath and getFollower work. */
+    public boolean hasPedro() {
+        return follower != null;
+    }
+
+    /** The Pedro Follower for building paths (pathBuilder) and reading its pose. Null without Pedro. */
+    public Follower getFollower() {
+        return follower;
+    }
+
+    /** Leave a Pedro move: zero the wheels once, stop Pedro writing them, restore the encoder run mode. */
+    private void endPedroMove() {
+        follower.breakFollowing();
+        setMotorMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        driveState = DriveState.IDLE;
     }
 
     /** True if the most recent async move (startDriveTo, turnToHeading, startDriveToTag) arrived rather than gave up. */
@@ -554,8 +628,9 @@ public class DriveUtil2026b {
         return getPose();
     }
 
+    /** True while an async move (waypoint, tag or Pedro path) is still travelling. Holding a pose after a path is not busy. */
     public boolean isBusy() {
-        return driveState != DriveState.IDLE;
+        return driveState != DriveState.IDLE && driveState != DriveState.HOLDING_POINT;
     }
 
     public void addTelemetry() {
@@ -605,31 +680,24 @@ public class DriveUtil2026b {
         setMotorPowers(p.leftFront, p.leftRear, p.rightRear, p.rightFront);
     }
 
+    // TeleOp driving stays on moveRobot on every robot, Pedro or not: the drivers' feel does not
+    // change with the config. Pedro is for autonomous paths (followPath). If a Pedro TeleOp drive is
+    // ever wanted, it is follower.startTeleopDrive() once and follower.setTeleOpDrive(...) each loop
+    // in a separate OpMode, never mixed with moveRobot in the same loop.
+
     public void arcadeDrive(double strafe, double drive, double turn, double rightStickY, double speed) {
-       // if (follower != null) {
-            // If the follower exists, use it for smooth, stateful control.
-           // follower.setTeleOpDrive(drive, strafe, turn, true);
-        //} else {
-            // This is where you would apply smoothing/deadband if desired,
-            // or just pass the raw values to moveRobot.
-            moveRobot(drive * speed, strafe * speed, turn * speed);
-       // }
+        moveRobot(drive * speed, strafe * speed, turn * speed);
     }
 
     public void fieldCentricDrive(double strafe, double drive, double turn, double speed) {
-//        if (follower != null) {
-//            // If the follower exists, use it for smooth, stateful control.
-//            follower.setTeleOpDrive(drive, strafe, turn, false);
-//        } else {
-            // Heading from the Pinpoint (radians, counter-clockwise positive). No Pinpoint: 0,
-            // and this silently becomes robot-centric driving.
-            double botHeading = getPinpointHeading() - fieldForwardOffsetRad;
+        // Heading from the Pinpoint (radians, counter-clockwise positive). No Pinpoint: 0,
+        // and this silently becomes robot-centric driving.
+        double botHeading = getPinpointHeading() - fieldForwardOffsetRad;
 
-            // Rotate the stick command from the field frame into the robot frame. The stick's
-            // strafe is right-positive; fieldToRobot takes field-left, hence the minus.
-            MecanumMixer.Command c = MecanumMixer.fieldToRobot(drive, -strafe, botHeading);
-            moveRobot(c.drive * speed, c.strafeRight * speed, turn * speed);
-        //}
+        // Rotate the stick command from the field frame into the robot frame. The stick's
+        // strafe is right-positive; fieldToRobot takes field-left, hence the minus.
+        MecanumMixer.Command c = MecanumMixer.fieldToRobot(drive, -strafe, botHeading);
+        moveRobot(c.drive * speed, c.strafeRight * speed, turn * speed);
     }
 
     public void simpleTankDrive(double left_stick_x, double left_stick_y, double right_stick_x, double right_stick_y, double DRIVE_SPEED) {
@@ -890,7 +958,22 @@ public class DriveUtil2026b {
     // =================================================================================
 
     public void update() {
-        if (pinpoint != null) pinpoint.update();
+        if (driveState == DriveState.FOLLOWING_PATH || driveState == DriveState.HOLDING_POINT) {
+            // Pedro steps the Pinpoint and drives the wheels. It is only stepped while a Pedro move
+            // is active: once a path has ended, every further follower.update() re-zeroes the
+            // motors, which would fight moveRobot in TeleOp.
+            follower.update();
+            if (driveState == DriveState.FOLLOWING_PATH && !follower.isBusy()) {
+                lastMoveSucceeded = true;
+                if (pathHoldEnd) {
+                    driveState = DriveState.HOLDING_POINT;   // Pedro keeps holding until cancel() or the next move
+                } else {
+                    endPedroMove();
+                }
+            }
+        } else if (pinpoint != null) {
+            pinpoint.update();
+        }
         switch (driveState) {
             case DRIVING_TO_POINT_PINPOINT:
                 // Step the waypoint drive (startDriveTo). driveTo does one loop of PID and moves.
@@ -914,14 +997,15 @@ public class DriveUtil2026b {
                     moveRobot(tagApproach.getDrivePower(), tagApproach.getStrafePower(), tagApproach.getYawPower());
                 }
                 break;
+            case FOLLOWING_PATH:
+            case HOLDING_POINT:
+                // Pedro drove the wheels above; the Pinpoint PID stays out of it.
+                break;
             case IDLE:
             default:
                 // Do nothing
                 break;
         }
-//        if (follower != null) {
-//            follower.update();
-//        }
     }
 
 public boolean driveTo(Pose2D currentPosition, Pose2D targetPosition, double power, double holdTime) {

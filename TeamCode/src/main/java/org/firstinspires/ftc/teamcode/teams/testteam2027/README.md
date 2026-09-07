@@ -142,6 +142,26 @@ where it is, and a move is started, then polled, while other things run in the s
 Power and hold time come from the defaults in your constants; add a power argument to
 `startDriveTo` for one move. Every start* move has a time limit that scales with the distance.
 
+## Step 6d. The third auto (Pedro Pathing paths)
+
+`auto/Test2027PedroSquareAuto.java` drives the same square as ONE Pedro Pathing path chain, without
+stopping at the corners. It works because the config has a `PedroPathingConfig` (section 6c of the
+config file): DriveUtil2026b then builds a Pedro Follower for the robot, and the Follower owns the
+Pinpoint. Tune first: run `Tuning` (Driver Station group Pedro) in the order
+`doc/PEDRO_ON_TEST2027.md` section 3 gives, copying each number into the config as you go.
+
+| Command | What it does |
+|---|---|
+| `hasPedro()` | true if the config has a PedroPathingConfig |
+| `getFollower().pathBuilder()...build()` | build a path chain from Pedro poses (inches, radians; x forward, y left, counter-clockwise, same as the Pinpoint) |
+| `followPath(chain)` then `isBusy()` | follow it without blocking; the robot stops at the end |
+| `followPath(chain, true)` | same, then hold the last pose (for shooting) until `cancel()` or the next move |
+| `cancel()` | abandon the path, or release the hold |
+
+Never build a second Follower or open the Pinpoint yourself in an OpMode that has a robot object;
+`getFollower()` is the one to use. Two owners of one Pinpoint is what broke Pedro in 2025.
+
+
 ## Step 7. Add the game
 
 - **First, on the bench:** enable `common/test/MechanismBenchTest`, edit its device-name constants

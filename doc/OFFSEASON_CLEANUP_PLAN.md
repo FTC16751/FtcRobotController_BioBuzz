@@ -2,7 +2,7 @@
 
 ## Status and how to resume (read this first)
 
-**Last updated 2026-09-07 (night, after the skeleton-subsystem session).** Repo: `/Users/georgemitchom/StudioProjects/FTC17651/FtcRobotController_Decode`
+**Last updated 2026-09-07 (night, after the skeleton-subsystem session and the drive-side review plus Pedro laptop work).** Repo: `/Users/georgemitchom/StudioProjects/FTC17651/FtcRobotController_Decode`
 (GitHub fork `FTC16751/FtcRobotController_Decode`, default branch `master`). Work is on branch
 `offseason/common-cleanup-2026`, open as [PR #1](https://github.com/FTC16751/FtcRobotController_Decode/pull/1).
 Tag `pre-r6-reorg` marks the tree before the folder move.
@@ -20,7 +20,9 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
 | R9 AutoSelector / AutoBase | **deferred**: build with the first new-season auto | |
 | R10 TeleOpBase / ButtonEdge | **closed**, will not be done; gamepad layouts stay as drivers learned them | |
 | R12 template: `teams/testteam2027` built as the template and test bed | done; TeleOp, beginner auto, encoder check, tag approach all proven on the Skyline chassis 2026-09-07 | |
-| DriveUtil2026b focus: fixes, tiers (Beginner, Intermediate), pure-math tests, cleanup, TagApproach | done (see the completed-focus section); Advanced tier and the Pedro revisit remain | a107f3f..dd00eb0 |
+| DriveUtil2026b focus: fixes, tiers (Beginner, Intermediate), pure-math tests, cleanup, TagApproach | done (see the completed-focus section); Advanced tier remains | a107f3f..dd00eb0 |
+| Drive-side review: was point-to-point + waypoints reusable? | done, `doc/DRIVE_STRATEGY_REVIEW.md`; mentor chose to lean into Pedro for a real comparison | |
+| **Pedro revisit (hard rule 6), laptop side** | **done 2026-09-07**: Pedro 2.0.1 to 2.1.2, config-driven bridge (`common/PedroBridge`, pod-offset swap fixed), one Pinpoint owner in DriveUtil2026b (`followPath`), Test2027 Pedro square auto, `PedroBridgeTest`. Robot side (tuning, comparison) in `doc/PEDRO_ON_TEST2027.md` section 3 and test plan K | |
 | Skeleton subsystems: `common/subsystems` Roller, PresetServo, Claw, PresetMotor, VelocityMotor + tests, MechanismBenchTest, one Clock | done 2026-09-07 (see the late-session subsection under Next focus); robot check owed | 1e997fe..ff4de57 |
 | R11 live defects (TeleOp-side items), R13-R15 | not started | |
 
@@ -42,12 +44,13 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
    does the beginner's auto get simpler or stay simple? Direction in the name, inches, one speed,
    blocking with a time limit, a reached flag. The advanced idioms (`driveTo` waypoints, `drive_p3`,
    the tag approach) stay, but nobody should need them to write "drive forward 24, turn left 90."
-6. **Keep the `OpMode` constructor parameter and `myOpMode` field in DriveUtil2026b, and keep the
-   commented-out Pedro Pathing blocks and their imports.** (Mentor, 2026-09-07.) The OpMode hook is
-   deliberately reserved; every robot passes null today and that is fine. Pedro did not work last
-   season and will be revisited this season, possibly immediately; the commented blocks in the
-   constructor, `arcadeDrive`, `fieldCentricDrive`, and `update()` are the starting point for that.
-   Neither is "dead code" for cleanup purposes.
+6. **Keep the `OpMode` constructor parameter and `myOpMode` field in DriveUtil2026b.** (Mentor,
+   2026-09-07.) The OpMode hook is deliberately reserved; every robot passes null today and that is
+   fine. The second half of this rule, keep the commented-out Pedro blocks, was satisfied the same
+   day: the Pedro revisit happened and those blocks became working code (`followPath`, a Follower
+   built from the config that owns the Pinpoint; see `doc/PEDRO_ON_TEST2027.md`). A robot opts in by
+   giving its config a `PedroPathingConfig`; only test2027bot has one. TeleOp driving stays on
+   `moveRobot` on every robot by design.
 
 **Open items from R5 for the mentor:** GGRobot (Bot 1) shares GGBot2Config; P3_Robot (Bot 2) shares
 P3Bot3Config; GearGirls and P3 still have the shared default Calibration (1.15 right-rear scale etc.)
@@ -245,6 +248,20 @@ prismled, RobotConfigorig, EncoderOdometry, LedUtil colors) is still open.
 
 
 ## Next focus, drive side (set 2026-09-07): was last season's point-to-point + waypoint strategy reusable?
+
+**ANSWERED 2026-09-07, later the same day.** The full answer is `doc/DRIVE_STRATEGY_REVIEW.md`; the
+Pedro follow-up is `doc/PEDRO_ON_TEST2027.md`. In one line each: (1) GearGirls 47 named waypoints,
+20 used, CLOSE block not mirrored; P3 40 named, 36 distinct, every red/blue pair a hand nudge apart;
+(2) hold 0 on almost every call, GearGirls has no timeouts at all, P3 skips on timeout and cut its
+shots from 3 to 1 on qualifier day to fit the shoot timeout; (3) no auto ever relocalized from a
+tag; (4) nothing was written down, the evidence is detuned per-chassis gains (so the "nobody tuned
+per chassis" line below is wrong: GearGirls and P3 did, Skyline and test2027 did not) and 1 to 5 in
+waypoint nudges per meet; (5) a dozen edits in two files to add one waypoint, with runtime NPEs for
+a missed one. Verdict: the pattern (queue of steps, station-keeping while shooting, `driveTo` as a
+terminal regulator) is reusable, the implementation (start-relative frame, payload in fields, no
+feedforward, four-way copy-paste) is not. Also: P3's queue holds enum constants, not `Step` objects.
+The mentor then chose to lean into Pedro for a real comparison on test2027bot; that work is the
+"Pedro revisit" row in the status table. The original brief follows for the record.
 
 A separate session, in parallel with the subsystem one. The question: GearGirls and P3 built
 every auto last season on `driveTo` (Pinpoint point-to-point PID) called each loop against a

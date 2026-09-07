@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.common.VisionUtil;
 import java.util.function.Supplier;
 @Configurable
 @TeleOp(name="Example PedroPath Teleop George", group = "Pedro")
-
+@Disabled   // vendor example lightly edited: uses the static block in Constants and passes un-negated sticks
 public class ExampleTeleOp_george extends OpMode {
     private Follower follower;
     public static Pose startingPose; //See ExampleAuto to understand how to use this

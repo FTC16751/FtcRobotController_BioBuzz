@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.function.Supplier;
 @Configurable
 @TeleOp(name="Example PedroPath Teleop", group = "Pedro")
-
+@Disabled   // vendor example: uses the static block in Constants, needs a "limelight", and passes un-negated sticks
 public class ExampleTeleOp extends OpMode {
 
     private Follower follower;

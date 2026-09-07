@@ -60,7 +60,15 @@ public final class Test2027BotConfig {
                         .xyToleranceMm(15.5).yawToleranceRad(0.0349066)
                         .xyGains(0.01905, 0.000002, 0.00111).xyAccel(8.0)
                         .yawGains(5.0, 0.0, 0.0).yawAccel(20.0),
-                null   // no Pedro Pathing on this robot
+                // 6c. Pedro Pathing (doc/PEDRO_ON_TEST2027.md). Because this is set, DriveUtil2026b builds
+                //     a Pedro Follower for this robot, and the Follower owns the Pinpoint. UNTUNED as of
+                //     2026-09-07: Pedro's library defaults. Run the "Tuning" OpMode (Driver Station group
+                //     Pedro) in the documented order and copy each result here: Localization Test first
+                //     (fixes go in section 4 above, not here), then .velocities(forward, strafe) from the
+                //     two velocity tuners, .headingPIDF(...) from the heading tuner, then
+                //     .predictiveBraking(kP, kLinear, kQuadratic) from the predictive braking tuner with
+                //     .centripetalScaling(0). Weigh the robot for .mass(kg) before the centripetal step.
+                new RobotConfig.PedroPathingConfig()
         )
         .named("test2027bot")
         // 1. Device names, exactly as in the Control Hub configuration.
