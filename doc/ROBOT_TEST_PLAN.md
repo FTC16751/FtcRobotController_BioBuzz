@@ -217,6 +217,7 @@ copy keeps the tuner and the robot on the same numbers. Background: `doc/PEDRO_O
 | K7 | `Test2027: Drive Square (Pedro)` from a tape mark | returns within 1 in (the "off the mark" line), "stuck false", time written down |
 | K8 | `Test2027: Drive Square (Pinpoint)` from the same mark, same session | returns within 1 in; time written down. The two times are the input to the executor decision in `doc/DRIVE_STRATEGY_REVIEW.md` |
 | K9 | `Test2027: Teleop (RUN ME)` after K7 | drives as before; telemetry X/Y/heading still track a push (the Follower owns the Pinpoint, TeleOp still drives through moveRobot) |
+| K10 | `Test2027: Teleop (Pedro drive)` (group TestTeam2027 Test), same lap driven twice, X toggles Pedro and moveRobot | both drive from the same sticks; pressing X mid-move hands over without a lurch; with Pedro on, a straight push stays straight and a turn stops where the stick stops. Write down which felt better; that is the TeleOp half of the executor decision |
 
 If K1 disagrees with section I's push test on the same robot, the bridge (`common/PedroBridge`)
 is wrong, not the pods. If the robot drives away from the line in K5, check the config's motor

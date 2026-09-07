@@ -157,6 +157,7 @@ Pinpoint. Tune first: run `Tuning` (Driver Station group Pedro) in the order
 | `followPath(chain)` then `isBusy()` | follow it without blocking; the robot stops at the end |
 | `followPath(chain, true)` | same, then hold the last pose (for shooting) until `cancel()` or the next move |
 | `cancel()` | abandon the path, or release the hold |
+| `startPedroTeleopDrive()`, then `pedroTeleopDrive(strafe, drive, turn, speed)` each loop | let Pedro drive the wheels from the sticks (same arguments as `arcadeDrive`); `cancel()` goes back to `moveRobot`. Comparison only, in `teleop/Test2027PedroTeleop`, never in the RUN ME TeleOp |
 
 Never build a second Follower or open the Pinpoint yourself in an OpMode that has a robot object;
 `getFollower()` is the one to use. Two owners of one Pinpoint is what broke Pedro in 2025.

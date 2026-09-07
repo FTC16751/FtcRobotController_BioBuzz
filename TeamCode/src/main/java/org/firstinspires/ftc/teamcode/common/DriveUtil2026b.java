@@ -118,7 +118,7 @@ public class DriveUtil2026b {
 
     // --- Enums ---
     private enum Direction { x, y, h }
-    private enum DriveState { IDLE, DRIVING_TO_POINT_PINPOINT, ALIGNING_TO_APRILTAG, FOLLOWING_PATH, HOLDING_POINT }
+    private enum DriveState { IDLE, DRIVING_TO_POINT_PINPOINT, ALIGNING_TO_APRILTAG, FOLLOWING_PATH, HOLDING_POINT, TELEOP_PEDRO }
     private DriveState driveState = DriveState.IDLE;
 
     /**
@@ -455,6 +455,9 @@ public class DriveUtil2026b {
             case HOLDING_POINT:
                 endPedroMove();                     // the move had arrived; releasing the hold is not a failure
                 return;
+            case TELEOP_PEDRO:
+                endPedroMove();                     // back to moveRobot driving; not a move, so not a failure
+                return;
             default:
                 break;
         }
@@ -495,6 +498,41 @@ public class DriveUtil2026b {
         followPath(chain, false);
     }
 
+    /**
+     * Hand TeleOp driving to Pedro (its own drive vectors, centripetal correction, brake mode) for a
+     * comparison against moveRobot. Call once, then pedroTeleopDrive(...) every loop while update()
+     * runs; cancel() hands driving back to moveRobot. Only in a SEPARATE OpMode from the RUN ME
+     * TeleOp: the drivers' feel on the RUN ME OpMode does not change with the config. Without Pedro
+     * in the config this does nothing and isPedroTeleopDrive() stays false.
+     */
+    public void startPedroTeleopDrive() {
+        cancel();
+        if (follower == null) {
+            return;
+        }
+        setMotorMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);   // same reason as followPath
+        follower.startTeleopDrive();
+        driveState = DriveState.TELEOP_PEDRO;
+    }
+
+    /**
+     * The Pedro TeleOp drive command, same arguments and signs as arcadeDrive (strafe right
+     * positive, drive forward positive, turn clockwise positive, 0..1 speed scale). Pedro wants
+     * forward / left / counter-clockwise, so strafe and turn are negated here. Ignored unless
+     * startPedroTeleopDrive() was called; pedro applies it on the next update().
+     */
+    public void pedroTeleopDrive(double strafe, double drive, double turn, double speed) {
+        if (driveState != DriveState.TELEOP_PEDRO) {
+            return;
+        }
+        follower.setTeleOpDrive(drive * speed, -strafe * speed, -turn * speed, true);   // true: robot-centric
+    }
+
+    /** True while Pedro is driving the wheels from pedroTeleopDrive (after startPedroTeleopDrive, before cancel). */
+    public boolean isPedroTeleopDrive() {
+        return driveState == DriveState.TELEOP_PEDRO;
+    }
+
     /** True if this robot's config includes Pedro Pathing, so followPath and getFollower work. */
     public boolean hasPedro() {
         return follower != null;
@@ -505,7 +543,7 @@ public class DriveUtil2026b {
         return follower;
     }
 
-    /** Leave a Pedro move: zero the wheels once, stop Pedro writing them, restore the encoder run mode. */
+    /** Leave a Pedro move or Pedro TeleOp drive: zero the wheels once, stop Pedro writing them, restore the encoder run mode. */
     private void endPedroMove() {
         follower.breakFollowing();
         setMotorMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -628,9 +666,9 @@ public class DriveUtil2026b {
         return getPose();
     }
 
-    /** True while an async move (waypoint, tag or Pedro path) is still travelling. Holding a pose after a path is not busy. */
+    /** True while an async move (waypoint, tag or Pedro path) is still travelling. Holding a pose after a path, or Pedro TeleOp driving, is not busy. */
     public boolean isBusy() {
-        return driveState != DriveState.IDLE && driveState != DriveState.HOLDING_POINT;
+        return driveState != DriveState.IDLE && driveState != DriveState.HOLDING_POINT && driveState != DriveState.TELEOP_PEDRO;
     }
 
     public void addTelemetry() {
@@ -681,9 +719,9 @@ public class DriveUtil2026b {
     }
 
     // TeleOp driving stays on moveRobot on every robot, Pedro or not: the drivers' feel does not
-    // change with the config. Pedro is for autonomous paths (followPath). If a Pedro TeleOp drive is
-    // ever wanted, it is follower.startTeleopDrive() once and follower.setTeleOpDrive(...) each loop
-    // in a separate OpMode, never mixed with moveRobot in the same loop.
+    // change with the config. Pedro is for autonomous paths (followPath). A Pedro TeleOp drive
+    // exists for comparison only (startPedroTeleopDrive / pedroTeleopDrive, see Test2027PedroTeleop);
+    // it lives in its own OpMode and is never mixed with moveRobot in the same loop.
 
     public void arcadeDrive(double strafe, double drive, double turn, double rightStickY, double speed) {
         moveRobot(drive * speed, strafe * speed, turn * speed);
@@ -958,10 +996,11 @@ public class DriveUtil2026b {
     // =================================================================================
 
     public void update() {
-        if (driveState == DriveState.FOLLOWING_PATH || driveState == DriveState.HOLDING_POINT) {
+        if (driveState == DriveState.FOLLOWING_PATH || driveState == DriveState.HOLDING_POINT
+                || driveState == DriveState.TELEOP_PEDRO) {
             // Pedro steps the Pinpoint and drives the wheels. It is only stepped while a Pedro move
-            // is active: once a path has ended, every further follower.update() re-zeroes the
-            // motors, which would fight moveRobot in TeleOp.
+            // (or the Pedro TeleOp drive) is active: once a path has ended, every further
+            // follower.update() re-zeroes the motors, which would fight moveRobot in TeleOp.
             follower.update();
             if (driveState == DriveState.FOLLOWING_PATH && !follower.isBusy()) {
                 lastMoveSucceeded = true;
@@ -999,6 +1038,7 @@ public class DriveUtil2026b {
                 break;
             case FOLLOWING_PATH:
             case HOLDING_POINT:
+            case TELEOP_PEDRO:
                 // Pedro drove the wheels above; the Pinpoint PID stays out of it.
                 break;
             case IDLE:

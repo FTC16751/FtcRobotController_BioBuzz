@@ -148,10 +148,11 @@ takes the Pinpoint from it (`((PinpointLocalizer) follower.getLocalizer()).getPi
 (which does `pinpoint.update()`) instead of `pinpoint.update()`. The two motion sources are made
 exclusive by `DriveState`: a new `FOLLOWING_PATH` state during which the Pinpoint PID never writes
 motors, and `startDriveTo`/`driveToTagAsync` call `follower.breakFollowing()` first. `resetPosition()`
-goes through `follower.setPose(...)` so Pedro and the Pinpoint agree. TeleOp stays on `moveRobot`
-(hard rule: gamepad feel does not change); Pedro's `setTeleOpDrive` is not wired for now. Check: unit
-test for the exclusivity in the state machine; on the robot, `Test2027Teleop` telemetry X/Y/heading
-still track the push test after the change.
+goes through `follower.setPose(...)` so Pedro and the Pinpoint agree. The RUN ME TeleOp stays on
+`moveRobot` (hard rule: gamepad feel does not change); Pedro's `setTeleOpDrive` is wired only in the
+separate comparison OpMode (section 5, question 3). Check: `DriveUtil2026b` has no unit test (it needs
+a HardwareMap), so the state-machine exclusivity is checked on the robot: `Test2027Teleop` telemetry
+X/Y/heading still track the push test after the change (K9), and K10 for the toggle.
 
 **Step 5. Localization Test.** Run `Tuning` > Localization > Localization Test with Panels open. Forward
 raises x, left raises y, counter-clockwise raises heading, a spin in place leaves x/y still. A wrong
@@ -218,6 +219,8 @@ mark them as samples. The Coach tests and `P3PedroPathAuto` stay `@Disabled` for
   README step 6d documents the vocabulary. `ROBOT_TEST_PLAN.md` section K is the robot checklist.
 - `ExampleTeleOp` and `ExampleTeleOp_george` are `@Disabled`. The Coach tests, `P3PedroPathAuto`,
   `AutoPedroPathExample` and `Drivetrain.java` are untouched (R3 scope).
+- Committed as a35e8cb the same evening. Added after the commit: `Test2027PedroTeleop`, the Pedro
+  drive toggle from section 5 question 3, and the `TELEOP_PEDRO` state in DriveUtil2026b behind it.
 
 
 ## 4. Frame conventions to write down once
@@ -237,10 +240,36 @@ else. The Coach tests' "X (Right/Left)" labels were the misunderstanding, not th
 
 ## 5. Open questions for the mentor
 
-1. Bump to FTC SDK 11.1.0 with the Pedro upgrade, or wait for the 2026-27 SDK this month and do both
-   at once?
-2. Predictive braking first (fewer knobs, faster) or PIDF first (smoother, more knobs)? This plan says
-   predictive.
-3. Should Test2027's TeleOp get a Pedro drive toggle (a second OpMode, not a change to the RUN ME one)?
-4. Which chassis is Test2027 physically: the Skyline frame measured 2026-09-07, or a separate robot?
-   Step 0's offsets assume the +120/-120 mm measurement from that session.
+Asked 2026-09-07 with the laptop work; answered the same evening after the commit (a35e8cb). The
+mentor can overturn any of these; question 4 is the one only the mentor can settle.
+
+1. **Bump to FTC SDK 11.1.0 with the Pedro upgrade, or wait for the 2026-27 SDK this month and do
+   both at once?** Wait, then bump once. As of 2026-09-07 the newest SDK is v11.2.1 (2026-07-31), a
+   tooling-only fix on v11.2 (2026-07-15, the 2025-26 offseason release); no 2026-27 kickoff SDK is
+   published yet (last year's v11.0 came out on 2025-09-06). The Pedro upgrade does not need it:
+   2.1.2 compiles and `PedroBridgeTest` passes on 11.0.0. What 11.1 would give us: Pinpoint v2
+   support in the goBILDA driver, gamepad triggers as booleans with edge detection, Limelight
+   pipeline upload. What 11.2 costs: Gradle 9.1 and AGP 8.13.2, so Android Studio Narwhal 3
+   Feature Drop or later on every laptop (this one runs 2025.3, which is newer; the students'
+   laptops need checking). Plan: stay on 11.0.0 until the 2026-27 SDK appears, then one bump
+   straight to it on a branch, Gradle move included, and re-run `PedroBridgeTest` plus test plan K.
+   The Pedro commit and the SDK commit stay separate so either can be reverted alone.
+2. **Predictive braking first or PIDF first?** Predictive braking, as planned. It is two numbers
+   from an automatic tuner (Tuning > Automatic > Predictive Braking Tuner, K4) against three
+   hand-tuned PIDF sets in the Manual folder. Touch the PIDFs only if the Line test (K5) still
+   overshoots with predictive braking on. The order in section 3 and in test plan K is unchanged.
+3. **A Pedro drive toggle for Test2027's TeleOp?** Built, as a second OpMode:
+   `teams/testteam2027/teleop/Test2027PedroTeleop` (`Test2027: Teleop (Pedro drive)`, Driver
+   Station group TestTeam2027 Test). Same sticks as RUN ME; X toggles between Pedro's
+   `setTeleOpDrive` (robot-centric) and `moveRobot`. DriveUtil2026b carries it as one more state,
+   `TELEOP_PEDRO`, behind `startPedroTeleopDrive()`, `pedroTeleopDrive(strafe, drive, turn, speed)`
+   and `isPedroTeleopDrive()`; `cancel()` hands the wheels back to `moveRobot`, `isBusy()` is
+   false in that state, and `update()` steps the Follower there exactly as it does for a path.
+   `Test2027Teleop` (RUN ME) is untouched. Robot check: test plan K10. Delete the OpMode once
+   the comparison is decided.
+4. **Which chassis is Test2027 physically: the Skyline frame measured 2026-09-07, or a separate
+   robot?** Not answerable from the laptop. Every 2026-09-07 row in the test plan's results table
+   reads "Skyline chassis, test2027bot config", so this plan assumes Test2027 is the Skyline frame
+   under the test2027bot hub configuration and the +120/-120 mm offsets stand. If it is a separate
+   robot, measure its pods and put the numbers in `Test2027BotConfig`'s `OdometryConfig` before
+   K1; nothing else in this plan changes.
