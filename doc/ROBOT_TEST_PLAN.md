@@ -173,6 +173,31 @@ the Intermediate tier), then section H. In the TeleOp, Back zeroes the position:
 forward by hand and the telemetry X rises, push it left and Y rises, turn it counter-clockwise
 and the heading rises; a pod direction that goes the wrong way is fixed in the config. Note anything in the README that a first-time team would have tripped on.
 
+## J. Mechanism Bench Test on a prototype (added 2026-09-07, never run on a robot)
+
+`common/test/MechanismBenchTest` (Disabled, group Common Test) is the first thing to run on any
+new mechanism, and the check that the skeleton subsystems in `common/subsystems/` work on real
+hardware. Enable it, set its device-name constants to match the Control Hub configuration (the
+goBILDA StarterBot names are the defaults), deploy.
+
+| # | Check | Expected |
+|---|---|---|
+| J1 | Init with only some devices configured | Telemetry lists the missing names under "missing (fine)"; no crash |
+| J2 | Right trigger / left trigger | Intake motor and both intake servos spin in / out, proportional; "intake power" tracks the trigger |
+| J3 | A | Claw toggles between the OPEN and CLOSED positions; telemetry shows "OPEN 0.300" / "CLOSED 0.700" |
+| J4 | Bumpers | Wrist steps A / B / C; left stick X creeps it; the position shown is what to copy into Constants |
+| J5 | Left stick Y on the lift | Moves with the stick; releasing the stick HOLDS (does not sag); cannot push past 0 or LIFT_MAX |
+| J6 | X / B / Y | Lift goes to DOWN / MID / HIGH, "moving" shows until within tolerance, then clears |
+| J7 | Press the home switch by hand while the lift is moving down | Telemetry "HOME", ticks reset to 0, the lift stops pushing into the switch |
+| J8 | D-pad left | Flywheel spins to LAUNCH_VELOCITY; "READY" appears near it; press again to stop |
+| J9 | D-pad right | One shot: spin-up, feeder runs FEED_TIME_SEC, LaunchController shots fired count goes up |
+| J10 | Stop | Everything off |
+
+If J5 sags on release, the motor's RUN_TO_POSITION hold is too weak for the load: raise
+`.power(...)` or check the gearing. If J7 never resets, the switch is wired to a DigitalChannel
+rather than a TouchSensor; configure it as a REV Touch Sensor.
+
+
 ## Results
 
 | Test | Date | Robot | Pass? | Notes |

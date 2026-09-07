@@ -54,6 +54,9 @@ Open your `...BotConfig.java`. Each numbered comment in it matches these:
 1. **Device names.** On the Driver Station, open Configure Robot and the active configuration.
    Copy the four drive motor names, the IMU name, and the Pinpoint and Limelight names exactly.
    No Pinpoint? `.pinpoint(null)`. No Limelight? `.limelight(null)`. The shared code checks.
+   goBILDA 2026-27 mecanum StarterBot names: `left_front_drive`, `right_front_drive`,
+   `left_back_drive`, `right_back_drive`; its intake is `intake`, `left_intake_servo`,
+   `right_intake_servo`.
 2. **Motor directions.** Leave the defaults, deploy, run the TeleOp, push the left stick forward.
    Any wheel that turns backward gets `REVERSE` in `DrivetrainConfig`. Then try strafe and turn.
 3. **IMU mounting.** Which way the REV logo faces (UP, DOWN, FORWARD, ...) and which way the USB
@@ -141,14 +144,38 @@ Power and hold time come from the defaults in your constants; add a power argume
 
 ## Step 7. Add the game
 
-- A subsystem: a class in `teams/<yourteam>/subsystems/`, built in the robot class from device
-  names you add to `HardwareNames` in your config. Look at Skyline's launcher and feeder.
-- A launcher: plug into `common/LaunchController` with two tiny interfaces. Skyline_Robot shows
-  the whole thing in 20 lines.
+- **First, on the bench:** enable `common/test/MechanismBenchTest`, edit its device-name constants
+  to match the Control Hub, and drive the prototype from gamepad 1. Its telemetry shows the live
+  servo positions and motor ticks; write those numbers down, they become your Constants.
+- **A subsystem is one line per device** using the skeletons in `common/subsystems/` (Roller,
+  PresetServo, Claw, PresetMotor, VelocityMotor; `package-info.java` there says which one you want).
+  Device names go in your BotConfig, positions and speeds in your Constants. The goBILDA intake,
+  for example:
+  ```java
+  // Test2027BotConfig.java                       what the robot IS
+  public static final String INTAKE = "intake", INTAKE_LEFT = "left_intake_servo", INTAKE_RIGHT = "right_intake_servo";
+
+  // Test2027Robot.java                           a public field, built in the constructor
+  public final Roller intake;
+  intake = new Roller(hardwareMap, Test2027BotConfig.INTAKE, DcMotorSimple.Direction.FORWARD)
+               .add(Test2027BotConfig.INTAKE_LEFT,  DcMotorSimple.Direction.FORWARD)
+               .add(Test2027BotConfig.INTAKE_RIGHT, DcMotorSimple.Direction.REVERSE);
+  // and in update():  intake.update();      in stopAll():  intake.stop();
+
+  // Test2027Teleop.java                          one line in loop()
+  robot.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+  ```
+  A claw is `new Claw(hardwareMap, CLAW, OPEN, CLOSED)` and `if (gamepad1.aWasPressed()) robot.claw.toggle();`.
+  A lift is `new PresetMotor(hardwareMap, LIFT, FORWARD).preset("HIGH", 2200).limits(0, 2300)` and
+  `robot.lift.goTo("HIGH")`. Only write your own class in `teams/<yourteam>/subsystems/` when a
+  mechanism does something none of the five do.
+- **A launcher:** a `VelocityMotor` for the wheel and a `Roller` for the feeder, handed to
+  `common/LaunchController`. Skyline_Robot shows the older way with two hand-written interfaces.
 - Waypoints: add them to your constants, one `Pose2D` each, and sequence them the way
   `Drive Square` does. That is exactly how the GearGirls and P3 autos work.
 - A tag to drive to: `robot.drive.driveToTagAsync(robot.vision, id, standoffInches, holdSec)`,
   then wait on `robot.drive.isBusy()` while the launcher spins up in the same loop.
+
 
 ## Things that will bite
 

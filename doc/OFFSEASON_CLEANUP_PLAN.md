@@ -2,7 +2,7 @@
 
 ## Status and how to resume (read this first)
 
-**Last updated 2026-09-07 (late evening, after the Skyline robot session).** Repo: `/Users/georgemitchom/StudioProjects/FTC17651/FtcRobotController_Decode`
+**Last updated 2026-09-07 (night, after the skeleton-subsystem session).** Repo: `/Users/georgemitchom/StudioProjects/FTC17651/FtcRobotController_Decode`
 (GitHub fork `FTC16751/FtcRobotController_Decode`, default branch `master`). Work is on branch
 `offseason/common-cleanup-2026`, open as [PR #1](https://github.com/FTC16751/FtcRobotController_Decode/pull/1).
 Tag `pre-r6-reorg` marks the tree before the folder move.
@@ -21,6 +21,7 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
 | R10 TeleOpBase / ButtonEdge | **closed**, will not be done; gamepad layouts stay as drivers learned them | |
 | R12 template: `teams/testteam2027` built as the template and test bed | done; TeleOp, beginner auto, encoder check, tag approach all proven on the Skyline chassis 2026-09-07 | |
 | DriveUtil2026b focus: fixes, tiers (Beginner, Intermediate), pure-math tests, cleanup, TagApproach | done (see the completed-focus section); Advanced tier and the Pedro revisit remain | a107f3f..dd00eb0 |
+| Skeleton subsystems: `common/subsystems` Roller, PresetServo, Claw, PresetMotor, VelocityMotor + tests, MechanismBenchTest, one Clock | done 2026-09-07 (see the late-session subsection under Next focus); robot check owed | 1e997fe..ff4de57 |
 | R11 live defects (TeleOp-side items), R13-R15 | not started | |
 
 **Hard rules learned from the mentor, do not violate:**
@@ -89,7 +90,7 @@ the tag-approach sign check pass; the Pedro revisit from the commented blocks (h
 as a one-page table of the tiers. The detailed record of what was found and done is the section
 below.
 
-## Next focus (set 2026-09-07, for the next session): the other subsystem utility classes
+## Next focus (set 2026-09-07): the other subsystem utility classes, and the skeleton subsystems (late session, done)
 
 The DriveUtil work is done; the next session looks at everything else in `common/` and at the
 per-team subsystem classes, with the same yardstick (hard rule 5: a new programmer's first robot)
@@ -152,6 +153,97 @@ auto should be able to say `robot.launcher.fire()` as plainly as `robot.drive.dr
 +120/-120 mm offsets; a re-run of the tag approach with the softened tuning; the 90-degree
 turning-circle refinement; A4 (alliance handoff) on Skyline, which needs an auto that runs.
 
+### 2026-09-07 late session: skeleton subsystems for the new game (DONE, robot check owed)
+
+**Ask.** Before the new game is announced, give the three teams and the new team (goBILDA
+2026-27 StarterBot, built next weekend) a small set of reusable subsystem classes with helper
+methods, so students can prototype an intake, claw, lift, arm, or flywheel the week of kickoff
+without writing a class from scratch. Judged by hard rule 5. Keep it simple.
+
+**What was looked at.**
+- goBILDA 2026-27 preseason code (two files, ~200 lines each, `StarterBotChassisTeleop` tank
+  and `StarterBotMecChassisTeleop` mecanum): drivetrain + one intake motor + two CR servos
+  (`intake`, `left_intake_servo`, `right_intake_servo`) driven by `right_trigger - left_trigger`.
+  Mecanum motor names `left_front_drive`, `right_front_drive`, `left_back_drive`,
+  `right_back_drive`. The resource guide describes a drop-center 6-wheel tank base with a
+  mecanum alternative; last season's StarterBot added `launcher` + `left_feeder`/`right_feeder`.
+- The live team subsystems in this repo (agent survey with line citations; the key facts):
+  every one is one of five shapes. Spins in/out: P3_IntakeUtil (motor + 2 CR),
+  P3_RubberBandIndexerUtil, Skyline_FeederUtil (2 CR), GG IntakeUtilV2 (2 motors), GG
+  LaunchIndexer (2 CR, timed). Servo to named positions: GG LaunchFlippers (IDLE/FLIPPING/
+  RETRACTING, 430 lines, 100% reusable), GG Spinner_FORTEST (3 presets + toggle), P3 stopper and
+  hood servos, GG diverter. Motors at a velocity with a ready check: Skyline_LauncherUtil,
+  P3_LauncherUtil, GG LauncherMotors. Servo turret with homing and autoAim: P3 `Turret` (only its
+  five mechanical numbers are P3-specific). Sensing with hysteresis: IntakeSensorFusion002 (about
+  320 of 456 lines generic). The two GearGirls shot sequencers are ~80% DECODE motif logic and
+  are not skeleton material. Good habit carried forward: no `sleep`, no `while` loop in any
+  current team subsystem.
+- `legacy/intothedeep` and the prior-year repos (FtcRobotController2022Bot02, CenterStage9.0,
+  IntoTheDeep, agent survey): six near-identical slide/lift/hang classes with the same method
+  set (`increasePosition/decreasePosition/changePosition/moveToPosition/slidesAtTargetPosition/
+  enum State/runStateMachine/sendTelemetryData`), three claw flavors (constants, value enums,
+  mirrored offset pair), the same rising-edge toggle copied five times, a 534-line servo helper
+  file, one motor turret (SuzanUtil), a drone-launcher servo, three incompatible init
+  conventions. Traps not to copy: blocking `while(isBusy())`, `while(servo.getPosition()!=target)`
+  (never waits), `sleep` in constructors, stubs that return true, presets as if/else chains,
+  limits enforced in the OpMode instead of the subsystem, `Servo "intake"` and `DcMotor "intake"`
+  under one name.
+- FIRST SDK 11 samples: the claw is a mirrored servo pair `MID_SERVO +/- offset` nudged per loop,
+  the arm is a motor on up/down power, `ConceptScanServo` sweeps a servo to find positions,
+  `ConceptGamepadEdgeDetection` is the `aWasPressed()` family (R10 stays closed),
+  `ConceptMotorBulkRead` (hub bulk-cache AUTO mode, a one-line loop-time win worth adding to the
+  robot hubs some day). The `RobotHardware` external-hardware-class sample of earlier SDKs is no
+  longer shipped, so FIRST offers no hardware-class pattern.
+- gm0's mechanism list (linear motion, arms, active/passive intakes, turrets, transfers) maps
+  onto the same shapes: an arm and a slide are the same code, a wrist and a hood are the same
+  code, an intake and a feeder are the same code.
+
+**Built: `common/subsystems/`, five classes, 56 laptop tests (158 total), build verified.**
+
+| Class | Wraps | Beginner words | Also | Covers |
+|---|---|---|---|---|
+| `Roller` (a `Feeder`) | any mix of motors and CR servos, one `add(name, dir)` | `in()`, `out()`, `stop()`, `setPower(p)`, `isRunning()` | `runFor(p, sec)`, `inFor`, `outFor` + `update()` / `isBusy()`; `speeds(in, out)` | goBILDA intake, P3 intake and indexer, Skyline feeder, GG IntakeUtilV2, LaunchIndexer |
+| `PresetServo` | one servo, optional `pair(name, dir)` | `goTo("NAME")`, `getPosition()`, `getPresetName()` | `setPosition` clamped, `nudge`, `flick("NAME", holdSec)` returns by itself, `preset`, `limits`, `startAt` | LaunchFlippers, Spinner, hood, stopper, diverter, every wrist/elbow/pivot in the old helper files |
+| `Claw extends PresetServo` | same | `open()`, `close()`, `toggle()`, `isOpen()` | 30 lines; the worked example of extending a skeleton | every ClawUtil since 2022 |
+| `PresetMotor` | ganged encoder motors, optional touch-sensor `homeSwitch` | `goTo("NAME")`, `isAtTarget()`, `getPosition()`, `stop()` | `goToTicks`, `nudge`, `manual(power)` with soft limits and hold on release, `zeroHere`, `isAtHome`, `update()` re-zeroes on the switch | the six slide/lift/hang classes, LiftUtil, DeliveryUtil, ArmUtil, SuzanUtil |
+| `VelocityMotor` (a `Flywheel`) | one or two DcMotorEx | `spinUp(v)`, `isReady()`, `stop()`, `getVelocity()` | `pidf(p,i,d,f)`, `readyFraction`, reports the slowest wheel | Skyline/P3/GG launcher motors, goBILDA launcher |
+
+A launcher for any team is now `new LaunchController(velocityMotor, roller, settings, telemetry)`
+with no new classes. Conventions, written once in `common/subsystems/package-info.java`: built
+from a device name in the team's BotConfig plus a direction; positions and speeds from the team's
+Constants through `preset`/`limits`/`speeds`; nothing moves when built (`startAt` is the opt-in;
+PresetMotor zeroes its encoder when built, so build it at rest); nothing blocks, timed things run
+through `update()`; preset names are strings and a wrong one throws listing the known names;
+`stop()` and `addTelemetry(telemetry, label)` on every class; a second constructor takes the
+device object so the tests (and a robot class) can inject. `RobotConfig` is unchanged; a team
+adds `public static final String INTAKE = "intake"` style constants to its BotConfig.
+
+Also: `common/Clock` (one interface; the nested copies in LaunchController and TagApproach are
+gone), `common/test/MechanismBenchTest` (Disabled, group Common Test: drives any subset of intake,
+claw, wrist, lift, flywheel, feeder from gamepad 1 via `hardwareMap.tryGet`, goBILDA names as
+defaults, shows live positions so preset values can be read off; the first thing to run on a
+prototype), SDK-interface fakes in the test tree (`FakeDcMotorEx`, `FakeServo`, `FakeCRServo`,
+`FakeTouchSensor`, `FakeClock`) for any future Common class that touches a motor or servo.
+
+**Not built, designed for when a game needs it:** `PieceSensor` (distance hysteresis plus an
+optional color name; IntakeSensorFusion002 minus DECODE); promoting P3 `Turret` with a `Settings`
+for its five numbers (R14); a `Sequence` base for multi-step actions (goes with the deferred R9
+AutoBase); `TankDrive` beginner class (driveForward/turnLeft on two motors) if the tank StarterBot
+is built. `ButtonEdge` stays closed.
+
+**Open for the mentor:** (1) tank or mecanum StarterBot; the whole Common stack and the
+testteam2027 template assume mecanum, a tank build needs the `TankDrive` class above or stays on
+goBILDA's own code. (2) Whether to add the two goBILDA 2026-27 files under
+`demobots/starterbot2027/` the way last season's were (package line and `group = "Demo"` only);
+not done this session, they are in Downloads. (3) Traps seen in live code and left alone under
+R3/demo season: GGRobot2 constructs and updates both shot sequencers every loop; `Turret.snapToHome`
+has its homed guard commented out (NPE before homing); launcher min velocity is 1400 / 1850 / 1800
+in three GearGirls places. (4) The earlier suggested order above (VisionUtil first-tag hazard,
+prismled, RobotConfigorig, EncoderOdometry, LedUtil colors) is still open.
+
+**Robot check owed:** doc/ROBOT_TEST_PLAN.md section J, MechanismBenchTest on the StarterBot.
+
+
 ## Next focus, drive side (set 2026-09-07): was last season's point-to-point + waypoint strategy reusable?
 
 A separate session, in parallel with the subsystem one. The question: GearGirls and P3 built
@@ -193,6 +285,7 @@ paths (hard rule 6, the mentor is revisiting it) and keep `driveTo` only for the
 
 **Robot prerequisites** before any of this can be tuned: the Pinpoint push test and Drive Square on
 the Skyline chassis with the +120/-120 mm offsets (test plan section I).
+
 
 ## Completed focus (2026-09-07): analyze and improve `common/DriveUtil2026b`
 
