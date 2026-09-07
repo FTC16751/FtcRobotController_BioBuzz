@@ -55,11 +55,17 @@ public final class Test2027BotConfig {
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
                         RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
                 ),
-                // 6a. Pinpoint point-to-point PID (driveTo). These are the StandardBot defaults.
+                // 6a. Pinpoint point-to-point PID (driveTo). Gains are per mm of error, so P alone
+                //     saturates the output at 1/P mm from the target: the first numbers here (P 0.019,
+                //     full power until 2 in out) made Drive Square overshoot and hunt at every corner on
+                //     the Skyline chassis, 2026-09-07. Now P3 Bot3's tuned numbers (P 0.0035, the robot
+                //     starts slowing about 11 in out). Tune with Drive Square, one thing at a time:
+                //     overshoots: lower P a quarter or raise D toward 0.002; stops short and creeps:
+                //     raise P a quarter; heading wobbles at the corners: yaw P 2.0, yaw D 0.2.
                 new RobotConfig.PointToPointTuning()
-                        .xyToleranceMm(15.5).yawToleranceRad(0.0349066)
-                        .xyGains(0.01905, 0.000002, 0.00111).xyAccel(8.0)
-                        .yawGains(5.0, 0.0, 0.0).yawAccel(20.0),
+                        .xyToleranceMm(18.0).yawToleranceRad(0.055)
+                        .xyGains(0.0035, 0.000003, 0.001).xyAccel(8.0)
+                        .yawGains(2.5, 0.0, 0.08).yawAccel(10.0),
                 // 6c. Pedro Pathing (doc/PEDRO_ON_TEST2027.md). Because this is set, DriveUtil2026b builds
                 //     a Pedro Follower for this robot, and the Follower owns the Pinpoint. UNTUNED as of
                 //     2026-09-07: Pedro's library defaults. Run the "Tuning" OpMode (Driver Station group
