@@ -71,10 +71,11 @@ public final class Test2027BotConfig {
                 //     Skyline chassis 2026-09-07 with the "Tuning" OpMode (Driver Station group Pedro):
                 //     velocities from the Forward and Lateral Velocity Tuners (K2), predictive braking
                 //     from its tuner (K4). Heading PIDF: the library default snapped back cleanly in the
-                //     Heading Tuner (K3), so it is not set here. Not yet done: .mass(kg) from a scale,
-                //     and the Line / Triangle / Circle tests (K5, K6). To retune, run the same tuner
+                //     Heading Tuner (K3), so it is not set here. Mass from a scale the same day. Not yet
+                //     done: the Line / Triangle / Circle tests (K5, K6). To retune, run the same tuner
                 //     and replace the number here; edits made in Panels are lost when the OpMode stops.
                 new RobotConfig.PedroPathingConfig()
+                        .mass(9.15)
                         .velocities(81.1, 67.8)
                         .predictiveBraking(0.1, 0.0962, 0.00165).centripetalScaling(0)
         )
