@@ -67,14 +67,16 @@ public final class Test2027BotConfig {
                         .xyGains(0.0035, 0.000003, 0.001).xyAccel(8.0)
                         .yawGains(2.5, 0.0, 0.08).yawAccel(10.0),
                 // 6c. Pedro Pathing (doc/PEDRO_ON_TEST2027.md). Because this is set, DriveUtil2026b builds
-                //     a Pedro Follower for this robot, and the Follower owns the Pinpoint. UNTUNED as of
-                //     2026-09-07: Pedro's library defaults. Run the "Tuning" OpMode (Driver Station group
-                //     Pedro) in the documented order and copy each result here: Localization Test first
-                //     (fixes go in section 4 above, not here), then .velocities(forward, strafe) from the
-                //     two velocity tuners, .headingPIDF(...) from the heading tuner, then
-                //     .predictiveBraking(kP, kLinear, kQuadratic) from the predictive braking tuner with
-                //     .centripetalScaling(0). Weigh the robot for .mass(kg) before the centripetal step.
+                //     a Pedro Follower for this robot, and the Follower owns the Pinpoint. Tuned on the
+                //     Skyline chassis 2026-09-07 with the "Tuning" OpMode (Driver Station group Pedro):
+                //     velocities from the Forward and Lateral Velocity Tuners (K2), predictive braking
+                //     from its tuner (K4). Heading PIDF: the library default snapped back cleanly in the
+                //     Heading Tuner (K3), so it is not set here. Not yet done: .mass(kg) from a scale,
+                //     and the Line / Triangle / Circle tests (K5, K6). To retune, run the same tuner
+                //     and replace the number here; edits made in Panels are lost when the OpMode stops.
                 new RobotConfig.PedroPathingConfig()
+                        .velocities(81.1, 67.8)
+                        .predictiveBraking(0.1, 0.0962, 0.00165).centripetalScaling(0)
         )
         .named("test2027bot")
         // 1. Device names, exactly as in the Control Hub configuration.
