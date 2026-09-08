@@ -208,7 +208,7 @@ copy keeps the tuner and the robot on the same numbers. Background: `doc/PEDRO_O
 
 | # | Check | Expected |
 |---|---|---|
-| K1 | Tuning > Localization > Localization Test | push forward: x rises; push left: y rises; turn counter-clockwise: heading rises; spin in place: x and y stay within about 1 in. A pod direction that goes the wrong way is fixed in the config's `OdometryConfig` (never in Constants) and redeployed |
+| K1 | Tuning > Localization > Localization Test | push forward: x rises; push left: y rises; turn counter-clockwise: heading rises; spin in place: x and y stay within about 1 in. A pod direction that goes the wrong way is fixed in the config's `OdometryConfig` (never in Constants) and redeployed. Every tuner starts the robot at Pedro's field centre, so the pose reads x 72, y 72 before anything moves; that is not travel. Skip Forward Tuner, Lateral Tuner and Turn Tuner in this folder: they scale ticks to inches for dead-wheel and drive-encoder localizers, and the Pinpoint does that conversion itself from the pod type, so their "Multiplier" is meaningless here (it showed 3609 on 2026-09-07). Offsets Tuner is optional: it re-measures the pod offsets in the config |
 | K2 | Tuning > Automatic > Forward Velocity Tuner, then Lateral Velocity Tuner (48 in clear each way) | two velocities in in/s; write them as `.velocities(forward, strafe)` |
 | K3 | Tuning > Manual > Heading Tuner | turn the robot by hand; after adjusting P in Panels it returns to its heading briskly with no oscillation; write `.headingPIDF(...)` |
 | K4 | Tuning > Automatic > Predictive Braking Tuner | kLinear and kQuadratic; write `.predictiveBraking(0.1, kLinear, kQuadratic).centripetalScaling(0)` |
