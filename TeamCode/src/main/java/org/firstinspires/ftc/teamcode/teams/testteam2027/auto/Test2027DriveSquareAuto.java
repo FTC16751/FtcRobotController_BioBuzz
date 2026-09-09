@@ -8,7 +8,8 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Constants;
 import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Robot;
 
 /**
- * Drives a 24 in square using Pinpoint waypoints, then turns a quarter turn. This is the
+ * Drives a 24 in square using Pinpoint waypoints, ending in the starting orientation so a
+ * chassis corner lands back on the tape corner and the error can be tape-measured. This is the
  * INTERMEDIATE pattern: the robot knows where it is, and moves are started, not waited on.
  *
  * Each waypoint is one startDriveTo; the auto then polls isBusy() each loop. While it waits,

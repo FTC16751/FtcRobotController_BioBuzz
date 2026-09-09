@@ -13,8 +13,10 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Robot;
 
 /**
  * The same 24 in square as Drive Square (Pinpoint), driven by Pedro Pathing as ONE path chain of
- * four straight lines, then a quarter turn on the last leg. This is the ADVANCED pattern: the robot
- * follows a planned path through the corners without stopping at each one.
+ * four straight lines, heading held at 0 throughout. This is the ADVANCED pattern: the robot
+ * follows a planned path through the corners without stopping at each one. It ends in the
+ * starting orientation so a chassis corner lands back on the tape corner and the error can be
+ * measured with a tape, not guessed (the last leg used to turn a quarter turn).
  *
  * Run both squares from the same tape mark and compare: does each return to the mark within an
  * inch, and how long did each take? That timing is the input to the "Pedro or driveTo" decision
@@ -50,17 +52,17 @@ public class Test2027PedroSquareAuto extends OpMode {
         telemetry.addData("Status", "Initialized");
     }
 
-    /** Four legs, corners counter-clockwise, heading held at 0 until the last leg turns to 90. */
+    /** Four legs, corners counter-clockwise, heading held at 0 the whole way. */
     private PathChain buildSquare(Follower follower) {
         Pose corner1 = new Pose(START.getX() + SIDE_IN, START.getY(),           0);
         Pose corner2 = new Pose(START.getX() + SIDE_IN, START.getY() + SIDE_IN, 0);
         Pose corner3 = new Pose(START.getX(),           START.getY() + SIDE_IN, 0);
-        Pose finish  = new Pose(START.getX(),           START.getY(),           Math.toRadians(90));
+        Pose finish  = new Pose(START.getX(),           START.getY(),           0);
         return follower.pathBuilder()
                 .addPath(new BezierLine(START, corner1)).setConstantHeadingInterpolation(0)
                 .addPath(new BezierLine(corner1, corner2)).setConstantHeadingInterpolation(0)
                 .addPath(new BezierLine(corner2, corner3)).setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(corner3, finish)).setLinearHeadingInterpolation(0, finish.getHeading())
+                .addPath(new BezierLine(corner3, finish)).setConstantHeadingInterpolation(0)
                 .build();
     }
 

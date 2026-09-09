@@ -58,7 +58,7 @@ public final class Test2027Constants {
         public static final Pose2D CORNER_1 = pose(SIDE_IN, 0,       0);
         public static final Pose2D CORNER_2 = pose(SIDE_IN, SIDE_IN, 0);
         public static final Pose2D CORNER_3 = pose(0,       SIDE_IN, 0);
-        public static final Pose2D FINISH   = pose(0,       0,       90);   // back at start, turned a quarter turn
+        public static final Pose2D FINISH   = pose(0,       0,       0);    // back at start, same heading, so a chassis corner lands on the tape corner (was a quarter turn until 2026-09-08)
 
         private static Pose2D pose(double xIn, double yIn, double headingDeg) {
             return new Pose2D(DistanceUnit.INCH, xIn, yIn, AngleUnit.DEGREES, headingDeg);

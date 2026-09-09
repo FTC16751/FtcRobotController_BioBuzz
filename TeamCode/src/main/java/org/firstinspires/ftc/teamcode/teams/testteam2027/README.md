@@ -88,8 +88,9 @@ and the `driveRobotDistance*` commands move the distance they are told.
 
 ## Step 5. Prove the Pinpoint and tune driveTo (second meeting, floor space)
 
-Run `Drive Square (Pinpoint)` from a tape mark. The robot drives a 24 in square and turns a
-quarter turn; it should end within an inch of the mark. If it drifts, the pod offsets or
+Run `Drive Square (Pinpoint)` from a tape mark. The robot drives a 24 in square and ends facing
+the way it started, so the same chassis corner should land within an inch of the tape corner;
+measure it with a tape, the telemetry only reports where the robot thinks it is. If it drifts, the pod offsets or
 directions in Step 2 are off. If it oscillates or crawls into each corner, the point-to-point
 gains in `PointToPointTuning` need work: lower `xyGains` P if it oscillates, raise it if it
 crawls, and only then touch D. The telemetry line "steps that timed out" should read 0.
