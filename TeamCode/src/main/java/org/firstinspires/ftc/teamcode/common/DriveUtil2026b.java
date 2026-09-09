@@ -511,7 +511,7 @@ public class DriveUtil2026b {
             return;
         }
         setMotorMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);   // same reason as followPath
-        follower.startTeleopDrive();
+        follower.startTeleopDrive(true);   // true: brake when the sticks are centred, like moveRobot. Without it Pedro coasts (K10, 2026-09-08)
         driveState = DriveState.TELEOP_PEDRO;
     }
 
@@ -547,6 +547,9 @@ public class DriveUtil2026b {
     private void endPedroMove() {
         follower.breakFollowing();
         setMotorMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        for (DcMotorEx motor : motors) {
+            motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);   // Pedro may have set FLOAT; TeleOp expects BRAKE
+        }
         driveState = DriveState.IDLE;
     }
 
