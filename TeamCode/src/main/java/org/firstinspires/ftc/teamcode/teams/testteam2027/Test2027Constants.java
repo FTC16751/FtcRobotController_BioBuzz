@@ -22,7 +22,10 @@ public final class Test2027Constants {
         public static final double SLOW_SPEED     = 0.25;
         public static final double STICK_DEADBAND = 0.05;
         /** Speeds the beginner auto commands use when no speed is given (driveForward(24) etc.). */
-        public static final double AUTO_DRIVE_SPEED = 0.4;
+        // 0.6 since 2026-09-08 for the Pedro-or-driveTo comparison (test plan K7/K8): both squares run
+        // under this same cap. The first comparison ran Pedro at 1.0 and driveTo at 0.4 and was not
+        // fair. Also the beginner commands' default speed. Was 0.4.
+        public static final double AUTO_DRIVE_SPEED = 0.6;
         public static final double AUTO_TURN_SPEED  = 0.3;
     }
 

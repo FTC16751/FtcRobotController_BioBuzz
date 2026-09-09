@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Constants;
 import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Robot;
 
 /**
@@ -73,6 +74,9 @@ public class Test2027PedroSquareAuto extends OpMode {
     public void start() {
         if (square == null) { state = State.DONE; return; }
         robot.drive.setPosition(START.getX(), START.getY(), Math.toDegrees(START.getHeading()));  // wherever we are is the start pose
+        // Same power cap as the Pinpoint square, so the two times can be compared. Pedro's own
+        // default is 1.0, and its tuning was done at 1.0; below that it may brake a little early.
+        robot.drive.getFollower().setMaxPower(Test2027Constants.Drive.AUTO_DRIVE_SPEED);
         runTimer.reset();
         robot.drive.followPath(square);    // no hold: stop at the end like the Pinpoint square does
         state = State.FOLLOWING;
