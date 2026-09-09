@@ -361,6 +361,29 @@ Prerequisites for the Pedro revisit, whichever way it goes: the frame decision w
 `pedropathing/Constants.java` localizer constants re-measured for the chassis it will run on (or
 generated from `RobotConfig.odometry`); the tuner suite re-run on that chassis; the timed comparison.
 
+### Result of the comparison (2026-09-08, Skyline chassis, test2027bot config)
+
+All four prerequisites were met first: frames written down (`PEDRO_ON_TEST2027.md` section 4),
+Pedro's constants generated from the config (`common/PedroBridge`), the tuner suite run (test plan
+K2 to K6, all pass), and both squares run from one tape mark under the same 0.6 power cap, ending
+at heading 0. The route was the 24 in square rather than the three-waypoint route above, so it
+tests the drive step, not relocalization.
+
+| | driveTo square (four `startDriveTo`) | Pedro square (one `PathChain`) |
+|---|---|---|
+| Time | about 10 s | about 6 s |
+| Return error, odometry | 0.6 in, heading 2 deg | 0.4 in, heading 0 |
+| Gave up / stuck | 0 waypoints | stuck false |
+| Battery | 12.16 V | 11.81 V |
+
+Pedro was about 40% faster at the same cap, past the 20% bar above, with the same accuracy, on a
+lower battery. Two caveats: the Pedro time was the same as its earlier uncapped run, so the cap may
+not be what limits it, and the return errors are the Pinpoint's own opinion, not tape. What the
+comparison does not settle is the second half of the bar, whether students can read the path code;
+that is the mentor's call after the first new-season auto is written both ways or the Pedro
+square is walked through with a student. K9 and K10 (TeleOp unchanged, Pedro TeleOp drive feel)
+were still to run.
+
 ---
 
 ## 5. What "reusable" should look like
@@ -442,7 +465,8 @@ the "ADD THIS" working notes in `DriveUtil2026b.calculatePID`. Ask before touchi
 ## 6. Decisions for the mentor
 
 1. **Executor.** `driveTo` stays the default for the first new-season auto; Pedro is decided after
-   the timed Skyline comparison in section 4. Agree, or decide now?
+   the timed Skyline comparison in section 4. Agree, or decide now? *2026-09-08: the comparison ran;
+   Pedro cleared the speed bar (about 40% faster, same accuracy). Open: the readability half.*
 2. **Frame.** Field-absolute waypoints with tag relocalization at start (5.1). This changes how
    every waypoint is written; the payoff is mirroring, sharing, and re-acquiring the score pose.
 3. **On step timeout:** skip (P3's choice) or retry once? Recommendation: skip, but log to a file.
