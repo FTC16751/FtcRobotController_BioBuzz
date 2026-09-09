@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teams.testteam2027;
 
+import com.pedropathing.control.PIDFCoefficients;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -71,13 +72,15 @@ public final class Test2027BotConfig {
                 //     Skyline chassis 2026-09-07 with the "Tuning" OpMode (Driver Station group Pedro):
                 //     velocities from the Forward and Lateral Velocity Tuners (K2), predictive braking
                 //     from its tuner (K4). Heading PIDF: the library default snapped back cleanly in the
-                //     Heading Tuner (K3), so it is not set here. Mass from a scale the same day. Not yet
-                //     done: the Line / Triangle / Circle tests (K5, K6). To retune, run the same tuner
-                //     and replace the number here; edits made in Panels are lost when the OpMode stops.
+                //     Heading Tuner (K3), so it is not set here. Mass from a scale the same day. With these
+                //     numbers the Line, Triangle and Circle tests passed 2026-09-08 (K5, K6). To retune,
+                //     run the same tuner and replace the number here; Panels edits are lost when the
+                //     OpMode stops.
                 new RobotConfig.PedroPathingConfig()
                         .mass(9.15)
                         .velocities(81.1, 67.8)
                         .predictiveBraking(0.1, 0.0962, 0.00165).centripetalScaling(0)
+                        .translationalPIDF(new PIDFCoefficients(0.065,0,0.001,0.01))
         )
         .named("test2027bot")
         // 1. Device names, exactly as in the Control Hub configuration.
