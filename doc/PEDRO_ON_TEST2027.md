@@ -273,3 +273,41 @@ mentor can overturn any of these; question 4 is the one only the mentor can sett
    under the test2027bot hub configuration and the +120/-120 mm offsets stand. If it is a separate
    robot, measure its pods and put the numbers in `Test2027BotConfig`'s `OdometryConfig` before
    K1; nothing else in this plan changes.
+
+
+## 6. Pedro 3.0.0 (released 2026-09-10), read on 2026-09-11
+
+What changed, from the release notes, the new Quickstart and the 3.0.0 jars on Maven Central:
+
+- **Artifacts.** `com.pedropathing:revhub:3.0.0` (replaces `ftc`) plus `com.pedropathing:tuning:1.0.0`
+  for AutoTune; `core` comes with it. Panels and the `telemetry` library are no longer part of tuning.
+  The Quickstart builds on FTC SDK 11.2.1.
+- **Rewrite, not an upgrade.** Everything `common/PedroBridge` is written against is gone:
+  `FollowerBuilder`, `FollowerConstants`, `MecanumConstants`, `PinpointConstants`, `PathChain`,
+  `BezierLine`, `setConstantHeadingInterpolation`, `startTeleopDrive` / `setTeleOpDrive`. New shapes:
+  `new Follower(localizer, drivetrain, new Foresight(config))` with `PinpointConfig`, `MecanumConfig`
+  and `ForesightConfig` filled by lambdas; `follower.follow(path)`, `hold(pose)`, `manual(forward,
+  strafe, turn)` for TeleOp, `stop()`, `mode()`, `withLogger(...)` for a per-update `FollowerLog`.
+- **Paths API.** `Paths.line(a, b).constant(0)`, `Paths.curve(a, control, b).tangent()`,
+  `Paths.through(poses...)`, `Paths.path(p1, p2, ...)` to chain. The square becomes four one-line
+  paths in one `Paths.path(...)`.
+- **PoseFactory.** `PoseFactory.degrees().of(x, y, headingDeg)`; `factory.mirrorY(72)` returns a
+  factory whose poses are mirrored, so one waypoint table serves both alliances. This is the
+  library-side answer to `DRIVE_STRATEGY_REVIEW.md` section 5.2 (one table, mirrored, resolved once).
+- **Foresight** replaces predictive braking (36% faster Line test on the authors' robot). Its config
+  is a different model (per-axis linear and quadratic brake matrices, coast and brake controllers,
+  natural decelerations, piecewise translational gains), so our K4 numbers do not carry over; the
+  K2 velocities do (`maxAchievableForwardVelocity` / `maxAchievableStrafeVelocity`).
+- **AutoTune** is a web page the robot hosts at `192.168.43.1:10158`, driven from a browser: motor
+  directions by spinning each motor and asking, Pinpoint pod directions and offsets by push forward,
+  push left, rotate 180, then nine Foresight procedures. Each step prints the Java to paste into
+  Constants. It replaces the Driver Station d-pad menu and the Panels page, and the "Forward Tuner"
+  trap in K1 does not exist in it.
+
+Plan: keep the 2.1.2 result (section K, the comparison) as it stands. Migrate on one branch together
+with the 2026-27 SDK bump, after 3.0.x has had a few weeks of patches (2.0.1 to 2.0.4 taught that
+lesson), and before the first real auto is written so students learn one API. Laptop work is a
+rewrite of `PedroBridge` and its test, the Pedro parts of DriveUtil2026b, the square auto, the
+TeleOp toggle, `pedropathing/Constants` and `Tuning` (the Quickstart's `procedures/` folder copied
+verbatim); robot work is one AutoTune session, about an hour, then K5 to K8 again.
+
