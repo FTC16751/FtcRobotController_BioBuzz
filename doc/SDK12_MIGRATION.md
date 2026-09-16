@@ -1,5 +1,11 @@
 # Moving to FTC SDK 12.0 for BIOBUZZ, and what to do with the Decode robots
 
+**Done 2026-09-15.** This repo (`FTC16751/FtcRobotController_BioBuzz`) is the result: cloned from
+`FtcRobotController_Decode` at its merge of PR #2, v12.0 merged from the FTC remote (`ftc`), the
+Decode-only code removed (`teams/geargirls`, `teams/p3`, `teams/skyline`, `demobots`, `legacy`,
+`roadrunner`, Road Runner and Dashboard dependencies). The Decode repo stays on SDK 11.0 for the
+demo robots. Later SDK releases: `git fetch ftc --tags && git merge v12.1`.
+
 **Written 2026-09-15.** Answers three questions the mentor asked: is the Pedro Quickstart on the
 newest SDK, Quickstart or parent SDK plus Pedro, and how to migrate this repo. Facts checked against
 the GitHub releases and repo contents on that date.
