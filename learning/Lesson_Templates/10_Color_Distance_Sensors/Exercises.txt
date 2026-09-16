@@ -1,0 +1,48 @@
+======================================================
+  LESSON 10 EXERCISES — Color & Distance Sensors
+  Book: Chapter 10
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Blue Value Display  (★★☆☆)
+------------------------------------------------------
+Add a method to your mechanism class (or your OpMode):
+  public int getAmountBlue()
+that returns the blue channel value.
+Display it separately with label "Blue Amount".
+
+------------------------------------------------------
+EXERCISE 2 — Distance-Triggered Motor  (★★★☆)
+------------------------------------------------------
+Add a motor to the config (see Lesson 07 for setup).
+When distance > 10 cm: run motor at 0.5 power.
+When distance ≤ 10 cm: stop the motor.
+
+------------------------------------------------------
+EXERCISE 3 — Alliance Color Detector  (★★★☆)
+------------------------------------------------------
+FTC robots often need to detect their alliance color.
+Create a method:
+  public boolean isRedAlliance()
+
+that returns true when the red channel is significantly
+higher than blue (e.g., red > blue + 50).
+
+Create a matching isBlueAlliance() method.
+
+------------------------------------------------------
+EXERCISE 4 — CHALLENGE: Color to DistanceUnit  (★★★★)
+------------------------------------------------------
+The book (section 10.4) shows how to store distances
+in a class using DistanceUnit conversion.
+
+Write a class called ColorGate with:
+  - double gateDistance_cm (when object crosses this distance, act)
+  - boolean hasCrossed()   (returns true when distance < gateDistance_cm)
+  - void setGateDistance(double distance, DistanceUnit unit)
+
+This shows how to design an API that works with any unit.
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L10/
+======================================================

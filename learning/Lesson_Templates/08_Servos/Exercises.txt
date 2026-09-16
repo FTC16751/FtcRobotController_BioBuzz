@@ -1,0 +1,102 @@
+LESSON 2: SERVO CONTROL - EXERCISES
+
+=== EXERCISE 1: INTERMEDIATE POSITIONS ===
+Modify the solution to visit servo positions in this sequence:
+- 0.0 (0°) for 1 second
+- 0.25 (45°) for 1 second
+- 0.5 (90°) for 1 second
+- 0.75 (135°) for 1 second
+- 1.0 (180°) for 1 second
+- Back to 0.0
+
+Display the current position in degrees on telemetry.
+Hint: Use the formula: degrees = position * 180
+
+---
+
+=== EXERCISE 2: SMOOTH SWEEP ===
+Make the servo slowly sweep from 0.0 to 1.0 in small steps:
+- Start at 0.0
+- Increase by 0.1 each iteration (0.0, 0.1, 0.2, 0.3, ..., 1.0)
+- Hold each position for 0.2 seconds
+- Then sweep back from 1.0 to 0.0
+
+Display the current position on telemetry at each step.
+Hint: Use a for loop with increments of 0.1
+
+---
+
+=== EXERCISE 3: TWO SERVO CLAW ===
+If you have two servos available:
+- Declare and initialize a second servo (servoLeft and servoRight)
+- Make them move in opposite directions:
+  - When servoLeft is at 0.0, servoRight is at 1.0 (claw open)
+  - When servoLeft is at 1.0, servoRight is at 0.0 (claw closed)
+- Cycle between open and closed
+
+Display both servo positions on telemetry.
+
+---
+
+=== EXERCISE 4: POSITION ACCURACY ===
+Test servo accuracy by:
+1. Setting position to a specific value (e.g., 0.333)
+2. Wait 500ms
+3. Read position back with getPosition()
+4. Display both set and read values
+5. Check if they match
+
+Repeat with multiple different positions (0.2, 0.4, 0.6, 0.8)
+What do you observe? Is there any difference between set and read?
+
+---
+
+=== EXERCISE 5: CAMERA MOUNT ===
+Simulate a camera mount with two servos:
+- Pan servo (left-right): Sweep from 0.0 to 1.0 continuously
+- Tilt servo (up-down): Move in a wave pattern
+  - At pan 0.0, tilt 0.5
+  - At pan 0.5, tilt 0.0
+  - At pan 1.0, tilt 0.5
+
+Display both pan and tilt positions on telemetry.
+
+---
+
+=== CHALLENGE: PRESET POSITIONS ===
+Create named preset positions for an intake arm:
+- RETRACTED = 0.1 (arm folded in)
+- EXTENDED = 0.9 (arm extended out)
+- MID_POSITION = 0.5
+
+Cycle through the positions:
+1. Start at RETRACTED for 1 second
+2. Move to EXTENDED for 1 second
+3. Move to MID_POSITION for 1 second
+4. Repeat
+
+Display which preset is currently active on telemetry.
+Hint: Consider using constants (static final double RETRACTED = 0.1;)
+
+---
+
+=== DEBUGGING: COMMON ISSUES ===
+If your servo doesn't work:
+1. Does the servo physically move when powered?
+2. Does the hardware configuration name match exactly?
+3. Is the position value between 0.0 and 1.0?
+4. Did you wait long enough for servo to move? (servo move takes ~500ms)
+5. Is there a power issue? (servos draw significant current)
+
+Servo making noise but not moving?
+- May be stalled (hitting end stop) - try reducing power usage
+- May have mechanical jam
+
+---
+
+BONUS: Research Questions
+1. Why do we use 0.0-1.0 position instead of degrees directly?
+2. What's the difference between servo position 0.0 and motor power 0.0?
+3. How would you create a "smooth" servo transition instead of instant?
+4. What would happen if you set position outside 0.0-1.0 range?
+5. Can a servo rotate continuously like a motor? Why or why not?

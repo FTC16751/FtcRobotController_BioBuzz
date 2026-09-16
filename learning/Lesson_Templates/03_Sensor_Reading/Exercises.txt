@@ -1,0 +1,109 @@
+LESSON 3: SENSOR READING - EXERCISES
+
+=== EXERCISE 1: RANGE CHECK ===
+Read the distance sensor and determine range category:
+- If distance < 10 cm: Display "VERY CLOSE"
+- If distance 10-20 cm: Display "CLOSE"
+- If distance 20-40 cm: Display "MEDIUM"
+- If distance 40-80 cm: Display "FAR"
+- If distance > 80 cm: Display "VERY FAR"
+
+Use if/else statements to implement this logic.
+Test by moving your hand at different distances.
+
+---
+
+=== EXERCISE 2: DISTANCE THRESHOLD WITH MOTOR ===
+Add a motor to your program. Control the motor based on distance:
+- If distance > 30 cm: Motor power = 1.0 (forward)
+- If distance <= 30 cm: Motor power = 0.0 (stop)
+
+This simulates a proximity-triggered motor.
+Test: Wave your hand - motor should turn on/off based on distance.
+
+---
+
+=== EXERCISE 3: AVERAGING SENSOR READINGS ===
+Sensors can be noisy. Create an average of 5 readings:
+1. Read the distance sensor 5 times
+2. Calculate the average of all 5 readings
+3. Display both the current reading and the average
+4. Store values in an array
+
+This reduces jitter and gives more stable readings.
+
+---
+
+=== EXERCISE 4: MULTIPLE SENSORS ===
+If available, read multiple distance sensors:
+- Declare and initialize distanceSensor1, distanceSensor2, etc.
+- Read all sensors in your loop
+- Display all values on telemetry
+- Use the data to detect objects from different directions
+
+This could simulate a robot with sensors on front, side, back.
+
+---
+
+=== EXERCISE 5: SENSOR CALIBRATION ===
+Test sensor accuracy and determine actual range:
+1. Create a procedure to test distance at known intervals (5cm, 10cm, 15cm, etc.)
+2. Record what value sensor reads at each distance
+3. Create a lookup table or formula to calibrate readings
+4. Compare raw vs. calibrated readings
+
+Write down your findings. Is the sensor linear?
+
+---
+
+=== CHALLENGE: STOP LINE DETECTOR ===
+Use distance sensor to detect a "stop line":
+- Read distance sensor continuously
+- When object gets very close (< 5 cm), trigger a motor to stop
+- Implement hysteresis:
+  - Trigger at < 5 cm
+  - Don't untrigger until > 10 cm (prevents flickering)
+- Display whether "stop line detected" on telemetry
+
+This is similar to autonomous line-following stopping.
+
+---
+
+=== CHALLENGE: DISTANCE-BASED MOTOR SPEED ===
+Make motor speed proportional to distance:
+- If distance is 80 cm, motor power = 0.5
+- If distance is 40 cm, motor power = 0.75
+- If distance is 20 cm, motor power = 1.0
+- If distance is < 10 cm, motor power = 0.0 (stop)
+
+Create a formula that maps distance to motor power.
+Test by moving your hand - motor speed changes with distance!
+
+---
+
+=== DEBUGGING: COMMON ISSUES ===
+If sensor doesn't work:
+1. Is sensor physically connected to the expansion hub?
+2. Is the hardware configuration name correct (case-sensitive)?
+3. Are you reading the value inside opModeIsActive() loop?
+4. Is there enough delay (50ms) between reads?
+5. Is object within sensor range (typical 2-150 cm)?
+
+Sensor reading is 0 or very high?
+- Check physical connection
+- Ensure nothing is blocking the sensor lens
+- May be out of range
+
+Sensor reading is very noisy/jittery?
+- Average multiple readings
+- Increase delay between reads
+- Check if lens is dirty (clean with soft cloth)
+
+---
+
+BONUS: Research Questions
+1. What is the actual range of your distance sensor?
+2. How fast can the sensor update (refresh rate)?
+3. What happens if you point sensor at different colors?
+4. How would you implement a "blind spot" zone?
+5. What's the difference between DistanceUnit.CM and DistanceUnit.INCH?

@@ -1,0 +1,64 @@
+======================================================
+  LESSON 13 EXERCISES — Arrays & Collections
+  Book: Chapter 13
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Servo Position Presets  (★★☆☆)
+------------------------------------------------------
+Declare a double array of servo positions:
+  double[] servoPresets = {0.0, 0.25, 0.5, 0.75, 1.0};
+
+Use D-pad up/down to cycle through them.
+Display the current preset index and value.
+If you have a servo connected, set it to the current preset.
+
+------------------------------------------------------
+EXERCISE 2 — Find Max/Min  (★★☆☆)
+------------------------------------------------------
+Declare this sensor reading array:
+  double[] readings = {12.5, 8.3, 19.7, 5.1, 14.2};
+
+Use a for loop to find and display:
+  "Max reading": 19.7
+  "Min reading": 5.1
+  "Average":     12.0
+
+------------------------------------------------------
+EXERCISE 3 — Rolling Average  (★★★☆)
+------------------------------------------------------
+Keep a rolling window of the last 5 joystick Y values.
+Each loop(), shift old values and add the newest one.
+Display the smoothed average instead of the raw value.
+
+HINT: Use an array of size 5. Each loop:
+  readings[0] = readings[1];
+  readings[1] = readings[2];
+  ...
+  readings[4] = gamepad1.left_stick_y;
+  Then compute average.
+
+------------------------------------------------------
+EXERCISE 4 — ArrayList Song Lyric Cycler  (★★★☆)
+------------------------------------------------------
+Create an ArrayList<String> with the lyrics to a chorus.
+Use a timer to display each line for 1 second.
+When you reach the end, loop back to the start.
+(Based on book Listing 13.1 ArrayOpMode)
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: 4-Motor Array  (★★★★)
+------------------------------------------------------
+Connect 4 motors to your robot (or simulate with 4 power values).
+Store them in a DcMotor[] array of size 4.
+Write a stopAllMotors() method that uses a for-each loop:
+
+  void stopAllMotors() {
+      for (DcMotor motor : motors) {
+          motor.setPower(0.0);
+      }
+  }
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L13/
+======================================================

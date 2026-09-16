@@ -1,0 +1,49 @@
+======================================================
+  LESSON 09 EXERCISES — Analog Sensors
+  Book: Chapter 9
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Zones from Angle  (★★☆☆)
+------------------------------------------------------
+Display a label based on the pot angle:
+  0–90°    → "LOW"
+  90–180°  → "MEDIUM"
+  180–270° → "HIGH"
+
+------------------------------------------------------
+EXERCISE 2 — Servo Follower  (★★★☆)
+------------------------------------------------------
+Add a Servo to the config (port 0, name "servo").
+Use the potentiometer angle to set the servo position:
+  normalized = angle / 270.0   → servo.setPosition(normalized)
+
+Turning the pot knob should physically move the servo!
+
+------------------------------------------------------
+EXERCISE 3 — Averaged Reading  (★★★☆)
+------------------------------------------------------
+Take 5 consecutive voltage readings and average them
+to reduce sensor noise. Use an array of size 5 and a
+for loop to fill it each time loop() runs.
+
+HINT:
+  double sum = 0;
+  for (int i = 0; i < 5; i++) {
+      sum += pot.getVoltage();
+  }
+  double avg = sum / 5.0;
+
+------------------------------------------------------
+EXERCISE 4 — CHALLENGE: getPotFraction()  (★★★★)
+------------------------------------------------------
+In your mechanism class, add a method:
+  public double getPotFraction()
+
+that returns the pot position as a value from 0.0 to 1.0,
+without the calling code needing to know about voltage or
+Range.scale(). The OpMode should only need to call one method.
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L09/
+======================================================

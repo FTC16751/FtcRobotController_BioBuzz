@@ -1,0 +1,133 @@
+LESSON 4: GAMEPAD CONTROL - EXERCISES
+
+=== EXERCISE 1: RIGHT TRIGGER FOR REVERSE ===
+Enhance the solution to use both triggers:
+- Left Trigger: Forward power (0 to 1.0)
+- Right Trigger: Reverse power (0 to -1.0)
+
+Motor power = left_trigger - right_trigger
+
+This gives more intuitive tank-drive style control.
+Test: Pull left trigger, motor goes forward. Pull right trigger, goes backward.
+
+---
+
+=== EXERCISE 2: STICK-BASED MOTOR CONTROL ===
+Replace trigger control with stick control:
+- Use left_stick_y to control motor power
+- Display the stick value on telemetry
+
+Remember: left_stick_y is INVERTED!
+- Push stick forward: negative value
+- Pull stick back: positive value
+
+Decide: Do you want inverted or normal behavior?
+Hint: You can negate the value with a minus sign: power = -gamepad1.left_stick_y;
+
+---
+
+=== EXERCISE 3: SERVO NEUTRAL POSITION ===
+Add a third servo position with X button:
+- A Button: servo = 0.0 (closed/retracted)
+- B Button: servo = 1.0 (open/extended)
+- X Button: servo = 0.5 (neutral/middle)
+
+Use if/else statements to handle all three buttons.
+
+---
+
+=== EXERCISE 4: BUMPER CONTROL ===
+Use bumpers for on/off motor control:
+- Left Bumper: Motor ON at full power (1.0)
+- Right Bumper: Motor OFF (0.0)
+- Otherwise: Motor stays at current power
+
+Implement logic to handle when both bumpers are pressed.
+Display "LB Pressed" or "RB Pressed" on telemetry.
+
+---
+
+=== EXERCISE 5: DUAL MOTOR DRIVE ===
+If you have two motors available:
+- Left Stick Y: Left motor power
+- Right Stick Y: Right motor power
+
+This is basic "arcade drive" where each stick controls one motor.
+Display both motor powers on telemetry.
+
+---
+
+=== EXERCISE 6: DEBOUNCING SERVO TOGGLE ===
+Create a toggle button that switches servo between two positions:
+- Start with servo at 0.0
+- Press A button: servo moves to 1.0
+- Press A button again: servo moves back to 0.0
+- Keep toggling
+
+Challenge: Avoid toggling multiple times per single button press
+(Hint: Track previous button state and only toggle on transition)
+
+---
+
+=== CHALLENGE: TWO-FINGER CLAW ===
+Simulate a two-finger claw with two servos:
+- Left_stick_y < -0.5: Both servos open (position 1.0)
+- Left_stick_y > 0.5: Both servos close (position 0.0)
+- Otherwise: Servos at neutral (position 0.5)
+
+Display "Claw: OPEN/CLOSED/NEUTRAL" on telemetry.
+
+---
+
+=== CHALLENGE: ADAPTIVE MOTOR SPEED ===
+Create smooth variable speed control:
+- Left Trigger: Base motor speed (0 to 1.0)
+- Right Bumper: Hold to reduce power to 50% (safety mode)
+
+Motor power = left_trigger * (rightBumper ? 0.5 : 1.0)
+
+This allows drivers to reduce power for precision control.
+
+---
+
+=== CHALLENGE: COMBINED STATE MACHINE ===
+Create a more complex control system:
+- Servo position changes based on motor running:
+  - If motor power > 0.5: Servo = 1.0 (open)
+  - If motor power < 0.1: Servo = 0.0 (closed)
+  - Otherwise: Servo follows manual control from B button
+
+This simulates an "automatic" gripper that opens when motor spins.
+
+---
+
+=== DEBUGGING: COMMON ISSUES ===
+If gamepad doesn't work:
+1. Is the gamepad connected to the Driver Station?
+2. Check gamepad battery level
+3. Try mapping buttons in the Driver Station app first
+4. Is gamepad1 vs gamepad2 correct?
+5. Are you reading gamepad INSIDE the while loop?
+
+Gamepad values seem stuck or not updating:
+- Increase telemetry frequency
+- Reduce sleep time (minimum 50ms, but can be less)
+- Check if loop is even running (add debug telemetry)
+
+---
+
+BONUS: Research Questions
+1. Why is left_stick_y inverted? (Hint: Think about joystick conventions)
+2. What is the refresh rate of the gamepad input?
+3. How would you create a "dead zone" (small stick movements ignored)?
+4. What's the difference between button and trigger input?
+5. How many gamepads can be connected simultaneously?
+6. Can you use gamepad2 for co-driver? (Yes! Read: gamepad2.a, gamepad2.left_stick_y, etc.)
+
+---
+
+FUTURE EXTENSIONS:
+- Multi-motor tank drive (left/right sticks control pairs of motors)
+- Precise arm positioning with stick (smooth servo movement)
+- Telemetry logging for driver station feedback
+- Rumble/vibration feedback (gamepad.rumbleBlips())

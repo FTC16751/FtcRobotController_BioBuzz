@@ -1,0 +1,66 @@
+======================================================
+  LESSON 12 EXERCISES — State Machines & Autonomous
+  Book: Chapter 12
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Add a DONE Display  (★★☆☆)
+------------------------------------------------------
+Enhance the DONE state to display:
+  - "Autonomous complete!"
+  - "Total runtime: X.XX sec"
+
+This is important at competition so you can verify
+the auto ran fully.
+
+------------------------------------------------------
+EXERCISE 2 — Timed Fallback  (★★★☆)
+------------------------------------------------------
+Add a safety feature: any state automatically transitions
+to DONE if 10 seconds have passed since the OpMode started.
+
+HINT: In every state's case block, add:
+  if (getRuntime() > 10.0) { currentState = State.DONE; }
+
+Or better — add a helper method:
+  boolean safetyTimeout() {
+      return getRuntime() > 10.0;
+  }
+
+------------------------------------------------------
+EXERCISE 3 — String States  (★★★☆)
+------------------------------------------------------
+Rewrite the state machine using a String variable instead
+of an enum:
+  String state = "WAIT_FOR_TOUCH";
+
+Use switch(state) with String cases.
+
+What are the trade-offs vs. using an enum?
+(Discuss with your coach.)
+
+------------------------------------------------------
+EXERCISE 4 — 5-Step Autonomous  (★★★★)
+------------------------------------------------------
+Design and build a 5-state autonomous sequence using
+the full programming board:
+  1. WAIT: Wait for touch sensor press
+  2. SERVO_OPEN: Move servo to 1.0
+  3. DRIVE_FORWARD: Run motor for 1.5 seconds
+  4. SERVO_CLOSE: Move servo to 0.0
+  5. DONE
+
+At competition, you'd replace the timing with encoder counts.
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Sensor Fallback  (★★★★)
+------------------------------------------------------
+Modify the RUN_MOTOR state so it stops when EITHER:
+  a) 2 seconds have elapsed, OR
+  b) The touch sensor is pressed (like hitting a wall)
+
+Use the || operator to combine both conditions.
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L12/
+======================================================
