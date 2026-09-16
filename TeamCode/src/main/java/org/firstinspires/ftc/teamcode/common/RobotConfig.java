@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.common;
 
 import androidx.annotation.Nullable;
-import com.pedropathing.control.PIDFCoefficients;
-import com.pedropathing.paths.PathConstraints;
+import com.pedropathing.algorithm.ForesightConfig;
+import com.pedropathing.config.Configuration;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -199,66 +199,35 @@ public class RobotConfig {
     }
 
     /**
-     * Tuning for the Pedro Pathing follower. Null if the robot does not use Pedro. When present,
-     * DriveUtil2026b builds the Follower from this plus the drivetrain, hardware and odometry
-     * sections above (pedropathing/Constants.createFollower), and the Follower owns the Pinpoint.
+     * Pedro Pathing 3 on this robot. A non-null block makes DriveUtil2026b build a Pedro Follower
+     * (which then owns the Pinpoint); null means "no Pedro on this robot".
      *
-     * Every number here comes out of the Pedro Tuning OpMode (Driver Station group "Pedro"), in
-     * the order the docs give: Localization Test, velocity tuners (driveMaxVelo, strafeMaxVelo),
-     * heading tuner (headingPIDF), then ONE drive algorithm: predictive braking (predictiveBraking)
-     * or the PIDF path (zeroPowerAccel, translationalPIDF, drivePIDF, centripetalScaling).
-     * Defaults are Pedro's own library defaults so an untuned robot behaves like the Quickstart.
-     *
+     * The numbers are Foresight's, Pedro 3's path-following algorithm, and they come from AutoTune:
+     * the robot hosts a tuning page at http://192.168.43.1:10158, its Foresight procedure drives the
+     * robot through nine measurements and prints a Java lambda. Paste that lambda here, verbatim:
      * <pre>
-     *   new RobotConfig.PedroPathingConfig()
-     *       .mass(9.0)
-     *       .velocities(78.3, 61.5)
-     *       .headingPIDF(new PIDFCoefficients(0.8, 0, 0, 0.01))
-     *       .predictiveBraking(0.1, 0.1, 0.001)
+     *   new RobotConfig.PedroPathingConfig().foresight(c -> {
+     *       c.maxAchievableForwardVelocity.set(81.1);
+     *       ...
+     *   })
      * </pre>
+     * Foresight has twelve numbers with NO library default (top speeds, coast-down decelerations,
+     * brake coefficients, controller gains): until AutoTune's lambda is pasted, PedroBridge refuses
+     * the config, DriveUtil2026b says so in telemetry and drives without Pedro (hasPedro() false),
+     * and AutoTune itself still runs, since its Mecanum, Pinpoint and Foresight procedures only need
+     * the names, directions and offsets. Those come from the rest of the RobotConfig through
+     * common/PedroBridge, so nothing is typed twice.
      */
     public static final class PedroPathingConfig {
-        /** Robot mass in kg (Pedro uses it for centripetal correction). Library default 10.65. */
-        public double followerMass = 10.65;
-        public double forwardZeroPowerAccel = -41.278;
-        public double lateralZeroPowerAccel = -59.7819;
-        public PIDFCoefficients translationalPIDF = new PIDFCoefficients(0.1, 0, 0, 0);
-        public PIDFCoefficients headingPIDF = new PIDFCoefficients(1.0, 0, 0, 0.01);
-        /** Max in/s forward and sideways at full power, from the velocity tuners. Library defaults. */
-        public double driveMaxVelo = 81.34;
-        public double strafeMaxVelo = 65.43;
-        public PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
-        /** Predictive braking (kP, kLinear, kQuadratic); null means the PIDF drive algorithm. */
-        public double[] predictiveBraking = null;
-        /** Centripetal correction scale. Pedro default 0.0005; set 0 with predictive braking. */
-        public double centripetalScaling = 0.0005;
+        /** Foresight tuning, as AutoTune prints it. Empty = not tuned yet = Pedro off on this robot. */
+        public Configuration<ForesightConfig> foresight = c -> {};
+        /** Pedro's TeleOp drive (Test2027PedroTeleop) brakes when the sticks are centred, like moveRobot. */
+        public boolean brakeInManualDrive = true;
 
         public PedroPathingConfig() {}
 
-        public PedroPathingConfig mass(double kg)                                  { this.followerMass = kg; return this; }
-        public PedroPathingConfig zeroPowerAccel(double forward, double lateral)   { this.forwardZeroPowerAccel = forward; this.lateralZeroPowerAccel = lateral; return this; }
-        public PedroPathingConfig translationalPIDF(PIDFCoefficients c)           { this.translationalPIDF = c; return this; }
-        public PedroPathingConfig headingPIDF(PIDFCoefficients c)                 { this.headingPIDF = c; return this; }
-        public PedroPathingConfig velocities(double forwardInPerSec, double strafeInPerSec) { this.driveMaxVelo = forwardInPerSec; this.strafeMaxVelo = strafeInPerSec; return this; }
-        public PedroPathingConfig pathConstraints(PathConstraints c)              { this.pathConstraints = c; return this; }
-        public PedroPathingConfig predictiveBraking(double kP, double kLinear, double kQuadratic) { this.predictiveBraking = new double[] { kP, kLinear, kQuadratic }; return this; }
-        public PedroPathingConfig centripetalScaling(double v)                    { this.centripetalScaling = v; return this; }
-
-        /**
-         * @deprecated Ten positional arguments are easy to transpose, and trackWidth / lateralMultiplier
-         * were never read. Use the no-arg constructor and the named setters.
-         */
-        @Deprecated
-        public PedroPathingConfig(double mass, double fwdAccel, double latAccel, PIDFCoefficients transPIDF, PIDFCoefficients headPIDF, double track, double latMulti, double driveVelo, double strafeVelo, PathConstraints constraints) {
-            this.followerMass = mass;
-            this.forwardZeroPowerAccel = fwdAccel;
-            this.lateralZeroPowerAccel = latAccel;
-            this.translationalPIDF = transPIDF;
-            this.headingPIDF = headPIDF;
-            this.driveMaxVelo = driveVelo;
-            this.strafeMaxVelo = strafeVelo;
-            this.pathConstraints = constraints;
-        }
+        public PedroPathingConfig foresight(Configuration<ForesightConfig> tuning) { this.foresight = tuning; return this; }
+        public PedroPathingConfig brakeInManualDrive(boolean brake)             { this.brakeInManualDrive = brake; return this; }
     }
 
     // =================================================================================

@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.common;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.pedropathing.follower.FollowerConstants;
-import com.pedropathing.ftc.drivetrains.MecanumConstants;
-import com.pedropathing.ftc.localization.constants.PinpointConstants;
+import com.pedropathing.algorithm.ForesightConfig;
+import com.pedropathing.controllers.Controller;
+import com.pedropathing.math.Matrix;
+import com.pedropathing.math.Vector2D;
+import com.pedropathing.revhub.drivetrains.MecanumConfig;
+import com.pedropathing.revhub.localizers.PinpointConfig;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.common.test.StandardBotConfig;
@@ -15,10 +17,10 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
 import org.junit.Test;
 
 /**
- * The RobotConfig to Pedro Pathing bridge. The one thing that matters most is the pod-offset
- * mapping: Pedro's forwardPodY is passed to goBILDA's setOffsets as the X (forward) pod's
- * sideways offset, which is what OdometryConfig.pinpointOffsetX_mm holds. The 2025 bridge had the
- * two swapped, which is one reason Pedro never localized right (doc/PEDRO_ON_TEST2027.md).
+ * The RobotConfig to Pedro Pathing 3 bridge. The thing that matters most is the pod-offset mapping:
+ * the X pod's leftward offset must reach the Pinpoint as xOffset and the Y pod's forward offset as
+ * yOffset, in mm. The 2025 bridge had them swapped, which is one reason Pedro never localized right
+ * (doc/PEDRO_ON_TEST2027.md); Pedro 3 passes them straight through, and this pins that.
  */
 public class PedroBridgeTest {
 
@@ -26,73 +28,85 @@ public class PedroBridgeTest {
 
     @Test
     public void pinpointOffsetsLandOnTheRightPedroFields() {
-        PinpointConstants pc = PedroBridge.pinpointConstantsFor(test2027);
-        assertEquals(test2027.odometry.pinpointOffsetX_mm, pc.forwardPodY, 1e-9);
-        assertEquals(test2027.odometry.pinpointOffsetY_mm, pc.strafePodX, 1e-9);
+        PinpointConfig pc = PedroBridge.pinpointConfigFor(test2027);
+        assertEquals(test2027.odometry.pinpointOffsetX_mm, pc.xPodOffset.get(), 1e-9);
+        assertEquals(test2027.odometry.pinpointOffsetY_mm, pc.yPodOffset.get(), 1e-9);
         // and in plain numbers, as measured on the Skyline chassis 2026-09-07
-        assertEquals(120.0, pc.forwardPodY, 1e-9);
-        assertEquals(-120.0, pc.strafePodX, 1e-9);
-        assertEquals(DistanceUnit.MM, pc.distanceUnit);
+        assertEquals(120.0, pc.xPodOffset.get(), 1e-9);
+        assertEquals(-120.0, pc.yPodOffset.get(), 1e-9);
+        assertEquals(DistanceUnit.MM, pc.offsetUnits.get());
+        assertEquals("poses are in inches everywhere else in our code", DistanceUnit.INCH, pc.globalDistanceUnit.get());
     }
 
     @Test
     public void pinpointNameAndPodDirectionsComeFromTheConfig() {
-        PinpointConstants pc = PedroBridge.pinpointConstantsFor(test2027);
-        assertEquals("odo", pc.hardwareMapName);
-        assertEquals(test2027.odometry.pinpointXPodDirection, pc.forwardEncoderDirection);
-        assertEquals(test2027.odometry.pinpointYPodDirection, pc.strafeEncoderDirection);
+        PinpointConfig pc = PedroBridge.pinpointConfigFor(test2027);
+        assertEquals("odo", pc.name.get());
+        assertEquals(test2027.odometry.pinpointXPodDirection, pc.xPodDirection.get());
+        assertEquals(test2027.odometry.pinpointYPodDirection, pc.yPodDirection.get());
     }
 
     @Test
     public void motorNamesAndDirectionsComeFromTheConfig() {
-        MecanumConstants mc = PedroBridge.mecanumConstantsFor(test2027);
-        assertEquals(test2027.hardware.leftFront,  mc.leftFrontMotorName);
-        assertEquals(test2027.hardware.leftRear,   mc.leftRearMotorName);
-        assertEquals(test2027.hardware.rightFront, mc.rightFrontMotorName);
-        assertEquals(test2027.hardware.rightRear,  mc.rightRearMotorName);
-        assertEquals(test2027.drivetrain.leftFrontDirection,  mc.leftFrontMotorDirection);
-        assertEquals(test2027.drivetrain.leftRearDirection,   mc.leftRearMotorDirection);
-        assertEquals(test2027.drivetrain.rightFrontDirection, mc.rightFrontMotorDirection);
-        assertEquals(test2027.drivetrain.rightRearDirection,  mc.rightRearMotorDirection);
-        assertEquals(test2027.pedroPathing.driveMaxVelo,  mc.xVelocity, 1e-9);
-        assertEquals(test2027.pedroPathing.strafeMaxVelo, mc.yVelocity, 1e-9);
+        MecanumConfig mc = PedroBridge.mecanumConfigFor(test2027);
+        assertEquals(test2027.hardware.leftFront,  mc.frontLeftName.get());
+        assertEquals(test2027.hardware.leftRear,   mc.backLeftName.get());
+        assertEquals(test2027.hardware.rightFront, mc.frontRightName.get());
+        assertEquals(test2027.hardware.rightRear,  mc.backRightName.get());
+        assertEquals(test2027.drivetrain.leftFrontDirection,  mc.frontLeftDirection.get());
+        assertEquals(test2027.drivetrain.leftRearDirection,   mc.backLeftDirection.get());
+        assertEquals(test2027.drivetrain.rightFrontDirection, mc.frontRightDirection.get());
+        assertEquals(test2027.drivetrain.rightRearDirection,  mc.backRightDirection.get());
+        assertTrue("the Pedro TeleOp drive brakes on centred sticks (K10, 2026-09-08)", mc.manualBrakeMode.get());
     }
 
     @Test
-    public void followerConstantsCarryTheTuning() {
-        FollowerConstants fc = PedroBridge.followerConstantsFor(test2027);
-        assertEquals(test2027.pedroPathing.followerMass, fc.mass, 1e-9);
-        assertEquals(test2027.pedroPathing.forwardZeroPowerAccel, fc.forwardZeroPowerAcceleration, 1e-9);
-        assertEquals(test2027.pedroPathing.lateralZeroPowerAccel, fc.lateralZeroPowerAcceleration, 1e-9);
-        assertEquals(test2027.pedroPathing.centripetalScaling, fc.centripetalScaling, 1e-9);
-        // Test2027 has carried predictive braking since the 2026-09-08 tuning session (test plan K4).
-        assertTrue("predictive braking once predictiveBraking(...) is set", fc.usePredictiveBraking);
-    }
-
-    @Test
-    public void withoutPredictiveBrakingTheBridgeUsesThePidfDrive() {
+    public void aCompleteForesightLambdaCarriesTheTuning() {
         RobotConfig cfg = Test2027BotConfig.create();
-        cfg.pedroPathing.predictiveBraking = null;    // an untuned robot
-        assertFalse(PedroBridge.followerConstantsFor(cfg).usePredictiveBraking);
+        cfg.pedroPathing.foresight(c -> {
+            // Shaped exactly like what AutoTune prints (numbers made up for the test).
+            c.forwardTranslational.set(Controller.piecewise(Controller.proportional(0.05)).put(2.5, Controller.proportional(0.1)));
+            c.strafeTranslational.set(Controller.piecewise(Controller.proportional(0.05)).put(2.5, Controller.proportional(0.1)));
+            c.coast.set(Controller.proportionalFeedforward(0.02));
+            c.brake.set(Controller.proportionalFeedforward(0.03));
+            c.headingFeedback.set(Controller.proportional(1.0));
+            c.headingBrakeCoefficients.set(Vector2D.cartesian(0.1, 0.01));
+            c.linearBrakeCoefficients.set(Matrix.diag(0.09, 0.08));
+            c.quadraticBrakeCoefficients.set(Matrix.diag(0.002, 0.001));
+            c.maxAchievableForwardVelocity.set(81.1);
+            c.maxAchievableStrafeVelocity.set(67.8);
+            c.naturalForwardDeceleration.set(40.0);
+            c.naturalStrafeDeceleration.set(60.0);
+        });
+        ForesightConfig fc = PedroBridge.foresightConfigFor(cfg);
+        assertEquals(81.1, fc.maxAchievableForwardVelocity.get(), 1e-9);
+        assertEquals(67.8, fc.maxAchievableStrafeVelocity.get(), 1e-9);
+        assertEquals(40.0, fc.naturalForwardDeceleration.get(), 1e-9);
+        assertTrue(PedroBridge.createForesight(cfg) != null);
     }
 
     @Test
-    public void settingPredictiveBrakingSwitchesTheDriveAlgorithm() {
-        RobotConfig cfg = Test2027BotConfig.create();
-        cfg.pedroPathing.predictiveBraking(0.1, 0.2, 0.003).centripetalScaling(0);
-        FollowerConstants fc = PedroBridge.followerConstantsFor(cfg);
-        assertTrue(fc.usePredictiveBraking);
-        assertEquals(0.0, fc.centripetalScaling, 1e-9);
+    public void anIncompleteForesightLambdaIsRefusedByName() {
+        // Test2027's block carries only the top speeds until AutoTune runs (2026-09-15).
+        try {
+            PedroBridge.foresightConfigFor(test2027);
+            fail("expected an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains(test2027.robotName));
+            assertTrue(e.getMessage(), e.getMessage().contains("AutoTune"));
+        }
+        assertTrue("the Pinpoint and mecanum halves still build for AutoTune",
+                PedroBridge.pinpointConfigFor(test2027) != null && PedroBridge.mecanumConfigFor(test2027) != null);
     }
 
     @Test
     public void aRobotWithoutPedroIsRefusedByName() {
-        RobotConfig standard = StandardBotConfig.create();
+        RobotConfig standard = StandardBotConfig.create();   // no PedroPathingConfig
         try {
-            PedroBridge.followerConstantsFor(standard);
-            fail("expected IllegalArgumentException");
+            PedroBridge.foresightConfigFor(standard);
+            fail("expected an IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains(standard.robotName));
+            assertTrue(e.getMessage(), e.getMessage().contains(standard.robotName));
         }
     }
 }

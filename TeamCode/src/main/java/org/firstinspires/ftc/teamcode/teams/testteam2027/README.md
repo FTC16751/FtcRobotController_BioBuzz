@@ -145,18 +145,22 @@ Power and hold time come from the defaults in your constants; add a power argume
 
 ## Step 6d. The third auto (Pedro Pathing paths)
 
-`auto/Test2027PedroSquareAuto.java` drives the same square as ONE Pedro Pathing path chain, without
-stopping at the corners. It works because the config has a `PedroPathingConfig` (section 6c of the
-config file): DriveUtil2026b then builds a Pedro Follower for the robot, and the Follower owns the
-Pinpoint. Tune first: run `Tuning` (Driver Station group Pedro) in the order
-`doc/PEDRO_ON_TEST2027.md` section 3 gives, copying each number into the config as you go.
+`auto/Test2027PedroSquareAuto.java` drives the same square as ONE Pedro Pathing path of four lines,
+without stopping at the corners. It works because the config has a `PedroPathingConfig` (section 6c
+of the config file) with AutoTune's Foresight numbers in it: DriveUtil2026b then builds a Pedro
+Follower for the robot, and the Follower owns the Pinpoint. Without those numbers Pedro is off,
+the telemetry says so, and everything else still drives. Tune first: open `http://192.168.43.1:10158`
+on the robot's WiFi and run the procedures in the order test plan section K gives, pasting what each
+one prints into the config.
 
 | Command | What it does |
 |---|---|
-| `hasPedro()` | true if the config has a PedroPathingConfig |
-| `getFollower().pathBuilder()...build()` | build a path chain from Pedro poses (inches, radians; x forward, y left, counter-clockwise, same as the Pinpoint) |
-| `followPath(chain)` then `isBusy()` | follow it without blocking; the robot stops at the end |
-| `followPath(chain, true)` | same, then hold the last pose (for shooting) until `cancel()` or the next move |
+| `hasPedro()` | true if the config has a complete PedroPathingConfig |
+| `PoseFactory.degrees().of(x, y, headingDeg)` | a Pedro pose: inches; x forward, y left, counter-clockwise, same as the Pinpoint |
+| `Paths.line(a, b).constant(a)` | a straight leg from pose a to pose b holding a's heading; `.tangent()` faces along the leg, `.linear(a, b)` turns evenly |
+| `Paths.path(leg1, leg2, ...)` | join legs into one path |
+| `followPath(path)` then `isBusy()` | follow it without blocking; the robot stops at the end |
+| `followPath(path, true)` | same, then hold the last pose (for shooting) until `cancel()` or the next move |
 | `cancel()` | abandon the path, or release the hold |
 | `startPedroTeleopDrive()`, then `pedroTeleopDrive(strafe, drive, turn, speed)` each loop | let Pedro drive the wheels from the sticks (same arguments as `arcadeDrive`); `cancel()` goes back to `moveRobot`. Comparison only, in `teleop/Test2027PedroTeleop`, never in the RUN ME TeleOp |
 
