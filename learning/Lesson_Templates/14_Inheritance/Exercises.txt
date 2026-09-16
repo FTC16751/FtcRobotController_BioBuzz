@@ -1,0 +1,58 @@
+======================================================
+  LESSON 14 EXERCISES — Inheritance & Polymorphism
+  Book: Chapter 14
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Add Javadoc to Every Method  (★★☆☆)
+------------------------------------------------------
+Add a Javadoc comment above every public method in
+L14_TestItem, L14_TestMotor, and L14_TestDigitalChannel.
+
+Example:
+  /**
+   * Runs this test item.
+   * @param on   true to activate hardware, false to deactivate
+   * @param telemetry  the telemetry object to display readings on
+   */
+
+------------------------------------------------------
+EXERCISE 2 — TestServo Subclass  (★★★☆)
+------------------------------------------------------
+Create a new class L14_TestServo that extends L14_TestItem.
+Constructor: (String description, Servo servo, double onPos, double offPos)
+run() method:
+  - When on=true:  servo.setPosition(onPos)
+  - When on=false: servo.setPosition(offPos)
+  - Display current position with telemetry
+
+Add it to buildTests() in L14_TestWiring.
+No changes to TestWiring are needed — polymorphism handles it!
+
+------------------------------------------------------
+EXERCISE 3 — Pass/Fail Counter  (★★★☆)
+------------------------------------------------------
+Add to L14_TestWiring:
+  int passCount = 0;
+  int failCount = 0;
+
+When gamepad1.y is pressed while a test is selected,
+count it as a PASS. When gamepad1.x is pressed, count FAIL.
+Display the totals on telemetry.
+
+------------------------------------------------------
+EXERCISE 4 — CHALLENGE: isa vs. hasa  (★★★★)
+------------------------------------------------------
+The book (section 14.1) discusses "isa" vs "hasa" relationships.
+
+Write two versions of a robot status tracker:
+  Version A (isa):  class RobotTracker extends RobotStatus
+  Version B (hasa): class RobotTracker { RobotStatus status; ... }
+
+For each, add a method logStatus(Telemetry t).
+Which is easier to use? Which is more flexible?
+Discuss with your coach.
+
+======================================================
+  Move completed files to: Student_Code/[YourName]/L14/
+======================================================

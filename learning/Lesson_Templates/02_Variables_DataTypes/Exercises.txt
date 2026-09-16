@@ -1,0 +1,74 @@
+======================================================
+  LESSON 02 EXERCISES — Variables & Data Types
+  Book: Chapter 2
+======================================================
+
+Complete the template first, then try these exercises.
+
+------------------------------------------------------
+EXERCISE 1 — Loop Counter with Reset  (★★☆☆)
+------------------------------------------------------
+Add a class-level int named loopCount.
+Increment it in loop() and display it.
+When loopCount reaches 100, reset it to 0.
+
+Expected output (cycling):
+  Loop Count: 0 → 1 → 2 → ... → 99 → 0 → 1 → ...
+
+HINT:
+  loopCount++;
+  if (loopCount >= 100) {
+      loopCount = 0;
+  }
+
+------------------------------------------------------
+EXERCISE 2 — Motor Power Percentage  (★★☆☆)
+------------------------------------------------------
+Declare a double named motorPower set to 0.65.
+Compute the percentage (multiply by 100) and display:
+  "Motor Power": 0.65
+  "Motor Power %": 65.0
+
+Can you also compute what percentage of MAX power (1.0)
+this represents? Display a third line:
+  "% of Max": 65.0
+
+------------------------------------------------------
+EXERCISE 3 — Boolean Timer Flag  (★★★☆)
+------------------------------------------------------
+Declare a boolean named "inEndgame" set to false.
+In loop(), if getRuntime() > 90.0 (90 seconds = endgame),
+set inEndgame to true.
+Display "In Endgame" on telemetry.
+
+Expected behavior:
+  First 90 seconds → "In Endgame: false"
+  After 90 seconds → "In Endgame: true"
+
+------------------------------------------------------
+EXERCISE 4 — String Builder  (★★★☆)
+------------------------------------------------------
+Declare these variables:
+  int   score         = 42;
+  String allianceColor = "Red";
+  double timeLeft      = 87.5;
+
+Combine them into a single status String using + :
+  String status = allianceColor + " Alliance | Score: " + score + " | Time: " + timeLeft;
+
+Display: "Status" → the assembled string.
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Type Limits  (★★★★)
+------------------------------------------------------
+What happens when an int runs out of room?
+Declare:
+  int bigNumber = 2147483647;   // this is the maximum int value
+
+In loop(), add 1 to bigNumber each iteration and display it.
+Watch what happens after it reaches the max!
+(This is called "integer overflow" — important to know about!)
+
+======================================================
+  Move your completed file to: Student_Code/[YourName]/L02/
+======================================================

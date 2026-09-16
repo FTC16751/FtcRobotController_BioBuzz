@@ -1,0 +1,85 @@
+LESSON 1: MOTOR BASICS - EXERCISES
+
+=== EXERCISE 1: VARIABLE SPEED ===
+Modify the solution to run the motor at different power levels:
+- Half speed forward (0.5)
+- Quarter speed reverse (-0.25)
+- Three-quarter speed forward (0.75)
+
+Each for 2 seconds with 1 second pause between changes.
+Use telemetry to display the current power level.
+
+Expected output on telemetry:
+Motor Power: 0.5
+[2 seconds pass]
+Motor Power: -0.25
+[2 seconds pass]
+Motor Power: 0.75
+[etc.]
+
+---
+
+=== EXERCISE 2: SMOOTH STOP ===
+Instead of instantly jumping from full power to 0, create a "smooth stop"
+that gradually reduces power:
+- Start at 1.0
+- Reduce to 0.5 (wait 0.5 seconds)
+- Reduce to 0.25 (wait 0.5 seconds)
+- Reduce to 0.0 (wait 0.5 seconds)
+
+Display the power level on telemetry at each step.
+Hint: Use the sleep() method to add delays
+
+---
+
+=== EXERCISE 3: OSCILLATING MOTOR ===
+Create a program that makes the motor oscillate (go back and forth) 
+between forward and reverse 5 times:
+- Forward at 0.75 power for 1 second
+- Reverse at -0.75 power for 1 second
+- [Repeat 5 times]
+
+Display a counter on telemetry showing which iteration (1-5) is running.
+Hint: Use a for loop
+
+---
+
+=== EXERCISE 4: READ MOTOR STATE ===
+After setting the motor power, read it back using motorTest.getPower()
+and verify the value matches what you set.
+
+Create a verification loop:
+- Set power to different value each iteration
+- Read it back with getPower()
+- Display both the set value and the read value on telemetry
+- Check they match (or explain any differences)
+
+---
+
+=== CHALLENGE: MOTOR PATTERN ===
+Create an interesting motor control pattern:
+- 1 second at 1.0
+- 0.5 seconds at 0.5
+- 0.5 seconds at -0.5
+- 0.5 seconds at 0.0
+- [Repeat 10 times]
+
+Display which segment (1-4) is currently running on telemetry.
+Use loops to avoid repeating code.
+
+---
+
+=== DEBUGGING: COMMON ISSUES ===
+If your motor doesn't work, check:
+1. Is the motor physically plugged in to the motor port?
+2. Does the hardware configuration name match exactly (case-sensitive)?
+3. Is the power value between -1.0 and +1.0?
+4. Did you call waitForStart() before trying to control the motor?
+5. Is the opModeIsActive() condition being checked in your loop?
+
+---
+
+BONUS: Research Questions
+1. What happens if you set motor power to a value > 1.0 or < -1.0?
+2. Why do we use power range -1.0 to +1.0 instead of RPM directly?
+3. What's the difference between this motor control and a servo? (Hint: You'll learn in Lesson 2!)

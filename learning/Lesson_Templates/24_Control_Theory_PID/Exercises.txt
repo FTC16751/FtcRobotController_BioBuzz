@@ -1,0 +1,68 @@
+======================================================
+  LESSON 24 EXERCISES — Control Theory & PID
+  Book: Chapter 24
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Bang-Bang with Deadband  (★★☆☆)
+------------------------------------------------------
+Implement Step 1 (bang-bang) first.
+Experiment with different DEADBAND values:
+  DEADBAND = 5    → motor oscillates a lot
+  DEADBAND = 50   → motor stops further from target
+  DEADBAND = 20   → a reasonable balance
+
+What's the trade-off between oscillation and accuracy?
+
+------------------------------------------------------
+EXERCISE 2 — Tune kP  (★★★☆)
+------------------------------------------------------
+Switch to Step 2 (P-only control).
+Experiment with these kP values and observe the behavior:
+  kP = 0.0001  → very slow to reach target
+  kP = 0.01    → overshoots and oscillates
+  kP = 0.001   → often a good starting point
+
+Document: what kP gives you fast response without oscillation?
+
+------------------------------------------------------
+EXERCISE 3 — Add I Term  (★★★☆)
+------------------------------------------------------
+Implement Step 3 (full PID).
+Start with kI = 0.
+
+Does the motor stop exactly at the target with P-only?
+If there's still a small steady-state error (it stops slightly
+off-target), increase kI gradually until it reaches the target.
+
+Typical starting range: kI = 0.00001 to 0.001
+
+------------------------------------------------------
+EXERCISE 4 — Built-In vs. Your Own  (★★★★)
+------------------------------------------------------
+Compare your custom PID to the built-in RUN_TO_POSITION:
+
+  motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+  motor.setTargetPosition(desiredPosition);
+  motor.setPower(0.8);
+
+Which is faster? Which is smoother? Which is easier to tune?
+Run both on the same motor and compare.
+
+(This directly mirrors the discussion in book section 24.5.4)
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Feedforward  (★★★★)
+------------------------------------------------------
+If you have a VERTICAL mechanism (like a lift or arm that
+fights gravity), add the kF term.
+
+Method: Hold the mechanism still. With kP=kI=kD=0, find
+the minimum motor power that holds it in place. That's your kF.
+
+Add it as a constant and include it in the power calculation:
+  power = (kP * error) + (kI * sumErrors) + (kD * derivative) + kF;
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L24/
+======================================================

@@ -1,0 +1,78 @@
+======================================================
+  LESSON 04 EXERCISES — Making Decisions
+  Book: Chapter 4
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Turbo Button  (★★☆☆)
+------------------------------------------------------
+Make a "turbo button":
+  - Normally: forward speed = left stick Y * 0.5  (half speed)
+  - When A held: forward speed = left stick Y * 1.0  (full speed)
+
+Display: "Forward Speed" → the computed value
+
+HINT:
+  double forwardSpeed;
+  if (gamepad1.a) {
+      forwardSpeed = -gamepad1.left_stick_y * 1.0;
+  } else {
+      forwardSpeed = -gamepad1.left_stick_y * 0.5;
+  }
+
+------------------------------------------------------
+EXERCISE 2 — Three Speed Modes via D-Pad  (★★☆☆)
+------------------------------------------------------
+Use the D-pad to select between 3 speed modes:
+  dpad_up    → "HIGH"   (power multiplier = 1.0)
+  dpad_down  → "LOW"    (power multiplier = 0.3)
+  neither    → "MEDIUM" (power multiplier = 0.6)
+
+Display both the mode name and the actual motor power:
+  "Speed Mode" → "HIGH"
+  "Motor Power" → left_stick_y * multiplier
+
+------------------------------------------------------
+EXERCISE 3 — Stick Zones with Combinations  (★★★☆)
+------------------------------------------------------
+Use BOTH sticks to determine what the robot would do.
+Use && to combine conditions:
+  left Y > 0.3 AND right X > 0.3  → "Forward Right Turn"
+  left Y > 0.3 AND right X < -0.3 → "Forward Left Turn"
+  left Y > 0.3                    → "Straight Forward"
+  left Y < -0.3                   → "Straight Backward"
+  otherwise                       → "Idle"
+
+------------------------------------------------------
+EXERCISE 4 — for Loop Telemetry  (★★★☆)
+------------------------------------------------------
+Use a for loop to display 5 lines of telemetry at once:
+  "Line 1": "one"
+  "Line 2": "two"
+  "Line 3": "three"
+  "Line 4": "four"
+  "Line 5": "five"
+
+HINT:
+  String[] words = {"one", "two", "three", "four", "five"};
+  for (int i = 0; i < 5; i++) {
+      telemetry.addData("Line " + (i + 1), words[i]);
+  }
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Press Counter with Reset  (★★★★)
+------------------------------------------------------
+Count A button presses (edge-detected).
+When the count reaches 5, display "FIVE PRESSES!" for
+2 seconds, then reset the counter to 0.
+
+HINT: You'll need:
+  - aPressCount (int, class-level)
+  - resetStartTime (double, class-level)
+  - A boolean showingMessage
+
+Use getRuntime() to check how long the message has shown.
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L04/
+======================================================

@@ -1,0 +1,43 @@
+======================================================
+  LESSON 11 EXERCISES — Gyro / IMU
+  Book: Chapter 11
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Degrees and Radians  (★★☆☆)
+------------------------------------------------------
+Display heading in both degrees AND radians simultaneously.
+Verify that they agree: 90° should show ~1.571 rad.
+
+------------------------------------------------------
+EXERCISE 2 — Motor Stops at Zero  (★★★☆)
+------------------------------------------------------
+Add a motor. Make it:
+  - Run at 0.5 when heading > 0  (robot turned right)
+  - Run at -0.5 when heading < 0 (robot turned left)
+  - Stop when heading is within 5 degrees of 0
+
+This mimics a basic "return to center" behavior.
+
+------------------------------------------------------
+EXERCISE 3 — Orientation Experiment  (★★★☆)
+------------------------------------------------------
+Change the LogoFacingDirection from UP to FORWARD.
+Does the heading still work correctly?
+What happens to pitch and roll?
+
+This helps you understand why hub orientation matters on a real robot.
+
+------------------------------------------------------
+EXERCISE 4 — CHALLENGE: Heading to Servo  (★★★★)
+------------------------------------------------------
+Map the heading (−180 to +180 degrees) to a servo position (0.0 to 1.0).
+Use Range.scale() to do the conversion:
+  double servoPos = Range.scale(headingDegrees, -180, 180, 0.0, 1.0);
+
+Set a servo to that position. When you rotate the hub, the servo should
+track the heading. This is similar to how a compass needle works!
+
+======================================================
+  Move completed file to: Student_Code/[YourName]/L11/
+======================================================

@@ -1,0 +1,73 @@
+======================================================
+  LESSON 05 EXERCISES — Classes, Members & Methods
+  Book: Chapter 5
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Add a clamp() method to your OpMode  (★★☆☆)
+------------------------------------------------------
+Write a method inside L05_Classes directly (not in RobotStatus):
+
+  double clamp(double value, double min, double max)
+
+Use it in loop() to clamp the raw joystick value before
+passing it to setMotorPower(). This way you control the
+clamping at the OpMode level instead of relying on the setter.
+
+------------------------------------------------------
+EXERCISE 2 — squareInput() method  (★★☆☆)
+------------------------------------------------------
+Add a method to L05_Classes:
+
+  double squareInputWithSign(double input)
+
+It should:
+  1. Square the input (input * input)
+  2. If the original was negative, make the result negative
+  3. Return the result
+
+This makes joysticks less sensitive near center while
+keeping full power available at the edges. Use it when
+setting motorPower.
+
+------------------------------------------------------
+EXERCISE 3 — Second RobotStatus + Instance Count  (★★★☆)
+------------------------------------------------------
+Create a SECOND RobotStatus object:
+  RobotStatus robot2 = new RobotStatus();
+
+Use robot2 as a "servo-only" tracker (only update its
+servoPosition, never its motorPower).
+
+Display RobotStatus.getInstanceCount() — it should show 2.
+
+------------------------------------------------------
+EXERCISE 4 — toString() Formatting  (★★★☆)
+------------------------------------------------------
+Modify RobotStatus.toString() to show values formatted
+to 2 decimal places:
+  "Power=0.75 Servo=0.50 Running=true"
+
+HINT: Use String.format() or %.2f format specifiers:
+  return String.format("Power=%.2f Servo=%.2f Running=%b",
+                       motorPower, servoPosition, isRunning);
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: RobotLocation  (★★★★)
+------------------------------------------------------
+Create a new class called RobotLocation (separate .java file)
+modeled after the book's example in Chapter 5.4.
+
+It should have:
+  - double angle (class member)
+  - RobotLocation(double startAngle) constructor
+  - double getHeading() — normalizes angle to -180..180
+  - void turn(double degrees) — adds to angle
+  - String toString()
+
+Write an OpMode that uses gamepad1.dpad_left / dpad_right
+to turn the robot's simulated heading and displays it.
+
+======================================================
+  Move completed files to: Student_Code/[YourName]/L05/
+======================================================

@@ -1,0 +1,61 @@
+======================================================
+  LESSON 20 EXERCISES — Making Robots Drive
+  Book: Chapter 20
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Turbo Button (Two-Motor)  (★★☆☆)
+------------------------------------------------------
+Modify L20_ArcadeDrive so the robot moves at 50% speed
+normally, but goes full speed when gamepad1.a is held.
+
+HINT: Multiply both forward and turn by a speed multiplier:
+  double multiplier = gamepad1.a ? 1.0 : 0.5;
+  forward *= multiplier;
+  turn    *= multiplier;
+
+------------------------------------------------------
+EXERCISE 2 — Slow Rotate (Mecanum)  (★★☆☆)
+------------------------------------------------------
+Limit the rotate speed to 50% in the mecanum OpMode:
+  double rotate = gamepad1.right_stick_x * 0.5;
+
+Test: the robot should strafe left/right freely but
+rotate more slowly.
+
+------------------------------------------------------
+EXERCISE 3 — Field-Relative Driving  (★★★★)
+------------------------------------------------------
+Implement the field-relative driving pattern from the book
+(Listing 20.6). You'll need your IMU from Lesson 11.
+
+The polar-rotation steps:
+  1. Convert (forward, right) to polar (r, theta)
+  2. Subtract the robot's IMU heading from theta
+  3. Convert back to Cartesian (newForward, newRight)
+  4. Call drive(newForward, newRight, rotate)
+
+Code:
+  double robotAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+  double theta = Math.atan2(forward, right);
+  double r     = Math.hypot(forward, right);
+  theta = AngleUnit.normalizeRadians(theta - robotAngle);
+  double newForward = r * Math.sin(theta);
+  double newRight   = r * Math.cos(theta);
+
+------------------------------------------------------
+EXERCISE 4 — CHALLENGE: Snap to Angle  (★★★★)
+------------------------------------------------------
+When the right stick is pushed hard (magnitude > 0.7),
+snap the robot to the angle the joystick points at
+instead of rotating freely.
+
+HINT:
+  double joyAngle = Math.atan2(-gamepad1.right_stick_y,
+                                gamepad1.right_stick_x);
+  double error = AngleUnit.normalizeRadians(joyAngle - robotHeadingRadians);
+  double rotatePower = error * 0.5;  // proportional correction
+
+======================================================
+  Move completed files to: Student_Code/[YourName]/L20/
+======================================================

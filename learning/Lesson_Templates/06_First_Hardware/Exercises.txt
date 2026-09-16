@@ -1,0 +1,56 @@
+======================================================
+  LESSON 06 EXERCISES — First Hardware (Touch Sensor)
+  Book: Chapter 6
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Text Instead of Boolean  (★★☆☆)
+------------------------------------------------------
+Your OpMode currently shows:  "Touch Pressed: true"
+Change it to show:             "Touch Sensor: PRESSED"  or  "Touch Sensor: released"
+(Use if/else — don't pass the boolean directly to addData)
+
+------------------------------------------------------
+EXERCISE 2 — Press Counter with Reset  (★★☆☆)
+------------------------------------------------------
+Track how many times the sensor has been pressed.
+When the count reaches 10, display "TEN PRESSES!" and
+reset the counter to 0.
+
+Use edge detection (only count the first frame it's pressed,
+not every frame it stays pressed).
+
+------------------------------------------------------
+EXERCISE 3 — Hold Duration  (★★★☆)
+------------------------------------------------------
+Display how long the user holds the sensor down each time.
+When released, show "Last hold: X.XX sec" on telemetry
+until the next press.
+
+HINT:
+  - Record pressStartTime when sensor first becomes pressed
+  - When it first becomes released, compute duration = getRuntime() - pressStartTime
+  - Store duration in a class variable and display it
+
+------------------------------------------------------
+EXERCISE 4 — Config Name Experiment  (★★★☆)
+------------------------------------------------------
+Intentionally change the config name string in your
+ProgrammingBoard class to something wrong, e.g. "Touch_Sensor".
+What error appears on the Driver Station when you try to
+run init? (This is an important error to recognize!)
+Then fix it back to the correct name.
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Double Press Detection  (★★★★)
+------------------------------------------------------
+Detect when the sensor is pressed TWICE quickly (double-tap).
+If two presses happen within 0.5 seconds, display "DOUBLE TAP!"
+
+HINT: Record the time of each press. If the time between
+the previous press and the current press is less than 0.5 seconds,
+it's a double-tap.
+
+======================================================
+  Move completed files to: Student_Code/[YourName]/L06/
+======================================================

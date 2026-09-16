@@ -82,3 +82,8 @@ lint/tmp/
 
 .DS_Store
 /.idea
+
+# The "Learn Java for FTC" book (copyrighted, and 17 MB). Keep a local copy in learning/book/;
+# this repo is public, so it is never committed. learning/book/README.md says where to get it.
+learning/book/*
+!learning/book/README.md
