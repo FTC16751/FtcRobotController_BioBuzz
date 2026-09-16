@@ -65,7 +65,15 @@ public class PedroBridgeTest {
         assertEquals(test2027.pedroPathing.forwardZeroPowerAccel, fc.forwardZeroPowerAcceleration, 1e-9);
         assertEquals(test2027.pedroPathing.lateralZeroPowerAccel, fc.lateralZeroPowerAcceleration, 1e-9);
         assertEquals(test2027.pedroPathing.centripetalScaling, fc.centripetalScaling, 1e-9);
-        assertFalse("PIDF drive algorithm until predictiveBraking is set", fc.usePredictiveBraking);
+        // Test2027 has carried predictive braking since the 2026-09-08 tuning session (test plan K4).
+        assertTrue("predictive braking once predictiveBraking(...) is set", fc.usePredictiveBraking);
+    }
+
+    @Test
+    public void withoutPredictiveBrakingTheBridgeUsesThePidfDrive() {
+        RobotConfig cfg = Test2027BotConfig.create();
+        cfg.pedroPathing.predictiveBraking = null;    // an untuned robot
+        assertFalse(PedroBridge.followerConstantsFor(cfg).usePredictiveBraking);
     }
 
     @Test
