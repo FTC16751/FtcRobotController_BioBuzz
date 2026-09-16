@@ -3,9 +3,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.MM;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
+import com.pedropathing.revhub.localizers.PinpointLocalizer;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -162,16 +162,27 @@ public class DriveUtil2026b {
         initializeIMU(hardwareMap);
         initMotors(hardwareMap);
 
+        Follower built = null;
         if (config.pedroPathing != null && config.hardware.pinpoint != null) {
-            // Pedro first, so it opens and configures the Pinpoint from the same config (names,
-            // directions, pod offsets); then borrow that device instead of opening it a second time.
-            PinpointLocalizer localizer = PedroBridge.createPinpointLocalizer(hardwareMap, config);
-            follower = PedroBridge.createFollower(hardwareMap, config, localizer);
-            pinpoint = localizer.getPinpoint();
-            localizer.resetIMU();                  // same resetPosAndIMU the non-Pedro path does
-            telemetry.addData("DriveUtil", "Pedro Pathing follower built; it owns the Pinpoint");
-        } else {
-            follower = null;
+            try {
+                // Pedro first, so it opens and configures the Pinpoint from the same config (names,
+                // directions, pod offsets); then borrow that device instead of opening it a second time.
+                PinpointLocalizer localizer = PedroBridge.createPinpointLocalizer(hardwareMap, config);
+                built = PedroBridge.createFollower(hardwareMap, config, localizer);
+                // The SDK hands out one object per device name, so this is the very Pinpoint Pedro just
+                // configured; nothing here reconfigures it (no configurePinpoint()).
+                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, config.hardware.pinpoint);
+                localizer.reset();                 // same resetPosAndIMU the non-Pedro path does
+                telemetry.addData("DriveUtil", "Pedro Pathing follower built; it owns the Pinpoint");
+            } catch (IllegalArgumentException e) {
+                // Pedro 3 cannot run on an untuned robot (PedroBridge says which number is missing).
+                // The rest of the robot must still work, so drive without Pedro and say why.
+                built = null;
+                telemetry.addData("DriveUtil", "Pedro Pathing OFF: %s", e.getMessage());
+            }
+        }
+        follower = built;
+        if (follower == null) {
             initOdo(hardwareMap);
         }
     }
@@ -482,14 +493,15 @@ public class DriveUtil2026b {
     // ---------------------------------------------------------------------------------
 
     /**
-     * Follow a Pedro Pathing path chain, non-blocking: build the chain with
-     * getFollower().pathBuilder(), call this, then poll isBusy() while update() runs each loop.
-     * Poses are Pedro's (inches, radians, x forward / y left / counter-clockwise like the Pinpoint).
-     * With holdEnd true the robot keeps holding the last pose after arriving (for shooting) until
-     * cancel() or the next move; isBusy() is false while holding. Without Pedro in the config this
-     * does nothing and lastMoveSucceeded() reads false.
+     * Follow a Pedro Pathing path, non-blocking: build it with Paths.line / Paths.curve /
+     * Paths.path (see Test2027PedroSquareAuto), call this, then poll isBusy() while update() runs
+     * each loop. Poses are Pedro's (inches, radians, x forward / y left / counter-clockwise like
+     * the Pinpoint; PoseFactory.degrees() if you would rather write degrees). With holdEnd true the
+     * robot keeps holding the last pose after arriving (for shooting) until cancel() or the next
+     * move; isBusy() is false while holding. Without Pedro in the config this does nothing and
+     * lastMoveSucceeded() reads false.
      */
-    public void followPath(PathChain chain, boolean holdEnd) {
+    public void followPath(Path path, boolean holdEnd) {
         cancel();
         if (follower == null) {
             lastMoveSucceeded = false;
@@ -498,13 +510,14 @@ public class DriveUtil2026b {
         // Pedro's tuning assumes plain power, not the velocity control RUN_USING_ENCODER adds.
         setMotorMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         pathHoldEnd = holdEnd;
-        follower.followPath(chain, holdEnd);
+        follower.holdEnd.set(holdEnd);
+        follower.follow(path);
         driveState = DriveState.FOLLOWING_PATH;
     }
 
-    /** Follow a path chain and stop at the end (no hold). */
-    public void followPath(PathChain chain) {
-        followPath(chain, false);
+    /** Follow a path and stop at the end (no hold). */
+    public void followPath(Path path) {
+        followPath(path, false);
     }
 
     /**
@@ -520,7 +533,7 @@ public class DriveUtil2026b {
             return;
         }
         setMotorMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);   // same reason as followPath
-        follower.startTeleopDrive(true);   // true: brake when the sticks are centred, like moveRobot. Without it Pedro coasts (K10, 2026-09-08)
+        follower.manual(0, 0, 0);          // Pedro's MANUAL mode; brake on centred sticks comes from the config (K10, 2026-09-08)
         driveState = DriveState.TELEOP_PEDRO;
     }
 
@@ -534,7 +547,7 @@ public class DriveUtil2026b {
         if (driveState != DriveState.TELEOP_PEDRO) {
             return;
         }
-        follower.setTeleOpDrive(drive * speed, -strafe * speed, -turn * speed, true);   // true: robot-centric
+        follower.manual(drive * speed, -strafe * speed, -turn * speed);   // robot-centric: forward, left, counter-clockwise
     }
 
     /** True while Pedro is driving the wheels from pedroTeleopDrive (after startPedroTeleopDrive, before cancel). */
@@ -547,14 +560,14 @@ public class DriveUtil2026b {
         return follower != null;
     }
 
-    /** The Pedro Follower for building paths (pathBuilder) and reading its pose. Null without Pedro. */
+    /** The Pedro Follower, for reading its pose, completion and remaining distance. Null without Pedro. */
     public Follower getFollower() {
         return follower;
     }
 
     /** Leave a Pedro move or Pedro TeleOp drive: zero the wheels once, stop Pedro writing them, restore the encoder run mode. */
     private void endPedroMove() {
-        follower.breakFollowing();
+        follower.stop();                     // Pedro's IDLE mode; it zeroes the wheels once
         setMotorMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         for (DcMotorEx motor : motors) {
             motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);   // Pedro may have set FLOAT; TeleOp expects BRAKE
@@ -1011,10 +1024,10 @@ public class DriveUtil2026b {
         if (driveState == DriveState.FOLLOWING_PATH || driveState == DriveState.HOLDING_POINT
                 || driveState == DriveState.TELEOP_PEDRO) {
             // Pedro steps the Pinpoint and drives the wheels. It is only stepped while a Pedro move
-            // (or the Pedro TeleOp drive) is active: once a path has ended, every further
-            // follower.update() re-zeroes the motors, which would fight moveRobot in TeleOp.
+            // (or the Pedro TeleOp drive) is active: in Pedro's IDLE mode every follower.update()
+            // re-zeroes the motors, which would fight moveRobot in TeleOp.
             follower.update();
-            if (driveState == DriveState.FOLLOWING_PATH && !follower.isBusy()) {
+            if (driveState == DriveState.FOLLOWING_PATH && !follower.following()) {
                 lastMoveSucceeded = true;
                 if (pathHoldEnd) {
                     driveState = DriveState.HOLDING_POINT;   // Pedro keeps holding until cancel() or the next move

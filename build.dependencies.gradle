@@ -2,8 +2,8 @@ repositories {
     mavenCentral()
     google() // Needed for androidx
 
-    // Pedro Pathing publishes to Maven Central since 2.0.2; Panels comes from bylazar.
-    maven { url = "https://mymaven.bylazar.com/releases" }
+    // Pedro Pathing's tuning library pulls Dairy's class scanner from here.
+    maven { url = 'https://repo.dairy.foundation/releases/' }
 }
 
 dependencies {
@@ -16,12 +16,10 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:12.0.0'
     implementation 'org.firstinspires.ftc:Vision:12.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    // Pedro Pathing 2.1.2 (2026-05) and the Panels versions its Quickstart pairs with. Upgraded from
-    // 2.0.1 on 2026-09-07: 2.0.3 and 2.0.4 fixed PinpointLocalizer heading bugs we ran into, 2.1 added
-    // predictive braking and the offsets tuner. pedropathing/Tuning.java is the matching Quickstart copy.
-    // Pedro 3 migration: doc/PEDRO_ON_TEST2027.md section 6.
-    implementation 'com.pedropathing:ftc:2.1.2'
-    implementation 'com.pedropathing:telemetry:1.0.0'
-    implementation 'com.bylazar:fullpanels:1.0.12'
+    // Pedro Pathing 3.0.0 (2026-09-10): revhub carries core; tuning is AutoTune, the robot-hosted
+    // tuning page at http://192.168.43.1:10158 (pedropathing/Tuning.java registers our tuners).
+    // Migrated from 2.1.2 on 2026-09-15: doc/PEDRO_ON_TEST2027.md sections 6 and 7. Panels is gone.
+    implementation 'com.pedropathing:revhub:3.0.0'
+    implementation 'com.pedropathing:tuning:1.0.0'
 }
 

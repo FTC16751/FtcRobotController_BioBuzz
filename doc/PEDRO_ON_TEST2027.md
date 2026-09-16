@@ -311,3 +311,39 @@ rewrite of `PedroBridge` and its test, the Pedro parts of DriveUtil2026b, the sq
 TeleOp toggle, `pedropathing/Constants` and `Tuning` (the Quickstart's `procedures/` folder copied
 verbatim); robot work is one AutoTune session, about an hour, then K5 to K8 again.
 
+
+## 7. Migrated to Pedro 3.0.0, 2026-09-15 (BioBuzz repo, branch `pedro-3`)
+
+Done on the laptop, nothing run on a robot. What the code looks like now:
+
+- **Dependencies.** `com.pedropathing:revhub:3.0.0` and `com.pedropathing:tuning:1.0.0`, plus the
+  dairy.foundation Maven repo the tuning library needs. Panels and `telemetry` are gone.
+- **`RobotConfig.PedroPathingConfig`** is one field: `foresight`, a `Configuration<ForesightConfig>`
+  lambda shaped exactly like what AutoTune prints, plus `brakeInManualDrive`. The 2.1.2 setters
+  (mass, velocities, predictiveBraking, PIDFs, centripetal) are gone; their numbers do not map onto
+  Foresight. Only Test2027's top speeds (81.1 / 67.8 in/s) carried over.
+- **Pedro 3 cannot run untuned.** Twelve Foresight numbers have no library default. `PedroBridge`
+  checks them by name; if any is missing, `DriveUtil2026b` reports "Pedro Pathing OFF: ..." in
+  telemetry, `hasPedro()` is false, and the robot drives on the Pinpoint as before. AutoTune's
+  Mecanum, Pinpoint and Foresight procedures do not need Foresight, so tuning still works. Only the
+  Tests procedure and the Pedro OpModes need the numbers.
+- **`common/PedroBridge`** builds `MecanumConfig`, `PinpointConfig` (offsets pass straight through
+  to `setOffsets`, no field swap any more; pinned by `PedroBridgeTest`) and `ForesightConfig` from
+  the RobotConfig, and `new Follower(localizer, drivetrain, new Foresight(config))`.
+- **`DriveUtil2026b`**: `followPath(Path[, holdEnd])` uses `follower.holdEnd` and `follow()`; the
+  path is done when `following()` is false; the Pedro TeleOp drive is `manual(forward, left, ccw)`
+  with brake mode from the config; `cancel()` is `follower.stop()`. The Pinpoint is the same device
+  object Pedro configured (the SDK hands out one per name), read directly as before.
+- **`Test2027PedroSquareAuto`**: `PoseFactory.degrees()`, four `Paths.line(...).constant(...)` legs
+  in one `Paths.path(...)`; the 0.6 cap is Foresight's `maxPathSpeed`.
+- **`pedropathing/`**: `Tuning.java` registers four `@Tuner` procedures (Mecanum, Pinpoint,
+  Foresight, Tests) wired to `Constants.ACTIVE_CONFIG` through the bridge; `procedures/` is the
+  Pedro 3 Quickstart's folder copied verbatim (package renamed). The 2.x vendor examples and the
+  old `Tuning` are deleted.
+- **Robot side**: test plan section K, rewritten for AutoTune. K3 (Foresight) is the step that
+  turns Pedro back on.
+
+Open questions for the robot session: whether Foresight's `maxPathSpeed` is the 0..1 cap the
+square assumes (if the Pedro square runs flat out, it is not, and the comparison needs another
+knob); whether Pedro's cached motor writes and `moveRobot` interfere when toggling in K9.
+
