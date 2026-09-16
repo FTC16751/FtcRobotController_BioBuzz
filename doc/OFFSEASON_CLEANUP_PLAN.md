@@ -2,7 +2,7 @@
 
 ## Status and how to resume (read this first)
 
-**Last updated 2026-09-07 (night, after the skeleton-subsystem session and the drive-side review plus Pedro laptop work).** Repo: `/Users/georgemitchom/StudioProjects/FTC17651/FtcRobotController_Decode`
+**Last updated 2026-09-08 (Pedro robot side done; SDK-samples survey and the AprilTag relocalization design added as the next focuses).** Repo: `/Users/georgemitchom/StudioProjects/FTC17651/FtcRobotController_Decode`
 (GitHub fork `FTC16751/FtcRobotController_Decode`, default branch `master`). Work is on branch
 `offseason/common-cleanup-2026`, open as [PR #1](https://github.com/FTC16751/FtcRobotController_Decode/pull/1).
 Tag `pre-r6-reorg` marks the tree before the folder move.
@@ -25,6 +25,8 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
 | **Pedro revisit (hard rule 6), laptop side** | **done 2026-09-07**: Pedro 2.0.1 to 2.1.2, config-driven bridge (`common/PedroBridge`, pod-offset swap fixed), one Pinpoint owner in DriveUtil2026b (`followPath`), Test2027 Pedro square auto, `PedroBridgeTest`. Robot side (tuning, comparison) in `doc/PEDRO_ON_TEST2027.md` section 3 and test plan K. Committed a35e8cb; then `Test2027PedroTeleop` (Pedro drive toggle, K10) and section 5 answered (SDK: wait for the 2026-27 release, bump once). **Robot side done 2026-09-08**: K1 to K10 pass on the Skyline chassis; Pedro about 40% faster than driveTo at the same 0.6 cap with the same accuracy (`DRIVE_STRATEGY_REVIEW.md` section 4 result). Open: the readability call, decision 1 in that review | |
 | Skeleton subsystems: `common/subsystems` Roller, PresetServo, Claw, PresetMotor, VelocityMotor + tests, MechanismBenchTest, one Clock | done 2026-09-07 (see the late-session subsection under Next focus); robot check owed | 1e997fe..ff4de57 |
 | R11 live defects (TeleOp-side items), R13-R15 | not started | |
+| **AprilTag relocalization on top of Pedro** | researched and designed 2026-09-08, `doc/APRILTAG_RELOCALIZATION.md`: coordinate frames read out of the Pedro 2.1.2 bytecode (`FTCCoordinates` vs `InvertedFTCCoordinates`, the DECODE inversion), six defects found (D1-D6), a `FieldFrame` / `FieldPoseSource` / `TagRelocalizer` design so a new season changes one line, and an 8-step plan (test plan section N). Nothing built | |
+| SDK samples as beginner utilities (IMU turns, bulk reads, PieceSensor, driveForwardUntil, WebcamTagSighting, Rumble) | surveyed 2026-09-08, see the Next focus section; nothing built | |
 
 **Hard rules learned from the mentor, do not violate:**
 0. Demo-safe TeleOp defaults: launcher targeting starts in MANUAL/PRESET at the CLOSE setpoint, never
@@ -195,8 +197,8 @@ without writing a class from scratch. Judged by hard rule 5. Keep it simple.
   the arm is a motor on up/down power, `ConceptScanServo` sweeps a servo to find positions,
   `ConceptGamepadEdgeDetection` is the `aWasPressed()` family (R10 stays closed),
   `ConceptMotorBulkRead` (hub bulk-cache AUTO mode, a one-line loop-time win worth adding to the
-  robot hubs some day). The `RobotHardware` external-hardware-class sample of earlier SDKs is no
-  longer shipped, so FIRST offers no hardware-class pattern.
+  robot hubs some day). The `RobotHardware` external-hardware-class sample is still shipped, in
+  `samples/externalhardware/` (corrected 2026-09-08; the first draft said it was gone).
 - gm0's mechanism list (linear motion, arms, active/passive intakes, turrets, transfers) maps
   onto the same shapes: an arm and a slide are the same code, a wrist and a hood are the same
   code, an intake and a feeder are the same code.
@@ -246,6 +248,113 @@ prismled, RobotConfigorig, EncoderOdometry, LedUtil colors) is still open.
 
 **Robot check owed:** doc/ROBOT_TEST_PLAN.md section J, MechanismBenchTest on the StarterBot.
 
+
+## Next focus (set 2026-09-08): FIRST SDK samples as ready-made utilities for the beginner team
+
+**Ask.** Read the 63 samples in `FtcRobotController/.../external/samples` (SDK 11.0.0) against what
+test2027bot has (mecanum, Pinpoint, Control Hub IMU, Limelight 3A, no LED) and what could be bolted on
+(REV Color Sensor V3, REV 2m distance, a webcam, a touch sensor), and say which ones are worth turning
+into Common utilities for a first-year programmer. Yardstick is hard rule 5. Samples are BSD-3, so
+lifting their math into `common/` needs only a one-line attribution comment; the pristine copies stay
+in `samples/` as they are.
+
+**Already covered by Common, nothing to do:** `SensorGoBildaPinpoint` (DriveUtil2026b), `SensorLimelight3A`
+(VisionUtil), `SensorIMUOrthogonal` (`RobotConfig.ImuConfig`), `RobotAutoDriveByEncoder_Linear`
+(`driveForward` and friends), `RobotTeleopPOV`/`BasicOmniOpMode` (`arcadeDrive`), `RobotAutoDriveByTime`
+(the beginner commands are better), `ConceptScanServo`/`ConceptRampMotorSpeed` (MechanismBenchTest's wrist
+creep), `SensorTouch`/`SensorDigitalTouch` (`PresetMotor.homeSwitch`), `ConceptGamepadEdgeDetection` (R10
+closed, the SDK's `aWasPressed()` family), `ConceptBlackboard` (the SDK's own OpMode-to-OpMode store; it
+does exactly what `SharedState` does with a static field, 94 uses, no reason to migrate; mention it in R13
+as the official name for the idea). Hardware we do not own: HuskyLens, OTOS, OctoQuad, navX, the
+AndyMark and Modern Robotics sensors, BNO055, SPARKMini, Blinkin, SparkFun LED stick. Webcam-only
+advanced: AprilTag MultiPortal, SwitchableCameras, OptimizeExposure, CameraFrameCapture.
+
+**Correction to the skeleton-subsystems notes above:** the `RobotHardware` / `ConceptExternalHardwareClass`
+pair IS still shipped, in `samples/externalhardware/`. It is FIRST's name for the robot-class pattern
+`Test2027Robot` already follows (a class that owns the hardware and offers `driveRobot`, `setArmPower`,
+`setHandPositions`); worth one sentence in the testteam2027 README so students can find FIRST's own
+explanation of why the OpMode never touches `hardwareMap`.
+
+**Worth building, in order (each is small, each arrives with a test, none changes a gamepad layout):**
+
+1. **IMU turns and heading-held straights, from `RobotAutoDriveByGyro_Linear`.** No new hardware; the
+   biggest accuracy win available to the beginner tier. Today `turnLeft/turnRight` are open-loop encoder
+   turns through `Calibration.turnCircumferenceIn`, the one number every chassis had to measure twice
+   (Skyline: 27.5 default, 73 first estimate, 79 after a commanded 90), and `driveForward` relies on
+   `rightRearPowerScale` to go straight. The sample's `turnToHeading` (P on IMU yaw error, clipped, 1 deg
+   threshold) and `driveStraight` (RUN_TO_POSITION plus a P steering correction from the IMU every loop,
+   sign flipped when reversing) are closed-loop and need no calibration at all. Shape: keep the beginner
+   names; `turnLeft/turnRight` become "relative to the IMU heading now" when the robot has an IMU
+   (every Control Hub does), with the encoder turn as the fallback; `driveForward/driveBackward` get the
+   steering correction; `turnToHeading(deg)` gets an IMU form so a robot WITHOUT a Pinpoint is no longer
+   "finishes at once, failed". Same fix for the open field-centric item: `fieldCentricDrive` falls back
+   to IMU yaw when there is no Pinpoint (the shipped `RobotTeleopMecanumFieldRelativeDrive` sample is the
+   IMU version). Tests: the steering-correction and wrap math with a fake heading source, in the
+   `PinpointPIDLoopTest` style. Robot check: the Beginner Auto square returns to its mark without
+   anyone measuring a turning circle. Gains to start from: `P_TURN_GAIN` 0.02, `P_DRIVE_GAIN` 0.03,
+   threshold 1 deg, into `RobotConfig.Calibration` or a small `HeadingTuning`.
+
+2. **Hub bulk reads, from `ConceptMotorBulkRead`.** One line in the DriveUtil2026b constructor:
+   `for (LynxModule m : hardwareMap.getAll(LynxModule.class)) m.setBulkCachingMode(AUTO)`. Road Runner's
+   `MecanumDrive` already does this; nothing on the DriveUtil path does. AUTO is safe with the current
+   code (a second read of the same encoder in one loop just costs a second bulk read, which is what
+   happens today anyway); MANUAL is faster but needs `clearBulkCache()` at the top of `update()` and is
+   a later step. Every loop-rate consumer (driveTo PID, TagApproach, LaunchController) gets faster for
+   free. Test plan: show loop ms in `addTelemetry` before and after.
+
+3. **`PieceSensor`, from `SensorColor` + `SensorREV2mDistance`** (the "not built, designed" item in the
+   skeleton section, now with the sample as the reference). One REV Color Sensor V3 is both a
+   `NormalizedColorSensor` and a `DistanceSensor`, which is what GearGirls' five intake sensors are.
+   Skeleton: `hasPiece()` with the 6 cm in / 8 cm out hysteresis from `IntakeSensorFusion002`, `color()`
+   returning a preset name from HSV hue bands the team sets in Constants (`.swatch("PURPLE", 250, 300)`),
+   `gain(g)` (the sample explains why gain matters; V3 wants 2 to 20 depending on light), `lightOn`,
+   `addTelemetry` showing raw hue/sat/value and cm so the bands can be read off on the bench. Tests:
+   hue classification and hysteresis with a fake sensor. A plain `RangeSensor` for a 2m sensor
+   (`inches()`, `isCloserThan(in)`, ignore `didTimeoutOccur` readings) is the same shape minus color.
+   Add-on for test2027bot: one V3 at an intake mouth, one 2m facing forward. This unlocks the fourth
+   beginner idea below.
+
+4. **`driveForwardUntil(condition, maxInches)`, from `RobotAutoDriveToLine_Linear`.** The oldest first-auto
+   in FTC: drive until the color sensor sees the tape, or the distance sensor says the wall is 6 in away,
+   or a tag is in view. The sample is 40 lines; ours is one beginner command that takes a Java 8
+   `BooleanSupplier`, drives at the default speed with the heading hold from item 1, stops on the
+   condition or the distance cap, and returns which one ended it. `robot.drive.driveForwardUntil(() ->
+   robot.wall.isCloserThan(6), 48)` reads as a sentence. Test: fake condition flips after N loops.
+
+5. **`WebcamTagSighting`, from `ConceptAprilTagEasy` + `RobotAutoDriveToAprilTagOmni`.** A second
+   implementation of `TagSighting` (the seam built for exactly this) from `AprilTagProcessor`'s
+   `ftcPose`: `range/bearing/yaw` map to `forwardInches/rightInches/squareUpDegrees` (SDK frame: X
+   right, Y forward, bearing positive left, so the signs are the H1 stand check again, once). Then
+   `driveToTag` and `startDriveToTag` work on a robot with a 30-dollar webcam and no Limelight, with
+   TagApproach's 23 tests untouched. The FIRST gains for reference: 0.02 / 0.015 / 0.01, max 0.5 / 0.5 /
+   0.3, 12 in standoff (ours: 0.04 / 0.04 / 0.015, max 0.3, 60 in). Extras the sample shows that the
+   Limelight path lacks: the Driver Station camera preview (three dots, Camera Stream), `setDecimation(2)`,
+   manual exposure 6 ms / gain 250 against motion blur. `ConceptAprilTagLocalization` is the webcam side
+   of the Advanced-tier `relocalizeFromTag` (`detection.robotPose` once `setCameraPose` is given), so the
+   camera offset belongs in `RobotConfig.HardwareNames` next to the webcam name. Add-on for test2027bot:
+   any UVC webcam, named `Webcam 1`. Only two files in the repo touch VisionPortal today and neither is
+   live, so this is new ground; keep it under 100 lines.
+
+6. **`Rumble`, from `ConceptGamepadRumble`.** Not a subsystem, a 30-line helper with edge detection so a
+   condition rumbles once on its rising edge: launcher ready (`LaunchController`), tag acquired, 30 s to
+   endgame (the sample's half-time alert), `rumbleBlips(3)` for a completed shot. Feedback only, so it
+   respects hard rule 0 and rule 10; GearGirls Bot 2 already rumbles in two TeleOps by hand. Wrap the
+   `Gamepad` in a tiny interface so the edge logic is testable.
+
+**Looked at and skipped for now:** `ConceptRevLED` (two digital-port LEDs, `on()/off()`) and
+`SampleRevBlinkinLedDriver` / `ConceptLEDStick` are only interesting if the prismled decision goes
+against keeping 1,660 lines for one strip; `LedUtil` plus the goBILDA indicator already cover a status
+light. `ConceptExploringIMUOrientation` / `SensorIMUNonOrthogonal`: the README step 3 could point at
+the orthogonal sample's telemetry as the way to verify the two mounting enums, no code needed.
+`ConceptTelemetry`, `ConceptSounds*`, `ConceptGamepadTouchpad`: demo fun, not first-auto material.
+
+**Hardware to add to test2027bot for this focus:** one REV Color Sensor V3 (items 3, 4), one REV 2m
+distance sensor (items 3, 4), one webcam (item 5), optionally one REV touch sensor for a `PresetMotor`
+home switch on the bench test. Items 1, 2 and 6 need nothing.
+
+**Robot checks this creates:** test plan L (IMU turn square without a measured turning circle), M
+(PieceSensor bands on real artifacts), N (webcam tag approach, the H1 sign check repeated for the
+webcam frame). Write them when the code exists.
 
 ## Next focus, drive side (set 2026-09-07): was last season's point-to-point + waypoint strategy reusable?
 

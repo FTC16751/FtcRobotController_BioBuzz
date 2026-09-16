@@ -7,6 +7,7 @@ import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -148,6 +149,14 @@ public class DriveUtil2026b {
 
         // Physical constants from the robot's config
         ENCODER_COUNTS_PER_INCH  = config.calibration.encoderCountsPerInch;
+
+        // One bulk read per loop instead of one hub round trip per encoder, velocity or
+        // digital read (FIRST's ConceptMotorBulkRead sample). AUTO refreshes the cache when a
+        // device is read a second time in the same loop, so existing code cannot read stale
+        // values; it only gets faster. Hub-level, so every subsystem on the robot benefits.
+        for (LynxModule hub : hardwareMap.getAll(LynxModule.class)) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         // Initialize all hardware components
         initializeIMU(hardwareMap);
