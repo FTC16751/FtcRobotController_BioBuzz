@@ -127,6 +127,7 @@ public class Launcher {
         shotDone = sequence.update(shotRequested, velocity);
         shotRequested = false;
         if (!sequence.isBusy() && !spinning) wheel.stop();   // a finished shot must not leave the wheel running after spinDown()
+        wheel.update();                                       // a follower motor copies the first motor's power
         feeder.update();
     }
 

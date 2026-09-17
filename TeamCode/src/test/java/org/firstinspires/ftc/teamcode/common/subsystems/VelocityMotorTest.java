@@ -34,6 +34,23 @@ public class VelocityMotorTest {
     }
 
     @Test
+    public void aFollowerMotorCopiesPowerAndDoesNotCountTowardReady() {
+        FakeDcMotorEx follower = new FakeDcMotorEx();
+        VelocityMotor wheel = new VelocityMotor(left).follower(follower);
+        assertEquals(DcMotor.RunMode.RUN_WITHOUT_ENCODER, follower.mode);
+        wheel.spinUp(1400);
+        left.measuredVelocity = 1400;
+        left.power = 0.8;          // what the SDK's velocity loop happens to be sending
+        wheel.update();
+        assertEquals(0.8, follower.power, 0);
+        assertEquals("the follower's 0 velocity is ignored", 1400, wheel.getVelocity(), 0);
+        assertTrue(wheel.isReady());
+        wheel.stop();
+        wheel.update();
+        assertEquals(0, follower.power, 0);
+    }
+
+    @Test
     public void pidfReachesEveryMotor() {
         flywheel.pidf(300, 0, 0, 10);
         assertArrayEquals(new double[] {300, 0, 0, 10}, left.velocityPidf, 0.0);

@@ -54,7 +54,10 @@ public class Test2027Robot {
         // sequence. Names and directions from the config, numbers from the constants.
         launcher = new Launcher(
                 new VelocityMotor(hardwareMap, Test2027BotConfig.LAUNCHER, Test2027BotConfig.LAUNCHER_DIR)
-                        .add(Test2027BotConfig.LAUNCHER_2, Test2027BotConfig.LAUNCHER_2_DIR)
+                        // launcher2 has no encoder cable (found 2026-09-16: it read 0), so it follows the
+                        // first motor's power instead of running its own velocity loop. If an encoder
+                        // is ever connected, change follower(...) to add(...).
+                        .follower(Test2027BotConfig.LAUNCHER_2, Test2027BotConfig.LAUNCHER_2_DIR)
                         .pidf(Test2027Constants.Launcher.PIDF_P, Test2027Constants.Launcher.PIDF_I,
                               Test2027Constants.Launcher.PIDF_D, Test2027Constants.Launcher.PIDF_F)
                         .readyFraction(Test2027Constants.Launcher.READY_FRACTION),
