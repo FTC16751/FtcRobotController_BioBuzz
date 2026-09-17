@@ -42,6 +42,15 @@ public final class Test2027Constants {
         public static final double HOLD_SECONDS      = 0.5;
     }
 
+    /**
+     * AdvantageScope logging (common/LogUtil, doc/LOGGING_ADVANTAGESCOPE.md). One .wpilog per run on
+     * the Control Hub while true. Turn off if the hub's storage fills or a run must be as lean as
+     * possible; the files are small (well under 1 MB a minute) but nothing deletes them for you.
+     */
+    public static final class Logging {
+        public static final boolean ENABLED = true;
+    }
+
     /** Autonomous driving. Power for waypoint moves is Drive.AUTO_DRIVE_SPEED. */
     public static final class Auto {
         /** How long startDriveTo must sit inside tolerance before it counts as arrived. */

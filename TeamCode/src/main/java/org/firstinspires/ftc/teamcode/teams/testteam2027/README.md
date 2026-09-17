@@ -23,6 +23,8 @@ teams/testteam2027/
   auto/Test2027DriveSquareAuto.java   Pinpoint waypoints with startDriveTo / isBusy. The next step up.
   auto/Test2027TagApproachAuto.java   Non-blocking AprilTag approach test.
   test/Test2027EncoderMoveCheck.java  Encoder moves on buttons, for calibration measurements.
+  (Every run also writes an AdvantageScope log; see doc/LOGGING_ADVANTAGESCOPE.md and the
+  Logging section of the constants file to turn it off.)
   README.md                   This file.
 ```
 

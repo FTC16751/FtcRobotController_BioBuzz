@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.DriveUtil2026b;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 import org.firstinspires.ftc.teamcode.common.VisionUtil;
 
@@ -16,6 +17,11 @@ import org.firstinspires.ftc.teamcode.common.VisionUtil;
  *   - OpModes call robot.update() first thing in every loop() and init_loop().
  *   - OpModes call robot.stopAll() in stop().
  *   - OpModes never touch hardwareMap themselves.
+ *
+ * Every run also writes an AdvantageScope log (common/LogUtil, doc/LOGGING_ADVANTAGESCOPE.md) while
+ * Test2027Constants.Logging.ENABLED is true: the drive's pose, state and motors, the tag in view and
+ * the battery, once per loop. stopAll() closes the file; a run that never reaches stop() keeps what
+ * was flushed.
  */
 public class Test2027Robot {
 
@@ -28,6 +34,9 @@ public class Test2027Robot {
         this.telemetry = telemetry;
         this.config = Test2027BotConfig.create();
 
+        if (Test2027Constants.Logging.ENABLED) {
+            LogUtil.start(hardwareMap);   // one .wpilog per OpMode run, named by time and OpMode
+        }
         drive  = new DriveUtil2026b(hardwareMap, telemetry, null, config);
         vision = new VisionUtil(hardwareMap, telemetry, config.hardware.limelight);
 
@@ -45,12 +54,29 @@ public class Test2027Robot {
     public void update() {
         vision.update();     // camera first, so this loop's drive step sees this loop's tag
         drive.update();
+        addLog();
     }
 
     public void stopAll() {
         drive.cancel();
         drive.stop();
         vision.stop();
+        LogUtil.stop();      // flush and close this run's log
+    }
+
+    /** This loop's values for the AdvantageScope log. Nothing happens when logging is off. */
+    private void addLog() {
+        if (!LogUtil.isRunning()) return;
+        drive.addLog();
+        LogUtil.logBattery();
+        boolean visible = vision.isTargetVisible();
+        LogUtil.log("Vision/TagVisible", visible);
+        LogUtil.log("Vision/TagId", visible ? vision.getDetectedTagId() : -1);
+        if (visible && vision.canSee(vision.getDetectedTagId())) {
+            LogUtil.log("Vision/Forward_in", vision.forwardInches());
+            LogUtil.log("Vision/Right_in", vision.rightInches());
+            LogUtil.log("Vision/SquareUp_deg", vision.squareUpDegrees());
+        }
     }
 
     /** The standard telemetry footer for this robot. */
