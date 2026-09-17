@@ -8,8 +8,11 @@ import org.firstinspires.ftc.teamcode.common.RobotConfig;
 
 /**
  * WHAT the P3 goBILDA BIOBUZZ StarterBot IS (mecanum chassis, intake, launcher, windmill feeder),
- * as goBILDA's example code configures it. Device names are goBILDA's, so a hub configured from
- * their build guide works unchanged. Edit this file when the robot is rewired, and this file only:
+ * as goBILDA's example code operates it. Drive motor, IMU, Pinpoint and Limelight names are OUR
+ * standard ones (Front_Left, Front_Right, Rear_Left, Rear_Right, imu, odo, limelight), the same on
+ * every robot since the Decode season, so configure the hub with those, not goBILDA's. The intake
+ * and launcher names are goBILDA's (StarterBot2027Constants.Devices). Edit this file when the
+ * robot is rewired, and this file only:
  * the twin StarterBot has its own copy, so the two can grow apart (one gets a Pinpoint or a
  * Limelight first) without touching each other. How the robot operates is in StarterBot2027Constants.
  *
@@ -56,12 +59,13 @@ public final class P3StarterBotConfig {
                 null
         )
         .named("P3 Starterbot")
-        // 1. Device names, exactly as in the Control Hub configuration (goBILDA's names).
+        // 1. Device names, exactly as in the Control Hub configuration: our standard names, the same
+        //    on every robot (Test2027, Skyline, GearGirls, P3), so drivers and code carry over.
         .withHardware(new RobotConfig.HardwareNames()
-                .driveMotors("left_front_drive", "right_front_drive", "left_back_drive", "right_back_drive")
+                .driveMotors("Front_Left", "Front_Right", "Rear_Left", "Rear_Right")
                 .imu("imu")
-                .pinpoint(null)             // no Pinpoint yet
-                .limelight(null)            // no Limelight yet
+                .pinpoint(null)             // no Pinpoint yet; name it "odo" when fitted
+                .limelight(null)            // no Limelight yet; name it "limelight" when fitted
                 .led(null))                 // no status LED
         // 5. Calibration for the encoder moves (driveForward and friends). Starting values for
         //    the goBILDA 312 rpm motor (537.7 ticks/rev) on a 96 mm mecanum wheel; measure each

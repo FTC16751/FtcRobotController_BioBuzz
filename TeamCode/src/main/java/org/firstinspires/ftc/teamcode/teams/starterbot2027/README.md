@@ -1,7 +1,10 @@
 # StarterBot2027: the two goBILDA BIOBUZZ StarterBots (P3 Starterbot, GG Starterbot)
 
 Two identical goBILDA mecanum StarterBots, wired into the shared `common/` code the way
-`teams/testteam2027` is, with goBILDA's own TeleOp behaviour and device names. They exist to drive
+`teams/testteam2027` is, with goBILDA's own TeleOp behaviour. Drive motors, IMU, Pinpoint and
+Limelight use our standard hub names (`Front_Left`, `Front_Right`, `Rear_Left`, `Rear_Right`, `imu`,
+`odo`, `limelight`), the same as every other robot we have; only the intake and launcher keep
+goBILDA's names. Configure the hub accordingly, not from goBILDA's guide. They exist to drive
 at demos and to be the test robots for adding a Pinpoint, a Limelight and Pedro Pathing one step at
 a time. Neither has any of that today.
 
@@ -23,7 +26,7 @@ teams/starterbot2027/
 
 | goBILDA's `BioBuzzStarterbotTeleopMecanum` | Here |
 |---|---|
-| four drive motors, left side reversed, brake mode, max-normalised mixing | `DriveUtil2026b` with the config's `DrivetrainConfig`; same mixing in `MecanumMixer` |
+| four drive motors (`left_front_drive` ...), left side reversed, brake mode, max-normalised mixing | `DriveUtil2026b` with the config's `DrivetrainConfig`, motors named `Front_Left` etc. like every robot of ours; same mixing in `MecanumMixer` |
 | `intake` motor + `left_intake_servo` + `right_intake_servo` (right reversed), on the triggers | one `Roller` with two `add` calls and `.brake()`; `robot.intake.setPower(right_trigger - left_trigger)` |
 | `launcher` in velocity mode, PIDF 40/0/0/12.5, target 1250, minimum 1200 | a `VelocityMotor` inside `Launcher`; the numbers in `StarterBot2027Constants.Launcher` |
 | `windmillServo` (reversed) feeds while the bumper is held and the wheel is above the minimum | the `Roller` inside `Launcher`; `handleLauncher()` in the TeleOp does exactly goBILDA's `launch()` |
