@@ -25,11 +25,17 @@ import java.util.List;
  * so with a {@link Roller} as the feeder a whole launcher is
  * {@code new LaunchController(flywheel, feeder, settings, telemetry)}.
  *
+ * A second motor WITHOUT an encoder cable goes in with {@link #follower} instead of {@link #add}:
+ * it copies the first motor's power every {@link #update()} and does not count toward ready. Put an
+ * unencoded motor in with add() and it reads 0 for ever, the launcher is never ready, and its own
+ * velocity loop runs it flat out (what the Skyline robot did without knowing, found 2026-09-16).
+ *
  * {@link #isReady()} is for the driver's ready light; LaunchController keeps its own ready check.
  */
 public class VelocityMotor implements Flywheel {
 
-    private final List<DcMotorEx> motors = new ArrayList<>();
+    private final List<DcMotorEx> motors = new ArrayList<>();      // with encoders: velocity-controlled, read for ready
+    private final List<DcMotorEx> followers = new ArrayList<>();   // no encoder: mirror the first motor's power
     private final HardwareMap hardwareMap;   // null when built from a device
 
     private double target = 0;
@@ -66,7 +72,24 @@ public class VelocityMotor implements Flywheel {
         return this;
     }
 
-    /** Velocity PIDF for every motor. Every launcher in this repo uses about (300, 0, 0, 10). */
+    /** A motor with NO encoder that spins with the first one by copying its power (needs update() each loop). */
+    public VelocityMotor follower(String deviceName, DcMotorSimple.Direction direction) {
+        if (hardwareMap == null) {
+            throw new IllegalStateException("This VelocityMotor was built from a device; use follower(DcMotorEx)");
+        }
+        DcMotorEx motor = hardwareMap.get(DcMotorEx.class, deviceName);
+        motor.setDirection(direction);
+        return follower(motor);
+    }
+
+    public VelocityMotor follower(DcMotorEx motor) {
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        followers.add(motor);
+        return this;
+    }
+
+    /** Velocity PIDF for every encoder motor. Every launcher in this repo uses about (300, 0, 0, 10). */
     public VelocityMotor pidf(double p, double i, double d, double f) {
         for (DcMotorEx m : motors) m.setVelocityPIDFCoefficients(p, i, d, f);
         return this;
@@ -90,7 +113,17 @@ public class VelocityMotor implements Flywheel {
     }
 
     /** Stop driving; the wheel coasts down. */
-    public void stop() { setVelocity(0); }
+    public void stop() {
+        setVelocity(0);
+        for (DcMotorEx f : followers) f.setPower(0);
+    }
+
+    /** Call every loop when a follower() motor is in use: it copies the first motor's power. */
+    public void update() {
+        if (followers.isEmpty()) return;
+        double power = target == 0 ? 0 : motors.get(0).getPower();
+        for (DcMotorEx f : followers) f.setPower(power);
+    }
 
     /** The slowest motor's velocity, so a two-wheel flywheel is "ready" only when both are. */
     @Override public double getVelocity() {
@@ -117,5 +150,13 @@ public class VelocityMotor implements Flywheel {
 
     public void addTelemetry(Telemetry telemetry, String label) {
         telemetry.addData(label, "%.0f / %.0f%s", getVelocity(), target, isReady() ? "  READY" : "");
+        if (motors.size() > 1 || !followers.isEmpty()) {
+            // Each motor on its own: a dead or backward encoder shows up here as 0 or a minus sign,
+            // and it would keep the launcher from ever being ready (getVelocity() is the slowest).
+            StringBuilder each = new StringBuilder();
+            for (DcMotorEx m : motors) each.append(String.format("%.0f  ", m.getVelocity()));
+            for (DcMotorEx f : followers) each.append(String.format("follower %.2f pwr  ", f.getPower()));
+            telemetry.addData(label + " motors", each.toString().trim());
+        }
     }
 }

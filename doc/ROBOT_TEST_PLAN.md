@@ -243,6 +243,23 @@ checks that, and that a file comes back readable. Needs a laptop with `adb` and 
 | L6 | Loop time with logging on vs `Logging.ENABLED = false` (Driver Station shows it) | no visible difference; Koala-Log writes from its own thread |
 | L7 | Stop the OpMode by pressing Stop, then again by killing the app from the Driver Station | the first file opens complete; the second opens up to its last flush (a partial file is expected, not a crash on the next run) |
 
+## M. Launcher on test2027bot (added 2026-09-16, never run on a robot)
+
+The Skyline launcher (two flywheel motors, two feeder servos, the aiming LED) as the common
+`Launcher` skeleton on the test2027 config, driven by `Test2027: Teleop (Launcher)`. The hub
+configuration is the Skyline one, so the device names are already there. Run on the Skyline chassis
+with a goal tag in view for M6.
+
+| # | Check | Expected |
+|---|---|---|
+| M1 | `Test2027: Teleop (Launcher)`, init, then Start | telemetry "launcher IDLE 0 / 1400 aim NONE"; nothing spins; the LED is off (no goal in view) or shows a colour (goal in view) |
+| M2 | D-pad right | wheel spins up; telemetry velocity climbs to about 1400 and says READY. Both wheels spin the same way (if one is backwards, swap its direction in `Test2027BotConfig`) |
+| M3 | Hold left trigger | feeder servos run backward, both the same way; release: stop |
+| M4 | Hold right trigger with a game piece loaded | one shot every 0.45 s of feeding while held; "fired" count climbs; the wheel stays spinning between shots. If the piece does not reach the wheel, raise FEED_TIME_SEC |
+| M5 | A, then right trigger | wheel spins down; the trigger spins it back up and shoots (a shot starts the wheel if needed) |
+| M6 | Y with the goal tag in view, walk the robot from 3 ft to 10 ft | telemetry "aim VISION" and the target velocity follows the table; LED green when lined up, orange/blue when the goal is right/left; cover the tag: "aim LAST KNOWN", velocity holds |
+| M7 | `Test2027: Teleop (RUN ME)` | unchanged: the launcher exists but no control touches it; nothing spins |
+
 ## Results
 
 | Test | Date | Robot | Pass? | Notes |

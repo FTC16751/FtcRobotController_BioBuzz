@@ -197,8 +197,11 @@ Never build a second Follower or open the Pinpoint yourself in an OpMode that ha
   A lift is `new PresetMotor(hardwareMap, LIFT, FORWARD).preset("HIGH", 2200).limits(0, 2300)` and
   `robot.lift.goTo("HIGH")`. Only write your own class in `teams/<yourteam>/subsystems/` when a
   mechanism does something none of the five do.
-- **A launcher:** a `VelocityMotor` for the wheel and a `Roller` for the feeder, handed to
-  `common/LaunchController`. Skyline_Robot shows the older way with two hand-written interfaces.
+- **A launcher** is the sixth skeleton, `Launcher`: a `VelocityMotor` for the wheel and a `Roller`
+  for the feeder, with the spin-up / feed / cooldown sequence and distance-table aiming built in.
+  `Test2027Robot` builds one (names in the BotConfig, numbers in `Test2027Constants.Launcher`), and
+  `Test2027: Teleop (Launcher)` drives it: `spinUp(CLOSE)`, `aim(robot.vision)`,
+  `shoot(gamepad1.right_trigger > 0.5)`. In an auto: `shoot()` then wait for `shotDone()`.
 - Waypoints: add them to your constants, one `Pose2D` each, and sequence them the way
   `Drive Square` does. That is exactly how the GearGirls and P3 autos work.
 - A tag to drive to: `robot.drive.driveToTagAsync(robot.vision, id, standoffInches, holdSec)`,

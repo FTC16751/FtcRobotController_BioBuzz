@@ -27,6 +27,7 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
 | R11 live defects (TeleOp-side items), R13-R15 | not started | |
 | **AprilTag relocalization on top of Pedro** | researched and designed 2026-09-08, `doc/APRILTAG_RELOCALIZATION.md`: coordinate frames read out of the Pedro 2.1.2 bytecode (`FTCCoordinates` vs `InvertedFTCCoordinates`, the DECODE inversion), six defects found (D1-D6), a `FieldFrame` / `FieldPoseSource` / `TagRelocalizer` design so a new season changes one line, and an 8-step plan (test plan section N). Nothing built | |
 | SDK samples as beginner utilities (IMU turns, bulk reads, PieceSensor, driveForwardUntil, WebcamTagSighting, Rumble) | surveyed 2026-09-08, see the Next focus section; nothing built | |
+| **Launcher as a common skeleton** (BioBuzz repo) | built 2026-09-16: `common/subsystems/Launcher` (VelocityMotor + Roller + LaunchController + distance table, `LauncherTest`), Test2027 gets the Skyline launcher, feeder and LED, `Test2027: Teleop (Launcher)`. Robot check: test plan section M | |
 
 **Hard rules learned from the mentor, do not violate:**
 0. Demo-safe TeleOp defaults: launcher targeting starts in MANUAL/PRESET at the CLOSE setpoint, never

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teams.testteam2027;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.common.LedUtil;
 
 /**
  * HOW test2027bot OPERATES: speeds, timings, waypoints, and the tag it drives to. These change
@@ -49,6 +50,51 @@ public final class Test2027Constants {
      */
     public static final class Logging {
         public static final boolean ENABLED = true;
+    }
+
+    /**
+     * The launcher (common/subsystems/Launcher): the Skyline launcher's numbers, since that chassis is
+     * the testbed. Velocities are flywheel ticks per second.
+     */
+    public static final class Launcher {
+        /** Velocity PIDF for the flywheel motors; every launcher in this repo uses about this. */
+        public static final double PIDF_P = 300, PIDF_I = 0, PIDF_D = 0, PIDF_F = 10;
+        /** The driver's presets. CLOSE is where the TeleOp starts (hard rule 0: demo-safe). */
+        public static final double CLOSE_VELOCITY = 1400;
+        public static final double FAR_VELOCITY   = 1680;
+        /** D-pad up/down change the velocity by this much. */
+        public static final double NUDGE = 100;
+        /** A shot feeds this long. Skyline's auto used 0.45 s; its TeleOp 2.5 s. Chosen 2026-09-16. */
+        public static final double FEED_TIME_SEC = 0.45;
+        /** The wheel counts as ready at this fraction of the target (1350 of 1400 on Skyline). */
+        public static final double READY_FRACTION = 0.96;
+        /** Give up on a shot if the wheel is not ready after this long. */
+        public static final double SPIN_UP_TIMEOUT_SEC = 2.0;
+        /** Distance to the goal (inches) -> flywheel velocity, for aim(). From Skyline, DECODE goal. */
+        public static final double[][] FLYWHEEL_TABLE = {
+                { 30.0, 1200.0*1.045},
+                { 40.0, 1200.0*1.045},
+                { 50.0, 1230.0*1.045},
+                { 60.0, 1260.0*1.05},
+                { 70.0, 1285.0*1.05},
+                { 80.0, 1340.0*1.045},
+                { 90.0, 1420.0*1.04},
+                {100.0, 1460.0*1.04},
+                {110.0, 1480.0*1.04},
+                {120.0, 1560.0*1.04},
+                {130.0, 1640.0*1.04},
+                {140.0, 1720.0*1.04},
+                {150.0, 1760.0},
+        };
+        /** Velocity to shoot at before the goal has ever been seen (the close-range table value). */
+        public static final double FLYWHEEL_INITIAL_FALLBACK = 1200.0*1.045;
+    }
+
+    /** The aiming LED (common/AimLed): green when lined up on the goal tag, else which way to turn. */
+    public static final class Aim {
+        public static final double LED_TOLERANCE_DEG = 2.0;
+        public static final double LED_GOAL_RIGHT = LedUtil.Color.ORANGE;
+        public static final double LED_GOAL_LEFT  = LedUtil.Color.BLUE;
     }
 
     /** Autonomous driving. Power for waypoint moves is Drive.AUTO_DRIVE_SPEED. */
