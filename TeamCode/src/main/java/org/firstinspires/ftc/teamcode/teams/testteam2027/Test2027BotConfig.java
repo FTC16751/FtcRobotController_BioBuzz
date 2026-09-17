@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teams.testteam2027;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 import org.firstinspires.ftc.teamcode.common.TagApproach;
@@ -28,6 +29,18 @@ import org.firstinspires.ftc.teamcode.common.TagApproach;
 public final class Test2027BotConfig {
 
     private Test2027BotConfig() {}
+
+    // 7. Game mechanisms (README step 7): device names exactly as in the Control Hub configuration,
+    //    and which way each one spins. These are the Skyline launcher's, because the Skyline chassis
+    //    is the test2027 testbed (2026-09-16). Speeds and the distance table are in Test2027Constants.
+    public static final String LAUNCHER   = "launcher";
+    public static final String LAUNCHER_2 = "launcher2";
+    public static final DcMotorSimple.Direction LAUNCHER_DIR   = DcMotorSimple.Direction.REVERSE;
+    public static final DcMotorSimple.Direction LAUNCHER_2_DIR = DcMotorSimple.Direction.FORWARD;
+    public static final String FEEDER_LEFT  = "left_feeder";
+    public static final String FEEDER_RIGHT = "right_feeder";
+    public static final DcMotorSimple.Direction FEEDER_LEFT_DIR  = DcMotorSimple.Direction.REVERSE;
+    public static final DcMotorSimple.Direction FEEDER_RIGHT_DIR = DcMotorSimple.Direction.FORWARD;
 
     public static RobotConfig create() {
         return new RobotConfig(
@@ -88,7 +101,7 @@ public final class Test2027BotConfig {
                 .imu("imu")
                 .pinpoint("odo")            // null if this robot has no Pinpoint
                 .limelight("limelight")     // null if this robot has no Limelight
-                .led(null))                 // no status LED on the test robot
+                .led("led_servo"))          // the aiming LED on the Skyline chassis (confirmed 2026-09-16)
         // 5. Calibration. Defaults were tuned on one robot years ago; measure this one.
         .withCalibration(new RobotConfig.Calibration()
                 .rightRearPowerScale(1.0)   // start with no correction; measure drift first

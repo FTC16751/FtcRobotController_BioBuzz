@@ -7,8 +7,10 @@
  *   A servo grips                           claw, gripper                       -> Claw
  *   A motor goes to a few positions         lift, slide, arm, hang, motor turret -> PresetMotor
  *   A motor holds a speed                   flywheel, shooter wheel             -> VelocityMotor
+ *   A wheel plus a feeder that shoots       launcher, shooter                   -> Launcher
  * </pre>
- * A launcher is a VelocityMotor plus a Roller handed to {@code common.LaunchController}.
+ * Launcher is the one composite: a VelocityMotor and a Roller with the spin-up / feed / cooldown
+ * sequence ({@code common.LaunchController}) and distance-table aiming built in.
  *
  * <b>How every class here behaves</b>
  * <ul>
