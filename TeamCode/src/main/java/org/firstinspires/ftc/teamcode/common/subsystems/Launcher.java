@@ -141,6 +141,12 @@ public class Launcher {
     public void addTelemetry(Telemetry telemetry, String label) {
         telemetry.addData(label, "%s  %.0f / %.0f%s  aim %s", sequence.getState(), wheel.getVelocity(), velocity,
                 wheel.isReady() ? "  READY" : "", getAimSource());
+        wheel.addTelemetry(telemetry, label + " wheel");
         feeder.addTelemetry(telemetry, label + " feeder");
+        telemetry.addData(label + " shots", "fired %d / attempted %d / aborted %d",
+                sequence.getShotsFired(), sequence.getShotsAttempted(), sequence.getShotsAborted());
+        if (!sequence.getLastAbortReason().isEmpty()) {
+            telemetry.addData(label + " last abort", sequence.getLastAbortReason());
+        }
     }
 }

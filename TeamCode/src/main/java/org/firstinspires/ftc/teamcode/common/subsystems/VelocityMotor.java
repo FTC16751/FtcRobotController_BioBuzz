@@ -117,5 +117,12 @@ public class VelocityMotor implements Flywheel {
 
     public void addTelemetry(Telemetry telemetry, String label) {
         telemetry.addData(label, "%.0f / %.0f%s", getVelocity(), target, isReady() ? "  READY" : "");
+        if (motors.size() > 1) {
+            // Each motor on its own: a dead or backward encoder shows up here as 0 or a minus sign,
+            // and it would keep the launcher from ever being ready (getVelocity() is the slowest).
+            StringBuilder each = new StringBuilder();
+            for (DcMotorEx m : motors) each.append(String.format("%.0f  ", m.getVelocity()));
+            telemetry.addData(label + " motors", each.toString().trim());
+        }
     }
 }
