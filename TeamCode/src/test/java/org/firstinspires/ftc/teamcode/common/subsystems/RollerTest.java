@@ -14,6 +14,15 @@ import org.junit.Test;
  */
 public class RollerTest {
 
+    @Test
+    public void brakeSetsMotorsOnlyAndLeavesServosAlone() {
+        FakeDcMotorEx motor = new FakeDcMotorEx();
+        FakeCRServo servo = new FakeCRServo();
+        new Roller(motor).add(servo).brake();
+        assertEquals(com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE, motor.zeroPowerBehavior);
+        assertEquals("a servo has no zero-power behaviour; nothing to check but no crash", 0, servo.power, 0);
+    }
+
     private FakeCRServo motor;
     private FakeCRServo servo;
     private FakeClock clock;

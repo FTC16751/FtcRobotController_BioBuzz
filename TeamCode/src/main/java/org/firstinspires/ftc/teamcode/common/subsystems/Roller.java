@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.common.subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -73,6 +74,14 @@ public class Roller implements Feeder {
     public Roller add(DcMotorSimple device) {
         devices.add(device);
         device.setPower(0);   // also wakes up a servo controller, as goBILDA's sample does
+        return this;
+    }
+
+    /** Motors stop hard instead of coasting when set to 0 (goBILDA's StarterBot intake does this). Servos are unaffected. */
+    public Roller brake() {
+        for (DcMotorSimple d : devices) {
+            if (d instanceof DcMotor) ((DcMotor) d).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
         return this;
     }
 
