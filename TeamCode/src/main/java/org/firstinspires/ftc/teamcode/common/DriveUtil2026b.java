@@ -708,6 +708,40 @@ public class DriveUtil2026b {
         telemetry.addData("current Heading angle", pinpoint.getPosition().getHeading(AngleUnit.DEGREES));
 
     }
+
+    /**
+     * Write this loop's drive state to the AdvantageScope log (common/LogUtil), under "Drive/...":
+     * the pose (also as a Pose2d for the field view), what the drive is doing, each motor's power
+     * and velocity, and Pedro's progress when it is following. Call once per loop after update().
+     * Free when LogUtil is not running.
+     */
+    public void addLog() {
+        if (!LogUtil.isRunning()) return;
+        double x = getX(), y = getY(), h = getHeadingDegrees();
+        LogUtil.log("Drive/X_in", x);
+        LogUtil.log("Drive/Y_in", y);
+        LogUtil.log("Drive/Heading_deg", h);
+        LogUtil.logPose("Drive/Pose", x, y, h);
+        LogUtil.log("Drive/State", driveState);
+        LogUtil.log("Drive/LastMoveSucceeded", lastMoveSucceeded);
+        LogUtil.log("Drive/Power/LF", leftFrontMotor.getPower());
+        LogUtil.log("Drive/Power/RF", rightFrontMotor.getPower());
+        LogUtil.log("Drive/Power/LR", leftRearMotor.getPower());
+        LogUtil.log("Drive/Power/RR", rightRearMotor.getPower());
+        // Velocities come from the hub bulk read this loop already did (BulkCachingMode.AUTO).
+        LogUtil.log("Drive/Velocity/LF", leftFrontMotor.getVelocity());
+        LogUtil.log("Drive/Velocity/RF", rightFrontMotor.getVelocity());
+        LogUtil.log("Drive/Velocity/LR", leftRearMotor.getVelocity());
+        LogUtil.log("Drive/Velocity/RR", rightRearMotor.getVelocity());
+        if (follower != null) {
+            LogUtil.log("Drive/Pedro/Following", follower.following());
+            LogUtil.log("Drive/Pedro/Mode", follower.mode());
+            if (follower.following()) {
+                LogUtil.log("Drive/Pedro/Completion", follower.completion());
+                LogUtil.log("Drive/Pedro/RemainingDistance_in", follower.remainingDistance());
+            }
+        }
+    }
     /**** CONVERSION METHODS *********/
 
     /**

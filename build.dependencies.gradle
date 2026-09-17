@@ -4,6 +4,12 @@ repositories {
 
     // Pedro Pathing's tuning library pulls Dairy's class scanner from here.
     maven { url = 'https://repo.dairy.foundation/releases/' }
+
+    // Koala-Log (AdvantageScope .wpilog logging, TeamCode/build.gradle) is built by JitPack straight
+    // from its GitHub tag; FTC Dashboard is on Brott's Maven. Koala-Log calls into Dashboard, and its
+    // POM does not declare that, so Dashboard is listed by hand next to it.
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.brott.dev/' }
 }
 
 dependencies {

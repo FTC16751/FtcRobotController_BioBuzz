@@ -227,6 +227,22 @@ is wrong, not the pods. If the robot drives away from the line in K4, check the 
 directions against K1 first; Pedro uses the same four directions as the TeleOp.
 
 
+## L. AdvantageScope logging on test2027bot (added 2026-09-15, never run on a robot)
+
+Koala-Log writes a `.wpilog` on the Control Hub for every test2027bot run (`common/LogUtil`,
+`doc/LOGGING_ADVANTAGESCOPE.md`). Nothing in the robot's behaviour should change; this section
+checks that, and that a file comes back readable. Needs a laptop with `adb` and AdvantageScope.
+
+| # | Check | Expected |
+|---|---|---|
+| L1 | Deploy; run `Test2027: Teleop (RUN ME)` for 30 s, drive around, Stop | drives as in section I; init telemetry has no "Koala-Log could not start" line in the robot log (`adb logcat -s LogUtil`) |
+| L2 | `adb pull /sdcard/Android/data/com.qualcomm.ftcrobotcontroller/files/ logs` | one new file named with the time and `Test2027__Teleop__RUN_ME_`, more than a few kB |
+| L3 | Open it in AdvantageScope, Line Graph tab, drag in `Drive/X_in`, `Drive/Heading_deg`, `Drive/Velocity/LF` | traces that follow what was driven; the timeline is about 30 s long |
+| L4 | 2D Field tab, add `Drive/Pose` | the robot's path is drawn. If it is drawn tiny or off the field, the tab's units are wrong for inches: note what setting fixed it in the doc |
+| L5 | `Test2027: Drive Square (Pedro)` (after K3) | `Drive/Pedro/Completion` rises 0 to 1 over one path; `Drive/State` reads FOLLOWING_PATH then IDLE; `Drive/Pose` draws a 24 in square |
+| L6 | Loop time with logging on vs `Logging.ENABLED = false` (Driver Station shows it) | no visible difference; Koala-Log writes from its own thread |
+| L7 | Stop the OpMode by pressing Stop, then again by killing the app from the Driver Station | the first file opens complete; the second opens up to its last flush (a partial file is expected, not a crash on the next run) |
+
 ## Results
 
 | Test | Date | Robot | Pass? | Notes |

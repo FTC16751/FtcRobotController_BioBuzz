@@ -34,6 +34,16 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
 
+    // Koala-Log 1.5.7 (2026-06-05): writes AdvantageScope-compatible .wpilog files on the Control
+    // Hub. common/LogUtil wraps it; doc/LOGGING_ADVANTAGESCOPE.md says how to pull and view a log.
+    // The annotation processor generates *AutoLogged subclasses for @AutoLog classes (none yet).
+    // Koala-Log posts values to FTC Dashboard's telemetry and its POM does not pull Dashboard in,
+    // so Dashboard is added here by hand (its page is http://192.168.43.1:8080 when the robot is on).
+    // Repositories for these are in build.dependencies.gradle.
+    implementation 'com.github.ori-coval.Koala-Log:KoalaLogger:1.5.7'
+    annotationProcessor 'com.github.ori-coval.Koala-Log:KoalaLoggingProcessor:1.5.7'
+    implementation 'com.acmerobotics.dashboard:dashboard:0.6.0'
+
 
     // Unit tests. Run with: ./gradlew :TeamCode:testDebugUnitTest
     // or right-click a test class in Android Studio and choose Run.
