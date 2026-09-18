@@ -124,7 +124,7 @@ public class Launcher {
 
     /** Call every loop. Steps the shot sequence and any timed feeder run. */
     public void update() {
-        shotDone = sequence.update(shotRequested, velocity);
+        shotDone = sequence.update(shotRequested && velocity != 0, velocity);   // a target of 0 is "ready" at once: it would feed into a stopped wheel
         shotRequested = false;
         if (!sequence.isBusy() && !spinning) wheel.stop();   // a finished shot must not leave the wheel running after spinDown()
         wheel.update();                                       // a follower motor copies the first motor's power
