@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.common.RobotConfig;
 import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBot2027Constants;
 import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBot2027Robot;
+import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
 
 /**
  * goBILDA's BIOBUZZ StarterBot TeleOp, the same controls, on our robot class. Not an OpMode by
@@ -23,13 +23,13 @@ public abstract class StarterBot2027Teleop extends OpMode {
 
     private StarterBot2027Robot robot;
 
-    /** Which StarterBot this is. */
-    protected abstract RobotConfig config();
+    /** Which StarterBot this is: StarterBotConfig.p3() or .gg(). */
+    protected abstract StarterBotConfig config();
 
     @Override
     public void init() {
         robot = new StarterBot2027Robot(hardwareMap, telemetry, config());
-        telemetry.addData("Status", "Initialized: %s", robot.config.robotName);
+        telemetry.addData("Status", "Initialized: %s", robot.config.chassis.robotName);
     }
 
     @Override
