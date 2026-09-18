@@ -1,33 +1,13 @@
 package org.firstinspires.ftc.teamcode.teams.starterbot2027;
 
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 /**
  * HOW the two BIOBUZZ StarterBots OPERATE: speeds and launcher numbers, shared by both robots
  * because they are the same goBILDA kit. Every number here is from goBILDA's example code unless
- * the comment says otherwise. If one robot needs its own value, copy this file into that robot's
- * name and point its TeleOp at the copy.
+ * the comment says otherwise. Device names and directions are in StarterBotConfig.
  */
 public final class StarterBot2027Constants {
 
     private StarterBot2027Constants() {}
-
-    /**
-     * Intake and launcher device names and directions, exactly as goBILDA's example configures
-     * them. They are the "what the robot is" kind of fact and would normally sit in a robot's
-     * config file; they are here because both StarterBots are the same kit and share one robot
-     * class. If one robot is rewired differently, move its names into its config file.
-     */
-    public static final class Devices {
-        public static final String LAUNCHER = "launcher";
-        public static final DcMotorSimple.Direction LAUNCHER_DIR = DcMotorSimple.Direction.FORWARD;
-        public static final String WINDMILL = "windmillServo";                          // the feeder
-        public static final DcMotorSimple.Direction WINDMILL_DIR = DcMotorSimple.Direction.REVERSE;
-        public static final String INTAKE = "intake", INTAKE_LEFT = "left_intake_servo", INTAKE_RIGHT = "right_intake_servo";
-        public static final DcMotorSimple.Direction INTAKE_DIR = DcMotorSimple.Direction.FORWARD;
-        public static final DcMotorSimple.Direction INTAKE_LEFT_DIR  = DcMotorSimple.Direction.FORWARD;
-        public static final DcMotorSimple.Direction INTAKE_RIGHT_DIR = DcMotorSimple.Direction.REVERSE;
-    }
 
     /** TeleOp driving. goBILDA drives at full stick; the slow mode is ours. */
     public static final class Drive {
