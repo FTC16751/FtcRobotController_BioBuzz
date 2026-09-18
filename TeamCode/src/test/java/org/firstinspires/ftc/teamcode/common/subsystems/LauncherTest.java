@@ -100,6 +100,16 @@ public class LauncherTest {
     }
 
     @Test
+    public void shootWithNoVelocityEverSetDoesNotFeedIntoAStoppedWheel() {
+        Launcher bare = new Launcher(new VelocityMotor(wheelA), new Roller(feederL, clock),
+                new LaunchController.Settings(), null, clock);   // no table(...), no spinUp()
+        bare.shoot();
+        for (int i = 0; i < 3; i++) bare.update();           // unguarded: IDLE -> SPIN_UP -> FEEDING -> feeder on
+        assertFalse(bare.isBusy());
+        assertEquals(0, feederL.power, 0);
+    }
+
+    @Test
     public void aimTakesTheVelocityFromTheTableAndRemembersIt() {
         AimTarget goalAt60 = new AimTarget() {
             @Override public boolean isTargetVisible() { return true; }
