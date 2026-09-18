@@ -28,6 +28,9 @@
  *       class that wants to) can hand one in. See the tests for the exact contract of each.</li>
  * </ul>
  *
+ * New here? {@code examples/} has one short TeleOp per class (RollerExample, ClawExample, ...):
+ * how to build it, the commands on buttons, and the update() call. Copy from those.
+ *
  * First thing to run on a new mechanism: {@code common/test/MechanismBenchTest}, which drives any
  * of these from gamepad 1 and shows the live positions so preset values can be read off.
  *
