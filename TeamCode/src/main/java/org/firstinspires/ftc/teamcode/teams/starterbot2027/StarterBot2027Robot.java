@@ -51,8 +51,8 @@ public class StarterBot2027Robot {
         // The launcher: goBILDA's single flywheel motor (it has its encoder) and the windmill.
         launcher = new Launcher(
                 new VelocityMotor(hardwareMap, StarterBotConfig.LAUNCHER, StarterBotConfig.LAUNCHER_DIR)
-                        .pidf(StarterBot2027Constants.Launcher.PIDF_P, StarterBot2027Constants.Launcher.PIDF_I,
-                              StarterBot2027Constants.Launcher.PIDF_D, StarterBot2027Constants.Launcher.PIDF_F)
+                        .pidf(config.launcherPidf.p, config.launcherPidf.i,
+                              config.launcherPidf.d, config.launcherPidf.f)   // per robot: GG's is gentler
                         .readyFraction(StarterBot2027Constants.Launcher.READY_FRACTION),
                 new Roller(hardwareMap, StarterBotConfig.WINDMILL, StarterBotConfig.WINDMILL_DIR),
                 new LaunchController.Settings()
