@@ -51,9 +51,11 @@ public final class StarterBotConfig {
 
     /**
      * GG's intake gear is on the other side of the robot (found 2026-09-17), so its motor is reversed.
-     * GG's launcher stopped and started on goBILDA's P = 40: the hub's velocity loop overshot every
-     * update. P = 10 is smooth; F = 32767 / its measured top speed (2026-09-18). P3 does not do this,
-     * so something on GG's launcher differs; check that its wheel is tight on the shaft.
+     * GG's launcher stopped and started on goBILDA's P = 40 (2026-09-18). Cause, found 2026-09-22:
+     * GG still had a 312 rpm motor on the launcher, not the kit's 6000 rpm one, so the hub's velocity
+     * loop overshot every update. P = 10 with F = 32767 / its measured top speed was smooth on that
+     * motor. Once the 6000 rpm motor is on, retune with the Launcher Test OpMode; expect goBILDA's
+     * 40 / 12.5 like P3.
      */
     public static StarterBotConfig gg() {
         return new StarterBotConfig("GG Starterbot", REVERSE, new PIDFCoefficients(10, 0, 0, 12.6));
