@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.lessons;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * LESSON 4: GAMEPAD CONTROL - COMPLETE SOLUTION
+ * LESSON 03: GAMEPAD & BASIC MATH - COMPLETE SOLUTION
  * 
  * This program demonstrates gamepad control of motors and servos.
  * 
@@ -18,19 +18,19 @@ import com.qualcomm.robotcore.hardware.Servo;
  * 
  * @author FTC Learning Team
  */
-@TeleOp(name = "Lesson 4: Gamepad Control (Solution)", group = "Learning")
-public class Lesson4_GamepadControl_Solution extends LinearOpMode {
+@TeleOp(name = "L03 Gamepad (Solution)")
+public class L03_Gamepad_Solution extends LinearOpMode {
 
     // Declare a DcMotor and Servo
-    private DcMotor motorTest;
-    private Servo servoTest;
+    private DcMotor motor;
+    private Servo servo;
 
     @Override
     public void runOpMode() {
         
         // Initialize motor and servo
-        motorTest = hardwareMap.get(DcMotor.class, "motorTest");
-        servoTest = hardwareMap.get(Servo.class, "servoTest");
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        servo = hardwareMap.get(Servo.class, "servo");
 
         // Display initialization message
         telemetry.addData("Status", "Initialized. Press Play to start.");
@@ -47,24 +47,24 @@ public class Lesson4_GamepadControl_Solution extends LinearOpMode {
 
             // Use the A button to run the motor at half speed, otherwise stop
             if (gamepad1.a) {
-                motorTest.setPower(0.5);
+                motor.setPower(0.5);
             } else {
-                motorTest.setPower(0.0);
+                motor.setPower(0.0);
             }
 
             // Use A button to move servo to 0.0 (closed)
             // Use B button to move servo to 1.0 (open)
             if (gamepad1.a) {
-                servoTest.setPosition(0.0);
+                servo.setPosition(0.0);
             } else if (gamepad1.b) {
-                servoTest.setPosition(1.0);
+                servo.setPosition(1.0);
             }
 
             // Display gamepad input and device states on telemetry
             telemetry.addData("A Button", gamepad1.a);
             telemetry.addData("B Button", gamepad1.b);
-            telemetry.addData("Motor Power", motorTest.getPower());
-            telemetry.addData("Servo Position", servoTest.getPosition());
+            telemetry.addData("Motor Power", motor.getPower());
+            telemetry.addData("Servo Position", servo.getPosition());
             telemetry.update();
 
             // Small delay to allow gamepad updates to be processed
@@ -72,6 +72,6 @@ public class Lesson4_GamepadControl_Solution extends LinearOpMode {
         }
 
         // Stop motor when program ends
-        motorTest.setPower(0.0);
+        motor.setPower(0.0);
     }
 }

@@ -8,12 +8,11 @@
 ## Where this lives
 
 This folder sits next to `doc/` and `TeamCode/`, **outside every Gradle module**, so nothing in it
-is compiled or shows up on the Driver Station. The lesson `.java` files are templates to copy:
-a student creates a class under `TeamCode/src/main/java/org/firstinspires/ftc/teamcode/` and
-pastes a template in, exactly as the Setup step below says. Never move this folder under
-`TeamCode/src`: the forty-odd lesson files share class names and would break the build. Finished
-student files belong in `Student_Code/<name>/`, not in `TeamCode`, once the student is done with
-them. The book itself goes in `book/` (see the README there); it is not committed.
+is compiled or shows up on the Driver Station. The lesson `.java` files are templates to copy.
+Each student writes their code in their own package under `TeamCode` (see *Per-student package*
+below); that is the only place code builds and deploys to a robot. Never move this folder under
+`TeamCode/src`: the forty-odd lesson files share class names and would break the build. The book
+itself goes in `book/` (see the README there); it is not committed.
 
 ## Overview
 
@@ -28,12 +27,10 @@ results.
 
 ## Quick Start
 
-1. **Students**: Start at Lesson 01. You need no hardware for the first 5 lessons.
-2. **Coaches**: Copy `Student_Template/` to `Student_Code/[StudentName]/` for each
-   new student, fill in their name in `STUDENT_PROGRESS.md`.
-3. **Setup**: Open Android Studio, create a new `.java` class in
-   `TeamCode/src/main/java/org/firstinspires/ftc/teamcode/`, and paste in the
-   lesson template. Follow the TODO comments in order.
+1. **Coaches**: create the student's package and progress file (see *Per-student package*).
+2. **Students**: start at Lesson 01. Lessons 01, 02, 04 and 05 need no hardware.
+3. **Each lesson**: in Android Studio, create a new Java class in your package, paste in the
+   lesson template, fix the `package` line, and follow the TODO comments in order.
 
 ---
 
@@ -41,7 +38,7 @@ results.
 
 ### Phase 1 — Java Fundamentals
 
-> **Hardware needed**: None — these can be done on any laptop
+> **Hardware needed**: None, except L03 (a gamepad plus the programming board's motor and servo)
 > **Time**: ~6–8 hours
 
 | Folder | Lesson | Book Chapter | Key Concepts | Time |
@@ -132,25 +129,43 @@ Some lessons (05, 06, 14, 20) have multiple template files — the README explai
 
 ---
 
-## Student Folder Setup
+## Per-student package
+
+Every student gets their own package under `TeamCode`, so two students can both have an
+`L01_HelloWorld` class without colliding, and their finished work stays in git next to the team
+code:
 
 ```
-FTC_Learning/
-├── Student_Template/      ← Copy this for each new student
-│   ├── STUDENT_PROGRESS.md
-│   ├── L01/ ... L24/
-│   └── README.md
-└── Student_Code/
-    ├── Jane_Smith/        ← Copied from Student_Template
-    └── Alex_Jones/
+TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/
+├── jane/
+│   ├── PROGRESS.md        ← copied from learning/STUDENT_PROGRESS.md
+│   ├── L01_HelloWorld.java
+│   └── L02_Variables.java
+└── alex/
+    └── ...
 ```
 
-**To onboard a new student**:
+**To onboard a new student** (lowercase first name, no spaces):
 
 ```bash
-cp -r Student_Template Student_Code/Jane_Smith
-# Then edit Student_Code/Jane_Smith/STUDENT_PROGRESS.md
+mkdir -p TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/jane
+cp learning/STUDENT_PROGRESS.md TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/jane/PROGRESS.md
 ```
+
+**Each lesson, the student**:
+
+1. In Android Studio, right-clicks their `students/<name>` folder → New → Java Class, named
+   after the template's class (the README of each lesson says which, e.g. `L01_HelloWorld`).
+2. Pastes the whole template over the new file.
+3. Changes the first line from `package org.firstinspires.ftc.teamcode;` to
+   `package org.firstinspires.ftc.teamcode.students.<name>;` (Android Studio underlines the
+   wrong one in red; Alt+Enter → *Move to package* also works).
+4. Puts their name in the OpMode annotation so two students' OpModes never share a name on the
+   Driver Station, which the SDK refuses: `@TeleOp(name = "L01 Hello World - Jane", group = "Jane")`.
+   The `group` keeps each student's OpModes together in the list.
+
+Solutions are pasted the same way when a coach wants one on the robot; their class and OpMode
+names already end in `_Solution` / `(Solution)`, so they never clash with the student's copy.
 
 ---
 
@@ -167,10 +182,9 @@ cp -r Student_Template Student_Code/Jane_Smith
 
 ## Notes for Coaches
 
-- **Phase 1 (L01–L05)** requires NO hardware. Students can work from any computer.
+- **L01, L02, L04, L05** require NO hardware. Students can work from any computer.
   Great for first sessions or when hardware is unavailable.
-- **`@Disabled`** is on all `Complete_Solution.java` files so they don't appear
-  on the Driver Station OpMode list.
-- The original `03_Sensor_Reading/` folder is kept for reference but lessons
-  09, 10, and 11 replace it with more detailed, focused content.
+- The whole curriculum, templates and solutions, compiles against SDK 12.0. Templates whose
+  first TODO is "declare the motor" (L07) will not build until that TODO is done; that is
+  deliberate.
 - See `COACHING_GUIDE.md` for full session plans and differentiation strategies.

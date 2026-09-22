@@ -1,4 +1,11 @@
-# Lesson 2: Servo Control
+# Lesson 08 — Servos
+**Book**: Chapter 8 | **Estimated Time**: 2 hours | **Hardware Required**: Programming board servo (`servo`)
+
+| File | Purpose |
+|------|---------|
+| `Template_L08_Servos.java` | Your starting point — class `L08_Servos` |
+| `Complete_Solution.java` | Full working solution |
+| `Exercises.txt` | Extra practice challenges |
 
 ## Book Alignment
 This lesson is based on the LearnJavaForFTC chapter *Servos*. Use the book as a reference for servo configuration, position values, and examples of simple servo mechanisms.
@@ -40,25 +47,25 @@ Servos are configured similarly to motors but appear as `Servo` in the hardware 
 
 ### Step 1: Declare the servo
 ```java
-private Servo servoTest;
+private Servo servo;
 ```
 
 ### Step 2: Initialize in runOpMode()
 ```java
-servoTest = hardwareMap.get(Servo.class, "servoTest");
+servo = hardwareMap.get(Servo.class, "servo");
 ```
-The string "servoTest" must match the name in your hardware configuration file.
+The string "servo" must match the name in your hardware configuration file.
 
 ### Step 3: Set servo position
 ```java
-servoTest.setPosition(0.0);    // Move to 0°
-servoTest.setPosition(0.5);    // Move to 90°
-servoTest.setPosition(1.0);    // Move to 180°
+servo.setPosition(0.0);    // Move to 0°
+servo.setPosition(0.5);    // Move to 90°
+servo.setPosition(1.0);    // Move to 180°
 ```
 
 ### Step 4: Read current servo position
 ```java
-double currentPosition = servoTest.getPosition();
+double currentPosition = servo.getPosition();
 ```
 
 ## Important Notes
@@ -71,4 +78,4 @@ double currentPosition = servoTest.getPosition();
 Servos provide precise angular positioning, unlike motors which rotate continuously. Use servo position values from 0.0 to 1.0 to control movement to specific angles.
 
 ---
-**Related**: Lesson 1 covered motors; Lesson 3 covers sensors; Lesson 4 uses gamepads to control both motors and servos
+**Related**: L07 covered motors; L03 used a gamepad to drive both a motor and a servo

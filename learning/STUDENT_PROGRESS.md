@@ -11,13 +11,14 @@
 
 - Check off each lesson when you have completed **all** TODOs in the template
 - Record the date and any notes (questions, things you struggled with, cool discoveries)
-- Move your completed `.java` files into the matching lesson folder below
+- Your code lives in your own package: `TeamCode/.../teamcode/students/<name>/`. Commit it
+  when a lesson is done; this file lives there too, as `PROGRESS.md`
 - After each lesson, show your coach before moving to the next one
 
 ---
 
 ## Phase 1 — Java Fundamentals
-> No hardware needed. Can be done on any laptop with Android Studio.
+> No hardware needed except L03 (gamepad + the programming board's motor and servo).
 > Estimated time: **6–8 hours total**
 
 | Lesson | Topic | Book Ch. | Done? | Date | Notes |

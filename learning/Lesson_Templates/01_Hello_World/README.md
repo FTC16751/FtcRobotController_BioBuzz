@@ -82,7 +82,9 @@ It resets when you press INIT.
 ## Before You Start
 
 1. Open Android Studio
-2. Navigate to `TeamCode/src/main/java/org/firstinspires/ftc/teamcode/`
+2. Navigate to your package: `TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/<yourname>/`
 3. Right-click → New → Java Class
 4. Name it `L01_HelloWorld` (must match the class name inside the file exactly)
 5. Copy the template code into your new file
+6. Fix the first line so it reads `package org.firstinspires.ftc.teamcode.students.<yourname>;`
+7. Put your name in the annotation: `@TeleOp(name = "L01 Hello World - <yourname>", group = "<yourname>")`

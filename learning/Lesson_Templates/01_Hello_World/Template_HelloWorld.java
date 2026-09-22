@@ -6,9 +6,10 @@
 //  INSTRUCTIONS: Fill in every section marked with // TODO
 //  Run it on the Driver Station and verify each telemetry line appears.
 //
-//  File must be saved in:
-//  TeamCode/src/main/java/org/firstinspires/ftc/teamcode/
-//  and the class name below MUST match the filename.
+//  File must be saved in YOUR package:
+//  TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/<yourname>/
+//  Fix the package line below to match, put your name in the @TeleOp name,
+//  and the class name MUST match the filename.
 // ============================================================
 
 package org.firstinspires.ftc.teamcode;
@@ -57,7 +58,7 @@ public class L01_HelloWorld extends OpMode {
 
 
         // This forces the telemetry to display right away (needed in init()).
-        telemetry.update()
+        telemetry.update();
     }
 
 

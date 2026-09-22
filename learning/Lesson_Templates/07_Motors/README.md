@@ -1,4 +1,11 @@
-# Lesson 1: Motor Basics
+# Lesson 07 — Motors & Encoders
+**Book**: Chapter 7 | **Estimated Time**: 2–3 hours | **Hardware Required**: Programming board motor (`motor`)
+
+| File | Purpose |
+|------|---------|
+| `Template_L07_Motors.java` | Your starting point — class `L07_Motors` |
+| `Complete_Solution.java` | Full working solution |
+| `Exercises.txt` | Extra practice challenges |
 
 ## Book Alignment
 This lesson is based on the LearnJavaForFTC chapters *Our first OpMode* and *Motors*. Use the book as a reference for deeper explanations of OpMode structure, hardware mapping, and motor behavior.
@@ -40,25 +47,25 @@ Before you can use a motor in code, it must be configured in the Robot Controlle
 
 ### Step 1: Declare the motor
 ```java
-private DcMotor motorTest;
+private DcMotor motor;
 ```
 
 ### Step 2: Initialize in runOpMode()
 ```java
-motorTest = hardwareMap.get(DcMotor.class, "motorTest");
+motor = hardwareMap.get(DcMotor.class, "motor");
 ```
-The string "motorTest" must match the name in your hardware configuration file.
+The string "motor" must match the name in your hardware configuration file.
 
 ### Step 3: Control the motor
 ```java
-motorTest.setPower(1.0);    // Full speed forward
-motorTest.setPower(-1.0);   // Full speed reverse
-motorTest.setPower(0.0);    // Stop
+motor.setPower(1.0);    // Full speed forward
+motor.setPower(-1.0);   // Full speed reverse
+motor.setPower(0.0);    // Stop
 ```
 
 ### Step 4: Read motor state
 ```java
-double currentPower = motorTest.getPower();
+double currentPower = motor.getPower();
 ```
 
 ## Hardware Configuration Checklist
@@ -72,4 +79,4 @@ Before testing:
 Motors are controlled by setting their power value. The power range from -1.0 to +1.0 determines both direction and speed. Always initialize the motor before using it!
 
 ---
-**Next Lesson**: Servo Control - Another way to move things with precise positioning
+**Next Lesson**: L08 Servos — another way to move things, with precise positioning

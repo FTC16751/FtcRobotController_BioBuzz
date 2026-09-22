@@ -1,9 +1,12 @@
 # Lesson 03 — Gamepad & Basic Math
 
-**Book**: Chapter 3 | **Estimated Time**: 1–2 hours | **Hardware Required**: Gamepad only
+**Book**: Chapter 3 | **Estimated Time**: 1–2 hours | **Hardware Required**: Gamepad, plus the programming board's motor (`motor`) and servo (`servo`)
 
-> This lesson was previously numbered Lesson 4. It has been renumbered to match
-> Chapter 3 of "Learn Java for FTC."
+| File | Purpose |
+|------|---------|
+| `Template_L03_Gamepad.java` | Your starting point — class `L03_Gamepad` |
+| `Complete_Solution.java` | Full working solution |
+| `Exercises.txt` | Extra practice challenges |
 
 ## Book Alignment
 This lesson is based on the LearnJavaForFTC chapter *Gamepad and basic math* and *Motors and Gamepads*.
@@ -106,4 +109,4 @@ if (gamepad1.a) {
 The gamepad is your interface to control the robot. Buttons provide on/off control, sticks and triggers provide smooth analog control. Combine these inputs to create intuitive robot control.
 
 ---
-**Related**: Lessons 1-3 covered Motors, Servos, and Sensors. This lesson combines all three with gamepad input!
+**Related**: L07 (Motors) and L08 (Servos) go deeper into the two devices this lesson drives.

@@ -1,30 +1,30 @@
-package org.firstinspires.ftc.teamcode.lessons;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * LESSON 2: SERVO CONTROL
+ * LESSON 08: SERVOS
  * 
  * This is a template program for learning servo control.
  * Students will fill in the TODOs to make the servo work.
  * 
  * @author FTC Learning Team
  */
-@TeleOp(name = "Lesson 2: Servo Control (Template)", group = "Learning")
-public class Lesson2_ServoControl_Template extends LinearOpMode {
+@TeleOp(name = "L08 Servos")
+public class L08_Servos extends LinearOpMode {
 
-    // TODO 1: Declare a Servo variable called servoTest
-    // Hint: private Servo servoTest;
+    // TODO 1: Declare a Servo variable called servo
+    // Hint: private Servo servo;
     
 
     @Override
     public void runOpMode() {
         
         // TODO 2: Initialize the servo using hardwareMap
-        // The name "servoTest" must match your hardware configuration
-        // Hint: servoTest = hardwareMap.get(Servo.class, "servoTest");
+        // The name "servo" must match your hardware configuration
+        // Hint: servo = hardwareMap.get(Servo.class, "servo");
         
 
         // Display initialization message
@@ -38,7 +38,7 @@ public class Lesson2_ServoControl_Template extends LinearOpMode {
         while (opModeIsActive()) {
 
             // TODO 3: Move servo to position 0.0 (0 degrees)
-            // Hint: servoTest.setPosition(0.0);
+            // Hint: servo.setPosition(0.0);
             
 
             telemetry.addData("Action", "Servo moving to 0° (position 0.0)");
@@ -48,7 +48,7 @@ public class Lesson2_ServoControl_Template extends LinearOpMode {
             sleep(1500);
 
             // TODO 4: Move servo to position 0.5 (90 degrees - middle)
-            // Hint: servoTest.setPosition(0.5);
+            // Hint: servo.setPosition(0.5);
             
 
             telemetry.addData("Action", "Servo moving to 90° (position 0.5)");
@@ -58,7 +58,7 @@ public class Lesson2_ServoControl_Template extends LinearOpMode {
             sleep(1500);
 
             // TODO 5: Move servo to position 1.0 (180 degrees)
-            // Hint: servoTest.setPosition(1.0);
+            // Hint: servo.setPosition(1.0);
             
 
             telemetry.addData("Action", "Servo moving to 180° (position 1.0)");
@@ -69,7 +69,7 @@ public class Lesson2_ServoControl_Template extends LinearOpMode {
 
             // TODO 6: Read current servo position with getPosition()
             // and display it on telemetry
-            // Hint: double position = servoTest.getPosition();
+            // Hint: double position = servo.getPosition();
             //       telemetry.addData("Current Position", position);
             
         }

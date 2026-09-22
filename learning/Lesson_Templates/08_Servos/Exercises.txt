@@ -1,4 +1,4 @@
-LESSON 2: SERVO CONTROL - EXERCISES
+LESSON 08: SERVOS - EXERCISES
 
 === EXERCISE 1: INTERMEDIATE POSITIONS ===
 Modify the solution to visit servo positions in this sequence:

@@ -1,4 +1,4 @@
-LESSON 1: MOTOR BASICS - EXERCISES
+LESSON 07: MOTORS - EXERCISES
 
 === EXERCISE 1: VARIABLE SPEED ===
 Modify the solution to run the motor at different power levels:
@@ -45,7 +45,7 @@ Hint: Use a for loop
 ---
 
 === EXERCISE 4: READ MOTOR STATE ===
-After setting the motor power, read it back using motorTest.getPower()
+After setting the motor power, read it back using motor.getPower()
 and verify the value matches what you set.
 
 Create a verification loop:

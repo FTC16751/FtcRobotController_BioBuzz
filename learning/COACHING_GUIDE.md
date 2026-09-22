@@ -6,7 +6,7 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 
 ## Quick Start for Coaches
 
-1. **Understand the progression**: Lessons 1→2→3→4 build sequentially
+1. **Understand the progression**: the 16 lessons in `README.md` build in order, in four phases
 2. **Prepare hardware** using HARDWARE_SETUP_GUIDE.md
 3. **Have students read the README** before coding
 4. **Give students the Template code** to complete
@@ -18,14 +18,15 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 
 ## Lesson Structure Overview
 
-| Lesson | Duration | Focus | Prerequisites |
-|--------|----------|-------|---------------|
-| 1: Motors | 2-3 hrs | Basic motor control | None |
-| 2: Servos | 2-3 hrs | Precise positioning | Lesson 1 |
-| 3: Sensors | 3-4 hrs | Reading input data | Lesson 1 |
-| 4: Gamepad | 3-4 hrs | Driver interaction | Lessons 1-3 |
+| Phase | Lessons | Hardware | Time |
+|-------|---------|----------|------|
+| 1 Java fundamentals | L01–L05 | none (L03: gamepad + board) | 6–8 hrs |
+| 2 Hardware basics | L06–L11 | programming board | 8–10 hrs |
+| 3 Programming patterns | L12–L14 | programming board | 6–8 hrs |
+| 4 Advanced FTC | L20, L24 | a drivable robot | 6–8 hrs |
 
-**Total Time**: ~10-14 hours per student
+**Total Time**: 26–38 hours per student. The full lesson table, with book chapters, is in
+`README.md`; the board wiring is in `HARDWARE_SETUP_GUIDE.md`.
 
 ---
 
@@ -66,105 +67,32 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 ### Wrap-Up (5 minutes)
 - [ ] Ask: "What was hard about this?"
 - [ ] Remind about next lesson prerequisites
-- [ ] Save their code to Student_Code folder
+- [ ] Have them commit their code (it lives in their `students/<name>` package)
 
 ---
 
 ## Coaching Strategies by Lesson
 
-### Lesson 1: Motor Basics
+One key point, one common struggle, and one question to ask, per lesson.
 
-**Key Points to Emphasize**:
-- Motor power is the key control variable
-- Range -1.0 to +1.0 includes direction AND speed
-- OpMode structure: initialize → wait → loop → repeat
-
-**Common Struggles**:
-- Confusion about negative values (reverse)
-- Forgetting to initialize before using
-- Not understanding why `opModeIsActive()` matters
-
-**Pro Tips**:
-- Have students manually write out the power sequence (1.0 → -1.0 → 0.0)
-- Show what happens if they forget to initialize
-- Demo the difference between FWD/REV by listening/feeling motor
-
-**Questions to Ask**:
-1. "What happens if you set power to 2.0?"
-2. "Why do we call `waitForStart()`?"
-3. "What's the difference between 0.5 and -0.5?"
-
----
-
-### Lesson 2: Servo Control
-
-**Key Points to Emphasize**:
-- Servos are different from motors (positional vs. continuous)
-- Position range 0.0-1.0 maps to angles 0-180°
-- Servo moves immediately, not gradually
-
-**Common Struggles**:
-- Confusing servo position with motor power
-- Setting position outside 0.0-1.0 range
-- Not understanding 0.5 = 90°
-
-**Pro Tips**:
-- Have students manually position servo (0, 0.25, 0.5, 0.75, 1.0)
-- Draw a diagram: 0.0 ← 0.5 → 1.0 with angles labeled
-- Show servo movement by hand, then with code
-
-**Questions to Ask**:
-1. "If 0.0 = 0° and 1.0 = 180°, what does 0.75 = ?"
-2. "Can a servo spin continuously like a motor?"
-3. "What would happen if you set position to 1.5?"
-
----
-
-### Lesson 3: Sensor Reading
-
-**Key Points to Emphasize**:
-- Sensors provide feedback about the world
-- Different sensors have different ranges and units
-- Sensors enable decision-making
-
-**Common Struggles**:
-- Not understanding sensor units (cm, RGB values, etc.)
-- Noisy/flickering readings
-- Confusion about analog vs. digital
-
-**Pro Tips**:
-- Have students map the range physically (5cm, 10cm, 50cm, etc.)
-- Show both raw and averaged readings
-- Use telemetry to visualize readings changing
-
-**Questions to Ask**:
-1. "What's the purpose of a sensor?"
-2. "Why might sensor readings be noisy?"
-3. "How would you know if a sensor is broken?"
-
----
-
-### Lesson 4: Gamepad Control
-
-**Key Points to Emphasize**:
-- Gamepad is the interface between driver and robot
-- Different input types: buttons, sticks, triggers
-- **Stick Y-axis is INVERTED** (critical!)
-
-**Common Struggles**:
-- Forgetting the Y-axis inversion
-- Confusing button logic (if/else-if chains)
-- Not reading gamepad inside the loop
-
-**Pro Tips**:
-- Draw diagram showing stick inversion
-- Have students test stick input with telemetry first
-- Demo what happens when they forget negation
-
-**Questions to Ask**:
-1. "Why is left stick Y-axis inverted?"
-2. "What's the difference between button and trigger input?"
-3. "How would you make a toggle button?"
+| Lesson | Emphasize | Watch for | Ask |
+|--------|-----------|-----------|-----|
+| L01 Hello World | `init()` runs once, `loop()` runs ~50×/s | a `while` loop inside `loop()` freezes the robot | "What happens if you put `telemetry.update()` only in `init()`?" |
+| L02 Variables | `int` vs `double`, and what `/` does to each | `5 / 2` is `2`; class vs local scope | "Where must a variable live to survive between loops?" |
+| L03 Gamepad | `left_stick_y` is inverted; read it inside the loop | forgetting the negation; button held = repeats every loop | "How would you make a button toggle instead of hold?" |
+| L04 Decisions | `if / else if / else` chains; `&&` vs `\|\|` | `=` instead of `==`; a `while` that never ends | "What's the difference between `if/if` and `if/else if`?" |
+| L05 Classes | a class bundles data + the methods that use it | `private` fields "not found" from another class | "Why hide a field behind a method?" |
+| L06 First hardware | the config name must match the code string exactly | typo in `touch_sensor`; config not activated | "What does the Mechanism class buy us over doing it in the OpMode?" |
+| L07 Motors | power is −1..+1, direction and speed together | `setPower(2.0)`; motor never stopped; encoder mode confusion | "What does `RUN_USING_ENCODER` change?" |
+| L08 Servos | position 0..1 holds; it is not power | positions outside 0..1; expecting continuous spin | "What does 0.75 mean on this servo?" |
+| L09 Analog | voltage → angle with `Range.scale()` | assuming 3.3 V = 5 V; wrong port type in config | "How would you know if the pot is wired backwards?" |
+| L10 Color/Distance | one device, two interfaces, one config name | raw RGB depends on lighting; distance saturates | "Why read the same name as two types?" |
+| L11 IMU | hub orientation must match the physical mount | yaw wraps at ±180°; wrong `RevHubOrientationOnRobot` | "What happens to yaw when you spin past 180°?" |
+| L12 State machines | `enum` + `switch`, one state per loop pass | blocking with `sleep()`; forgetting to transition | "Which state are you in if the sensor never fires?" |
+| L13 Arrays | index from 0; `ArrayList` grows, arrays don't | off-by-one; `length` vs `size()` | "What does `list.get(list.size())` do?" |
+| L14 Inheritance | `abstract` says "you must implement this" | missing `super()`; forgetting `@Override` | "Why does `TestWiring` not care which `TestItem` it holds?" |
+| L20 Driving | normalize so no wheel exceeds 1.0 | one motor reversed; mecanum wheel order | "Why divide by the max instead of clipping?" |
+| L24 PID | start with P only; add I and D one at a time | integral windup; tuning all three at once | "What does the robot do with P too high?" |
 
 ---
 
@@ -325,31 +253,9 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 ## Tracking Progress
 
 ### Student Progress Checklist
-```
-[ ] Lesson 1 - Motor Basics
-    [ ] Template completed
-    [ ] Tested on robot
-    [ ] Solution reviewed
-    [ ] 1+ Exercise attempted
-    
-[ ] Lesson 2 - Servo Control
-    [ ] Template completed
-    [ ] Tested on robot
-    [ ] Solution reviewed
-    [ ] Challenge attempted
-    
-[ ] Lesson 3 - Sensor Reading
-    [ ] Template completed
-    [ ] Tested on robot
-    [ ] Solution reviewed
-    [ ] Multi-sensor exercise
-    
-[ ] Lesson 4 - Gamepad Control
-    [ ] Template completed
-    [ ] Tested on robot
-    [ ] Solution reviewed
-    [ ] Complex control implemented
-```
+
+Each student keeps `PROGRESS.md` in their package (copied from `learning/STUDENT_PROGRESS.md`):
+one row per lesson, one per exercise, and a space for coach notes.
 
 ### What to Look For
 - ✅ Code compiles and runs
@@ -360,36 +266,30 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 
 ---
 
-## Next Steps After Lesson 4
+## Next Steps After L24
 
-### Students Ready for More:
-- Multi-motor drive systems (tank/mecanum)
-- Encoder-based position control
-- State machines for complex behavior
-- Autonomous programming
-- Vision processing (AprilTags)
-
-### Start Competitive Programming:
-- TeleOp with real robot from competition
-- Build real mechanisms
-- Practice drive control with complex input
-- Learn team roles (driver, operator, programmer)
+- Read the team code in `TeamCode/.../teamcode/common/` and `teams/`; `teams/testteam2027`
+  is a complete minimal team and its README walks through it
+- Give them a real mechanism on the competition robot, with a driver to please
+- Vision (AprilTags), odometry and the launcher are covered by `doc/` and the team code, not
+  by these lessons
 
 ---
 
 ## Resources for Coaches
 
 **In This Folder**:
-- README.md - Student learning guide
+- README.md - Student learning guide, lesson map, per-student package setup
+- STUDENT_PROGRESS.md - Progress tracker to copy into each student's package
 - FTC_PATTERNS_REFERENCE.md - Code patterns
-- HARDWARE_SETUP_GUIDE.md - Hardware config
+- HARDWARE_SETUP_GUIDE.md - Programming board wiring and config
 - QUICK_REFERENCE.md - Student cheat sheet
-- LearnJavaForFTC - Comprehensive learning (team library)
+- book/ - *Learn Java for FTC* (download it there; not committed)
 
 **External Resources**:
-- FTC SDK Examples: `RobotController/TeamCode`
-- REV Documentation: rev-robotics.com/ftc
-- FIRST Resources: firstinspires.org
+- FTC SDK samples: `FtcRobotController/src/main/java/.../external/samples`
+- FTC docs: ftc-docs.firstinspires.org
+- REV documentation: docs.revrobotics.com
 
 ---
 
@@ -417,7 +317,7 @@ Before each lesson session:
 - [ ] I have printed materials ready
 
 After each lesson session:
-- [ ] I collected student code into Student_Code folder
+- [ ] Student code is committed in their package
 - [ ] I noted which students are struggling
 - [ ] I noted which students are ready for challenges
 - [ ] I gave positive feedback
@@ -432,4 +332,4 @@ After each lesson session:
 
 Good luck coaching!
 
-Last Updated: May 2026
+Last Updated: September 2026
