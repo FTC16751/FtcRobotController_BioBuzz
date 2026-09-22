@@ -2,6 +2,16 @@
 
 This repository contains the public FTC SDK for the BIOBUZZ (2026-2027) competition season.
 
+## This fork: team code
+
+Our code lives under [TeamCode/src/main/java/org/firstinspires/ftc/teamcode](TeamCode/src/main/java/org/firstinspires/ftc/teamcode):
+
+* `common/` shared drive, vision, launcher and hardware code. Never names a specific robot.
+* `teams/starterbot2027/` the goBILDA StarterBot with its launcher.
+* `teams/testteam2027/` a complete minimal team (config, robot, teleop, autos). Copy this to start a new team; its README walks through it.
+* `teams/demobots/` drive-only TeleOps for a two-wheel pushbot and a basic mecanum chassis, on `DriveUtilSimple`. No config files, no sensors. See its README.
+* `doc/` design notes and plans.
+
 ## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
