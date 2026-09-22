@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.common.drive;
 /**
  * The pure math of driving a mecanum chassis. No hardware, no state; unit-tested (MecanumMixerTest).
  *
- * Sign conventions, the same everywhere in DriveUtil2026b:
+ * Sign conventions, the same everywhere in DriveUtil:
  *   drive  +forward, strafe +RIGHT, yaw +CLOCKWISE (left side forward, right side back).
  *
- * DriveUtil2026b.moveRobot calls mix(); fieldCentricDrive and driveTo call fieldToRobot().
+ * DriveUtil.moveRobot calls mix(); fieldCentricDrive and driveTo call fieldToRobot().
  * If a robot ever drives the wrong way on a command, this is the file to read first, and the
  * tests are the statement of what "right" means.
  */

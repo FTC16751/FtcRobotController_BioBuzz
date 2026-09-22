@@ -46,7 +46,7 @@ import org.firstinspires.ftc.teamcode.common.LogUtil;
  * turns are positive CLOCKWISE. The beginner commands put the direction in the name so you never
  * have to remember that.
  */
-public class DriveUtil2026b {
+public class DriveUtil {
     // =================================================================================
     // SECTION 1: CLASS MEMBERS AND CONSTANTS
     // =================================================================================
@@ -147,7 +147,7 @@ public class DriveUtil2026b {
     // SECTION 2: CONSTRUCTOR & INITIALIZATION
     // =================================================================================
 
-    public DriveUtil2026b(HardwareMap hardwareMap, Telemetry telemetry, OpMode opMode, RobotConfig config) {
+    public DriveUtil(HardwareMap hardwareMap, Telemetry telemetry, OpMode opMode, RobotConfig config) {
         this.telemetry = telemetry;
         this.config = config;
         this.tagApproach = new TagApproach(config.tagApproach);

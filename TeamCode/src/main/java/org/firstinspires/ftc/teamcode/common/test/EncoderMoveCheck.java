@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.common.test;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.common.drive.DriveUtil2026b;
+import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 
 /**
- * One-button checks for the encoder moves in DriveUtil2026b, and the measurements that calibrate
+ * One-button checks for the encoder moves in DriveUtil, and the measurements that calibrate
  * them. Put the robot at a tape line, press a button, measure what it did, read the telemetry.
  *
  * This class is abstract because Common never names a specific robot. Each team has a tiny
@@ -44,7 +44,7 @@ public abstract class EncoderMoveCheck extends LinearOpMode {
     /** One blocking move; returns true if the motors reached their targets. */
     private interface Move { boolean go(); }
 
-    private DriveUtil2026b drive;
+    private DriveUtil drive;
     private RobotConfig config;
     private double speed = 0.4;
 
@@ -60,7 +60,7 @@ public abstract class EncoderMoveCheck extends LinearOpMode {
     @Override
     public void runOpMode() {
         config = robotConfig();
-        drive  = new DriveUtil2026b(hardwareMap, telemetry, null, config);
+        drive  = new DriveUtil(hardwareMap, telemetry, null, config);
 
         telemetry.addData("robot config", config.robotName);
         telemetry.addLine("Put the robot at a tape line, then press START.");

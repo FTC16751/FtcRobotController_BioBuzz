@@ -32,7 +32,7 @@ and one StarterBot.
 
 ## B. Encoder moves: distance fix and stoppable loop (a107f3f)
 
-These are the two DriveUtil2026b changes from 2026-09-07. Any mecanum robot on this branch works;
+These are the two DriveUtil changes from 2026-09-07. Any mecanum robot on this branch works;
 Skyline is the best choice because its live autos use these moves.
 
 - [ ] **B1. Nothing got slower.** Robot on the floor at a tape line. Run `SKYLINE: PARK FAR` (it

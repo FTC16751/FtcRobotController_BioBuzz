@@ -101,12 +101,12 @@ public final class PedroBridge {
         return fc;
     }
 
-    /** Opens and configures the Pinpoint for Pedro. Whoever holds this owns the device; see DriveUtil2026b. */
+    /** Opens and configures the Pinpoint for Pedro. Whoever holds this owns the device; see DriveUtil. */
     public static PinpointLocalizer createPinpointLocalizer(HardwareMap hardwareMap, RobotConfig config) {
         return new PinpointLocalizer(hardwareMap, pinpointConfigFor(config));
     }
 
-    /** Pedro's mecanum drivetrain on this robot's four motors (the same DcMotorEx objects DriveUtil2026b holds). */
+    /** Pedro's mecanum drivetrain on this robot's four motors (the same DcMotorEx objects DriveUtil holds). */
     public static Mecanum createDrivetrain(HardwareMap hardwareMap, RobotConfig config) {
         return new Mecanum(hardwareMap, mecanumConfigFor(config));
     }
@@ -121,7 +121,7 @@ public final class PedroBridge {
         return new Follower(localizer, createDrivetrain(hardwareMap, config), createForesight(config));
     }
 
-    /** A Follower that opens its own Pinpoint. Only for OpModes that do NOT also build a DriveUtil2026b. */
+    /** A Follower that opens its own Pinpoint. Only for OpModes that do NOT also build a DriveUtil. */
     public static Follower createFollower(HardwareMap hardwareMap, RobotConfig config) {
         return createFollower(hardwareMap, config, createPinpointLocalizer(hardwareMap, config));
     }

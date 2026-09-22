@@ -9,7 +9,7 @@ package org.firstinspires.ftc.teamcode.common.vision;
  * that must be checked on a robot (see doc/ROBOT_TEST_PLAN.md), which is why the conversion lives
  * in the adapter and not here.
  *
- * Conventions, chosen to line up with DriveUtil2026b.moveRobot (drive +forward, strafe +right,
+ * Conventions, chosen to line up with DriveUtil.moveRobot (drive +forward, strafe +right,
  * yaw +clockwise):
  */
 public interface TagSighting {

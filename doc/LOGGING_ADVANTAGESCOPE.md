@@ -13,7 +13,7 @@ square overshoot on the third corner" from data instead of memory.
 | `build.dependencies.gradle` | two Maven repositories: JitPack (Koala-Log) and maven.brott.dev (FTC Dashboard) |
 | `TeamCode/build.gradle` | `KoalaLogger` 1.5.7, its annotation processor, and FTC Dashboard 0.6.0 |
 | `common/LogUtil` | our wrapper: `start(hardwareMap)`, `log(name, value)`, `logPose`, `logBattery`, `stop()`. Contains Koala-Log's failures so a logger can never stop a robot |
-| `common/drive/DriveUtil2026b.addLog()` | pose, drive state, the four motor powers and velocities, Pedro's progress |
+| `common/drive/DriveUtil.addLog()` | pose, drive state, the four motor powers and velocities, Pedro's progress |
 | `teams/testteam2027/Test2027Robot` | starts the log in the constructor, logs drive, vision and battery in `update()`, closes it in `stopAll()` |
 | `Test2027Constants.Logging.ENABLED` | the off switch |
 

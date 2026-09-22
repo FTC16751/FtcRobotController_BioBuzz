@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
  * PedroPathingConfig (Test2027BotConfig section 6c); the Pinpoint and drivetrain procedures print
  * names, directions and offsets that belong in sections 1, 2 and 4 of the same file (offsets in
  * inches there, mm in ours: multiply by 25.4). Robot code never uses this class; it goes through
- * DriveUtil2026b.
+ * DriveUtil.
  */
 public class Constants {
 
@@ -42,8 +42,8 @@ public class Constants {
 
     /**
      * A Follower on ACTIVE_CONFIG that opens its own Pinpoint. Only for OpModes that do NOT also
-     * build a DriveUtil2026b: two owners of one Pinpoint is the 2025 failure. Robot code gets its
-     * Follower from DriveUtil2026b.getFollower().
+     * build a DriveUtil: two owners of one Pinpoint is the 2025 failure. Robot code gets its
+     * Follower from DriveUtil.getFollower().
      */
     public static Follower createFollower(HardwareMap hardwareMap) {
         return PedroBridge.createFollower(hardwareMap, ACTIVE_CONFIG);

@@ -12,13 +12,13 @@ releases and Quickstart repo as of today.
 Six causes, each verifiable in the tree. Any one of them would have made Pedro look broken; we had all six.
 
 **1.1 Two objects owned the same Pinpoint.** Both Coach tests (`teams/geargirls/test/PedroPathTeleopCoachTest*.java`)
-build `GGRobot`, whose `DriveUtil2026b` opens the I2C device `odo`, applies GearGirls' pod offsets and
+build `GGRobot`, whose `DriveUtil` opens the I2C device `odo`, applies GearGirls' pod offsets and
 directions, and calls `resetPosAndIMU()`. Then they build a Pedro `Follower` whose `PinpointLocalizer`
 opens the same `odo`, applies **different** offsets (38, -168 mm) and directions, and both objects call
 `update()` on it every loop from different code paths. Whichever configured it last won, and the
 gamepad START button did `resetPosAndIMU()` on the shared device without telling the Follower, so
 Pedro's pose jumped. The `DriveOnly` variant added a third localizer (`EncoderOdometry` on the drive
-motor encoders that Pedro was driving). The commented-out Pedro block in the `DriveUtil2026b`
+motor encoders that Pedro was driving). The commented-out Pedro block in the `DriveUtil`
 constructor (`:149-160`) creates the Follower **after** `initOdo()`, so it would have baked the same
 conflict into every robot.
 
@@ -42,7 +42,7 @@ Test2027's (LF/LR REVERSE, RF/RR FORWARD). Every Pedro OpMode in the tree uses t
 does `.forwardPodY(config.odometry.pinpointOffsetY_mm)` and `.strafePodX(config.odometry.pinpointOffsetX_mm)`.
 Pedro's `PinpointLocalizer` passes `forwardPodY` straight into goBILDA's `setOffsets` as the **first**
 argument, which is the X (forward) pod's sideways offset, left positive; `strafePodX` becomes the
-second argument, the Y (strafe) pod's forward offset. `DriveUtil2026b.configurePinpoint()` calls
+second argument, the Y (strafe) pod's forward offset. `DriveUtil.configurePinpoint()` calls
 `setOffsets(pinpointOffsetX_mm, pinpointOffsetY_mm)`. So the bridge must be
 `.forwardPodY(pinpointOffsetX_mm).strafePodX(pinpointOffsetY_mm)`; today it is the reverse. For
 Test2027 (`OdometryConfig(120, -120)`: forward pod 120 mm left, strafe pod 120 mm behind) the bridge
@@ -141,7 +141,7 @@ and drop the two fields nothing reads (`trackWidth`, `lateralMultiplier`). Add
 2.1 drive algorithm.
 
 **Step 4. One owner of the Pinpoint.** The design the commented blocks were reaching for, done in the
-right order: when `config.pedroPathing != null`, `DriveUtil2026b` builds the Follower **first** and
+right order: when `config.pedroPathing != null`, `DriveUtil` builds the Follower **first** and
 takes the Pinpoint from it (`((PinpointLocalizer) follower.getLocalizer()).getPinpoint()`), skipping
 `initOdo()`/`configurePinpoint()`/`resetPosAndIMU()`. Pedro configures the device once; `driveTo`,
 `getX()`, telemetry and the tag approach read the same object. `update()` calls `follower.update()`
@@ -150,7 +150,7 @@ exclusive by `DriveState`: a new `FOLLOWING_PATH` state during which the Pinpoin
 motors, and `startDriveTo`/`driveToTagAsync` call `follower.breakFollowing()` first. `resetPosition()`
 goes through `follower.setPose(...)` so Pedro and the Pinpoint agree. The RUN ME TeleOp stays on
 `moveRobot` (hard rule: gamepad feel does not change); Pedro's `setTeleOpDrive` is wired only in the
-separate comparison OpMode (section 5, question 3). Check: `DriveUtil2026b` has no unit test (it needs
+separate comparison OpMode (section 5, question 3). Check: `DriveUtil` has no unit test (it needs
 a HardwareMap), so the state-machine exclusivity is checked on the robot: `Test2027Teleop` telemetry
 X/Y/heading still track the push test after the change (K9), and K10 for the toggle.
 
@@ -202,10 +202,10 @@ mark them as samples. The Coach tests and `P3PedroPathAuto` stay `@Disabled` for
   `centripetalScaling`), defaults equal to Pedro's library defaults; the ten-argument constructor is
   deprecated. `Test2027BotConfig` now carries a `PedroPathingConfig` (untuned). `GGBot2Config`,
   `P3Bot3Config`, `P3Bot1Config` have theirs set to **null** with the old numbers kept in a comment:
-  a non-null block now makes DriveUtil2026b build a Follower, and those robots must not change in
+  a non-null block now makes DriveUtil build a Follower, and those robots must not change in
   demo season. Consequence: the disabled `P3_Robot3_TeleOp`, which builds its own Follower from
   `P3Bot3Config`, would throw at init if re-enabled until Bot 3 gets a real `PedroPathingConfig`.
-- `common/DriveUtil2026b`: when the config has Pedro, the constructor builds the localizer and the
+- `common/DriveUtil`: when the config has Pedro, the constructor builds the localizer and the
   Follower first and borrows the Pinpoint from the localizer (one owner, step 4). New
   `followPath(chain[, holdEnd])`, `hasPedro()`, `getFollower()`, states `FOLLOWING_PATH` and
   `HOLDING_POINT`; `update()` steps the Follower only while one of those is active (after a path
@@ -220,7 +220,7 @@ mark them as samples. The Coach tests and `P3PedroPathAuto` stay `@Disabled` for
 - `ExampleTeleOp` and `ExampleTeleOp_george` are `@Disabled`. The Coach tests, `P3PedroPathAuto`,
   `AutoPedroPathExample` and `Drivetrain.java` are untouched (R3 scope).
 - Committed as a35e8cb the same evening. Added after the commit: `Test2027PedroTeleop`, the Pedro
-  drive toggle from section 5 question 3, and the `TELEOP_PEDRO` state in DriveUtil2026b behind it.
+  drive toggle from section 5 question 3, and the `TELEOP_PEDRO` state in DriveUtil behind it.
 
 
 ## 4. Frame conventions to write down once
@@ -261,7 +261,7 @@ mentor can overturn any of these; question 4 is the one only the mentor can sett
 3. **A Pedro drive toggle for Test2027's TeleOp?** Built, as a second OpMode:
    `teams/testteam2027/teleop/Test2027PedroTeleop` (`Test2027: Teleop (Pedro drive)`, Driver
    Station group TestTeam2027 Test). Same sticks as RUN ME; X toggles between Pedro's
-   `setTeleOpDrive` (robot-centric) and `moveRobot`. DriveUtil2026b carries it as one more state,
+   `setTeleOpDrive` (robot-centric) and `moveRobot`. DriveUtil carries it as one more state,
    `TELEOP_PEDRO`, behind `startPedroTeleopDrive()`, `pedroTeleopDrive(strafe, drive, turn, speed)`
    and `isPedroTeleopDrive()`; `cancel()` hands the wheels back to `moveRobot`, `isBusy()` is
    false in that state, and `update()` steps the Follower there exactly as it does for a path.
@@ -307,7 +307,7 @@ What changed, from the release notes, the new Quickstart and the 3.0.0 jars on M
 Plan: keep the 2.1.2 result (section K, the comparison) as it stands. Migrate on one branch together
 with the 2026-27 SDK bump, after 3.0.x has had a few weeks of patches (2.0.1 to 2.0.4 taught that
 lesson), and before the first real auto is written so students learn one API. Laptop work is a
-rewrite of `PedroBridge` and its test, the Pedro parts of DriveUtil2026b, the square auto, the
+rewrite of `PedroBridge` and its test, the Pedro parts of DriveUtil, the square auto, the
 TeleOp toggle, `pedropathing/Constants` and `Tuning` (the Quickstart's `procedures/` folder copied
 verbatim); robot work is one AutoTune session, about an hour, then K5 to K8 again.
 
@@ -323,14 +323,14 @@ Done on the laptop, nothing run on a robot. What the code looks like now:
   (mass, velocities, predictiveBraking, PIDFs, centripetal) are gone; their numbers do not map onto
   Foresight. Only Test2027's top speeds (81.1 / 67.8 in/s) carried over.
 - **Pedro 3 cannot run untuned.** Twelve Foresight numbers have no library default. `PedroBridge`
-  checks them by name; if any is missing, `DriveUtil2026b` reports "Pedro Pathing OFF: ..." in
+  checks them by name; if any is missing, `DriveUtil` reports "Pedro Pathing OFF: ..." in
   telemetry, `hasPedro()` is false, and the robot drives on the Pinpoint as before. AutoTune's
   Mecanum, Pinpoint and Foresight procedures do not need Foresight, so tuning still works. Only the
   Tests procedure and the Pedro OpModes need the numbers.
 - **`common/PedroBridge`** builds `MecanumConfig`, `PinpointConfig` (offsets pass straight through
   to `setOffsets`, no field swap any more; pinned by `PedroBridgeTest`) and `ForesightConfig` from
   the RobotConfig, and `new Follower(localizer, drivetrain, new Foresight(config))`.
-- **`DriveUtil2026b`**: `followPath(Path[, holdEnd])` uses `follower.holdEnd` and `follow()`; the
+- **`DriveUtil`**: `followPath(Path[, holdEnd])` uses `follower.holdEnd` and `follow()`; the
   path is done when `following()` is false; the Pedro TeleOp drive is `manual(forward, left, ccw)`
   with brake mode from the config; `cancel()` is `follower.stop()`. The Pinpoint is the same device
   object Pedro configured (the SDK hands out one per name), read directly as before.

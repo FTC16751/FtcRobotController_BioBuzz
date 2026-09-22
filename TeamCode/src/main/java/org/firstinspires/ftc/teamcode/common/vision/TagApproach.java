@@ -8,10 +8,10 @@ import org.firstinspires.ftc.teamcode.common.Clock;
  *
  * Pure math and state: it never touches hardware. Each loop the caller hands it a TagSighting
  * (where the tag is relative to the robot) and reads back three motor powers in
- * DriveUtil2026b.moveRobot's convention (drive +forward, strafe +right, yaw +clockwise). Because
+ * DriveUtil.moveRobot's convention (drive +forward, strafe +right, yaw +clockwise). Because
  * it does not block, the launcher, intake, and anything else keep running in the same loop.
  *
- * Usage from an iterative auto, through DriveUtil2026b:
+ * Usage from an iterative auto, through DriveUtil:
  * <pre>
  *   robot.drive.driveToTagAsync(vision, 24, 12.0, 0.5);   // once: tag 24, stop 12 in away, hold 0.5 s
  *   ...

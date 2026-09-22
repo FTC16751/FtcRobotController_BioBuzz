@@ -79,12 +79,12 @@ public final class Test2027BotConfig {
                         .xyToleranceMm(18.0).yawToleranceRad(0.055)
                         .xyGains(0.0035, 0.000003, 0.001).xyAccel(8.0)
                         .yawGains(2.5, 0.0, 0.08).yawAccel(10.0),
-                // 6c. Pedro Pathing 3 (doc/PEDRO_ON_TEST2027.md). Because this is set, DriveUtil2026b builds
+                // 6c. Pedro Pathing 3 (doc/PEDRO_ON_TEST2027.md). Because this is set, DriveUtil builds
                 //     a Pedro Follower for this robot, and the Follower owns the Pinpoint. The lambda is
                 //     Foresight's tuning; AutoTune (http://192.168.43.1:10158 on the robot, Foresight
                 //     procedure, test plan K) prints one like it at the end: paste it here whole.
                 //     UNTUNED for Pedro 3 as of 2026-09-15, so Pedro is OFF on this robot until the lambda
-                //     is complete: DriveUtil2026b drives without it and says so in telemetry. Only the
+                //     is complete: DriveUtil drives without it and says so in telemetry. Only the
                 //     top speeds carried over from the 2026-09-08 session on 2.1.2 (K2); the 2.1.2 braking
                 //     numbers (predictive braking 0.1 / 0.0962 / 0.00165, mass 9.15 kg) do not map onto
                 //     Foresight and were dropped. AutoTune's Foresight procedure re-measures everything.

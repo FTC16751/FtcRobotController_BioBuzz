@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Robot;
  * push, does it overshoot a turn, does a diagonal stay a diagonal. Pedro's drive uses the tuned
  * velocities and centripetal correction (Tuning first, test plan K2 to K4); untuned it still drives.
  *
- * Stick signs are handled inside DriveUtil2026b: both drive commands take the same
+ * Stick signs are handled inside DriveUtil: both drive commands take the same
  * (strafe, drive, turn, speed) with strafe right-positive and turn clockwise-positive.
  */
 @TeleOp(name = "Test2027: Teleop (Pedro drive)", group = "TestTeam2027 Test")

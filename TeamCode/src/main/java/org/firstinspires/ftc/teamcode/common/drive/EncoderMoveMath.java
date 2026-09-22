@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.drive;
 
 /**
- * Encoder target arithmetic for DriveUtil2026b.drive_p3 and rotateRobot. Pure and unit-tested
+ * Encoder target arithmetic for DriveUtil.drive_p3 and rotateRobot. Pure and unit-tested
  * (EncoderMoveMathTest).
  *
  * Conventions match MecanumMixer: forward +, strafe +RIGHT, turn +CLOCKWISE. The wheel order in

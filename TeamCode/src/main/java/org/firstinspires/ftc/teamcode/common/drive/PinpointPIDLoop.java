@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.drive;
 
 /**
- * One axis of the Pinpoint point-to-point controller behind DriveUtil2026b.driveTo. DriveUtil
+ * One axis of the Pinpoint point-to-point controller behind DriveUtil.driveTo. DriveUtil
  * keeps three: x, y, and heading.
  *
  * PID with a filtered derivative, an integral cap, an asymmetric acceleration limit (ramping up
@@ -13,7 +13,7 @@ package org.firstinspires.ftc.teamcode.common.drive;
  *   - When the error is inside tolerance AND the previous output was already small, it treats the
  *     axis as settled: zeroes its history and returns 0.
  *
- * Moved out of DriveUtil2026b unchanged on 2026-09-07 so it could be tested.
+ * Moved out of DriveUtil unchanged on 2026-09-07 so it could be tested.
  */
 public class PinpointPIDLoop {
     private double previousError;

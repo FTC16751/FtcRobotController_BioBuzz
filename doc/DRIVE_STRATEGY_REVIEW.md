@@ -8,7 +8,7 @@ for this review. Line numbers are from the tree at commit 0bbc947 on `offseason/
 
 Files read in full: `teams/geargirls/auto/bot2/GGAutonomous_Score9_v7.java` (432 lines),
 `teams/p3/auto/bot3/P3Autonomous_QueueBot3.java` (815), `GGRobotConstants.Waypoints`,
-`P3RobotConstants.Bot3_Waypoints`, `GGRobot2`, `P3_Robot3`, `common/DriveUtil2026b` (driveTo,
+`P3RobotConstants.Bot3_Waypoints`, `GGRobot2`, `P3_Robot3`, `common/DriveUtil` (driveTo,
 calculatePID, inBounds, startDriveTo, update), `common/PinpointPIDLoop`, `RobotConfig.PointToPointTuning`,
 the four chassis configs, `pedropathing/*`, `teams/p3/auto/P3PedroPathAuto`, the two Coach Pedro
 tests, and the existing unit tests. The older autos (bot1, bot2/old, earlyideas) were skimmed for
@@ -29,7 +29,7 @@ comparison on the Skyline chassis, not now.
 
 ### The controller
 
-`driveTo(current, target, power, hold)` at `DriveUtil2026b.java:927` is a **stop-and-go point
+`driveTo(current, target, power, hold)` at `DriveUtil.java:927` is a **stop-and-go point
 regulator**, not a path follower.
 
 - Three independent PIDs (X in mm, Y in mm, heading in rad) in the Pinpoint field frame. Only the
@@ -156,10 +156,10 @@ team's autos or constants. The evidence is in values, not prose:
   is added at `:648`. `BLUE_AIM_OFFSET_DEG` is 0.0 so the blue branch is a no-op.
 - `QueueBot3:89` and `:198/230/268/300`: `useFeederOnSpikeMarkCollection` is set true in all four
   branches and never read. Bot 2 used it to reverse a feeder; Bot 3 has no feeder.
-- `P3_Robot3.java:152`: `// Note: drive.update() is currently a no-op` is false. `DriveUtil2026b.update()`
+- `P3_Robot3.java:152`: `// Note: drive.update() is currently a no-op` is false. `DriveUtil.update()`
   calls `pinpoint.update()` and runs the async move state machine; `robot.update()` is the only
   thing refreshing the Pinpoint each loop. A student reading this would move or drop the call.
-- `DriveUtil2026b.java:966-1005`: the working notes of whoever fixed the loop are still in the
+- `DriveUtil.java:966-1005`: the working notes of whoever fixed the loop are still in the
   source: `// ADD THIS: Early return if within tolerance`, `// ADDED THIS`,
   `// ADD THIS (you'll need to add this to your tuning config)`.
 - `old/GGAutonomous_Score9_Bot2.java:533, 591, 640`: `// TODO: Complete remaining states` three times.
@@ -302,7 +302,7 @@ placeholders; someone ran the suite once. The F terms are exactly the static-fri
 `driveTo` lacks. `GGBot2Config:47-53` copies the measured numbers into a `PedroPathingConfig`;
 `P3Bot3Config:47-53` holds round estimates (4.5, -30, -60, 80, 55). Nothing reads either; the only
 consumer is `Constants.createFollower(hardwareMap, config)`, whose only call site is the
-commented-out `DriveUtil2026b` constructor block.
+commented-out `DriveUtil` constructor block.
 
 ### What was tried, from git
 
@@ -322,7 +322,7 @@ between Pedro's absolute frame and the start-relative frame the rest of the code
 localizer constants in `pedropathing/Constants.java` (38, -168, forward pod reversed) match no live
 `RobotConfig` (GG is (0, -203) both forward, P3 is (50, -152) strafe reversed), so the file is
 frozen against a chassis state that changed; (c) it competed for the same six weeks as making the
-robots shoot at all. The commented blocks in `DriveUtil2026b` (constructor `:149-160`, `arcadeDrive`
+robots shoot at all. The commented blocks in `DriveUtil` (constructor `:149-160`, `arcadeDrive`
 `:608-617`, `fieldCentricDrive` `:619-633`, `update` `:922-924`) wire Pedro for **TeleOp
 `setTeleOpDrive` only**. No `followPath` was ever sketched inside Common; the autonomous side of a
 Pedro integration was never started.
@@ -396,7 +396,7 @@ front of hardware, fake in the test). None changes a live auto's behavior.
 
 ### 5.1 Field-absolute waypoints plus start relocalization
 
-Promote `GGRobot2.resetOdometryToVision` into `DriveUtil2026b` as `relocalizeFromTag(vision)`
+Promote `GGRobot2.resetOdometryToVision` into `DriveUtil` as `relocalizeFromTag(vision)`
 (Advanced tier), converting the Limelight MegaTag2 field pose into the Pinpoint frame once, in one
 place, using the axis facts learned 2026-09-07 and documented in `VisionUtil`. Autos call it in
 `init_loop` while the robot sits on the tile looking at the goal tag, so the waypoint table is in
@@ -412,10 +412,10 @@ Per team, `Waypoints.forAlliance(alliance, location)` returns a small `AutoWaypo
 `mirror(pose) = (x, -y, -heading)` in the field-absolute frame, with an explicit per-pose override
 map for the handful of spots that genuinely differ. Replaces the four-branch `setPathWaypoints` and
 `start()` blocks and the 40 to 47 flat constants. `Pose2D` construction goes through the existing
-`DriveUtil2026b.pose(x, y, headingDeg)` so the five-positional-argument constructor leaves team
+`DriveUtil.pose(x, y, headingDeg)` so the five-positional-argument constructor leaves team
 code. Test: mirror is an involution; every pose in a path lies inside the field.
 
-### 5.3 The step carries its own payload; `startPath` in DriveUtil2026b
+### 5.3 The step carries its own payload; `startPath` in DriveUtil
 
 A tiny `common/DriveStep` value (target, power, holdSec, timeoutSec, `passThrough`) and
 `startPath(List<DriveStep>)` in the Advanced tier, stepping the existing `startDriveTo` per element
@@ -457,7 +457,7 @@ answer next season.
 
 Students copy from these files. `P3_Robot3:152` false "no-op" comment; `QueueBot3` PARK and
 SHOOT_PRELOAD timeouts; the aim-offset comment versus its sign; the gate poses null on FAR paths;
-the "ADD THIS" working notes in `DriveUtil2026b.calculatePID`. Ask before touching GearGirls'
+the "ADD THIS" working notes in `DriveUtil.calculatePID`. Ask before touching GearGirls'
 `usePurgeMode` default.
 
 ---
