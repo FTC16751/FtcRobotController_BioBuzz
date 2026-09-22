@@ -103,7 +103,7 @@ Set `TagTest.TAG_ID` in your constants to the tag on the wall. Follow `doc/ROBOT
 section H, in order: the sign check on a stand (H1), the wheel directions (H2), then
 `Tag Approach Test` from 3 ft away (H3). The TeleOp's right bumper does the same approach
 interactively, which is the quickest way to repeat H1 while someone adjusts the four sign
-constants at the top of the TagSighting section of `common/VisionUtil.java`. Those constants
+constants at the top of the TagSighting section of `common/vision/VisionUtil.java`. Those constants
 are shared by every robot, so once one robot has them right, every robot does.
 
 ## Step 6b. Write the first auto (the beginner vocabulary)

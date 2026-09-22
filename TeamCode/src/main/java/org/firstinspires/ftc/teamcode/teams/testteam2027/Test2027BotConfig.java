@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
-import org.firstinspires.ftc.teamcode.common.TagApproach;
+import org.firstinspires.ftc.teamcode.common.vision.TagApproach;
 
 /**
  * WHAT THE test2027bot CHASSIS IS.

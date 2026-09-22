@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Constants;
 import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027Robot;
 
 /**
- * Tests the non-blocking AprilTag approach (DriveUtil2026b.driveToTagAsync / common.TagApproach).
+ * Tests the non-blocking AprilTag approach (DriveUtil2026b.driveToTagAsync / common.vision.TagApproach).
  *
  * Put the robot about 3 ft from a wall with the test tag (Test2027Constants.TagTest.TAG_ID) taped
  * to it at camera height, roughly facing the tag. Press START. The robot should end the standoff

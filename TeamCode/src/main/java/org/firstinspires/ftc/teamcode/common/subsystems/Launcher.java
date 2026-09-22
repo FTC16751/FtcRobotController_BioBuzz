@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.common.subsystems;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.AimTarget;
+import org.firstinspires.ftc.teamcode.common.vision.AimTarget;
 import org.firstinspires.ftc.teamcode.common.Clock;
-import org.firstinspires.ftc.teamcode.common.FlywheelVelocityModel;
-import org.firstinspires.ftc.teamcode.common.LaunchController;
+import org.firstinspires.ftc.teamcode.common.launch.FlywheelVelocityModel;
+import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 
 /**
  * A whole shooter in one object: a flywheel ({@link VelocityMotor}), a feeder ({@link Roller}),
- * the spin-up / feed / cooldown sequence ({@code common.LaunchController}) and, if a table is
- * given, distance-to-velocity aiming ({@code common.FlywheelVelocityModel}).
+ * the spin-up / feed / cooldown sequence ({@code common.launch.LaunchController}) and, if a table is
+ * given, distance-to-velocity aiming ({@code common.launch.FlywheelVelocityModel}).
  * <pre>
  *   launcher = new Launcher(
  *           new VelocityMotor(hardwareMap, LAUNCHER, REVERSE).add(LAUNCHER_2, FORWARD).pidf(300, 0, 0, 10),

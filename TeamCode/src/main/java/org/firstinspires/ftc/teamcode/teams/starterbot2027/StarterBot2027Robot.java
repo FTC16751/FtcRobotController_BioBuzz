@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.DriveUtil2026b;
-import org.firstinspires.ftc.teamcode.common.LaunchController;
-import org.firstinspires.ftc.teamcode.common.VisionUtil;
+import org.firstinspires.ftc.teamcode.common.drive.DriveUtil2026b;
+import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
+import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;

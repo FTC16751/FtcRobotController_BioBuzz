@@ -20,9 +20,9 @@ Limelight MegaTag2 docs.
 ### 1.1 The Pedro side (working, untuned, one robot)
 
 - `com.pedropathing:ftc:2.1.2` + `telemetry:1.0.0`.
-- `common/PedroBridge` builds `FollowerConstants` / `MecanumConstants` / `PinpointConstants` /
+- `common/drive/PedroBridge` builds `FollowerConstants` / `MecanumConstants` / `PinpointConstants` /
   `PinpointLocalizer` / `Follower` **from a `RobotConfig`**. Six unit tests pin it.
-- `common/DriveUtil2026b` builds the Follower first when `config.pedroPathing != null` and takes the
+- `common/drive/DriveUtil2026b` builds the Follower first when `config.pedroPathing != null` and takes the
   Pinpoint from it, so exactly one object owns the device. `DriveState` makes the two motion sources
   exclusive (`FOLLOWING_PATH`, `HOLDING_POINT`, `TELEOP_PEDRO` vs `DRIVING_TO_POINT_PINPOINT`,
   `ALIGNING_TO_APRILTAG`).
@@ -32,8 +32,8 @@ Limelight MegaTag2 docs.
 
 ### 1.2 The vision side (working, robot-relative only)
 
-- `common/VisionUtil` wraps a Limelight 3A. It implements `AimTarget` and `TagSighting`.
-- `common/TagSighting` + `common/TagApproach` are the good pattern: an interface in front of the
+- `common/vision/VisionUtil` wraps a Limelight 3A. It implements `AimTarget` and `TagSighting`.
+- `common/vision/TagSighting` + `common/vision/TagApproach` are the good pattern: an interface in front of the
   camera, pure math behind it, a fake in `TagApproachTest`. But `TagSighting` is deliberately
   **robot-relative** (forward / right / square-up inches and degrees). It never mentions the field.
 - `VisionUtil` already reads all three field-space products and shows them in telemetry:
@@ -139,9 +139,9 @@ the same line must not appear in the Common version.
 | D1 | `teams/p3/teleop/P3_Robot3_TeleOp.java:260` | Pedro heading fed to `updateRobotOrientation`; 90° off (section 2.4) | fix when that OpMode is revived; never copy |
 | D2 | `GGRobot2.java:223-237`, `GGRobot.java:192` | `resetOdometryToVision` uses the **single-tag** field pose, applies no frame conversion, and gates on nothing | leave (R3 on hold); the Common version must not follow it |
 | D3 | same, line 228 | `Math.toDegrees(pose.getOrientation().getYaw())` — `YawPitchRollAngles.getYaw()` with no argument returns the raw stored value, and the Limelight driver constructs these with `AngleUnit.DEGREES` (verified in `Hardware-11.0.0`). So this multiplies degrees by 57.3 | always call `getYaw(AngleUnit.DEGREES)`; same for `getPitch`/`getRoll` |
-| D4 | `common/VisionUtil.java:158-165` | `hasMegaTag2FieldPose` is true whenever `getBotpose_MT2()` is non-null. The Limelight returns a **zero pose**, not null, when it has no fix | gate on `LLResult.getBotposeTagCount() > 0` |
-| D5 | `common/VisionUtil.java:145` | the "primary tag" is `tags.get(0)`, whichever the camera listed first | fine for `TagSighting` (which asks by id), not fine as a pose source |
-| D6 | `common/DriveUtil2026b.java:376-389` | `setPosition` means "field pose, 0..144" on a Pedro robot and "wherever you say the origin is" on a Pinpoint-only robot. `resetPosition()` calls `setPosition(0,0,0)`, which on a Pedro robot **teleports the follower to the field corner** | resolve by adopting one field frame everywhere (section 5.1) before adding relocalization, which uses the same door |
+| D4 | `common/vision/VisionUtil.java:158-165` | `hasMegaTag2FieldPose` is true whenever `getBotpose_MT2()` is non-null. The Limelight returns a **zero pose**, not null, when it has no fix | gate on `LLResult.getBotposeTagCount() > 0` |
+| D5 | `common/vision/VisionUtil.java:145` | the "primary tag" is `tags.get(0)`, whichever the camera listed first | fine for `TagSighting` (which asks by id), not fine as a pose source |
+| D6 | `common/drive/DriveUtil2026b.java:376-389` | `setPosition` means "field pose, 0..144" on a Pedro robot and "wherever you say the origin is" on a Pinpoint-only robot. `resetPosition()` calls `setPosition(0,0,0)`, which on a Pedro robot **teleports the follower to the field corner** | resolve by adopting one field frame everywhere (section 5.1) before adding relocalization, which uses the same door |
 
 D6 is the one that matters most here: relocalization is only meaningful if the odometry frame *is* a
 field frame. On a Pinpoint-only robot whose auto never told the Pinpoint where the field is, there is

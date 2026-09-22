@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.common.Flywheel;
+import org.firstinspires.ftc.teamcode.common.launch.Flywheel;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.firstinspires.ftc.teamcode.common.AimTarget;
-import org.firstinspires.ftc.teamcode.common.LaunchController;
+import org.firstinspires.ftc.teamcode.common.vision.AimTarget;
+import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.junit.Before;
 import org.junit.Test;
 

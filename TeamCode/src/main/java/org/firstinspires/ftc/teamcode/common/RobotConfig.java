@@ -6,6 +6,7 @@ import com.pedropathing.config.Configuration;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import org.firstinspires.ftc.teamcode.common.vision.TagApproach;
 
 /**
  * WHAT THE ROBOT IS.
@@ -216,7 +217,7 @@ public class RobotConfig {
      * the config, DriveUtil2026b says so in telemetry and drives without Pedro (hasPedro() false),
      * and AutoTune itself still runs, since its Mecanum, Pinpoint and Foresight procedures only need
      * the names, directions and offsets. Those come from the rest of the RobotConfig through
-     * common/PedroBridge, so nothing is typed twice.
+     * common/drive/PedroBridge, so nothing is typed twice.
      */
     public static final class PedroPathingConfig {
         /** Foresight tuning, as AutoTune prints it. Empty = not tuned yet = Pedro off on this robot. */

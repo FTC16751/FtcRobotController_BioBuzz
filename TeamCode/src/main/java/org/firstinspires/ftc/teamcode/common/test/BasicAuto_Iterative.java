@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.common.DriveUtil2026b;
+import org.firstinspires.ftc.teamcode.common.drive.DriveUtil2026b;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 
 @Autonomous(name="Basic Auto", group = "Common Test")

@@ -6,14 +6,14 @@ import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.localizers.PinpointLocalizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.common.PedroBridge;
+import org.firstinspires.ftc.teamcode.common.drive.PedroBridge;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
 
 /**
  * Which robot AutoTune tunes. Pedro 3's tuning procedures (Tuning.java, procedures/) ask for a
  * localizer, a drivetrain and an algorithm built from a HardwareMap; these come from the robot's
- * RobotConfig through common/PedroBridge, so the tuner always tunes the robot named here and
+ * RobotConfig through common/drive/PedroBridge, so the tuner always tunes the robot named here and
  * nothing Pedro-specific is typed in this package.
  *
  * To tune a different chassis: change ACTIVE_CONFIG, redeploy, open http://192.168.43.1:10158.

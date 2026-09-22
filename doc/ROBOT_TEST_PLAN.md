@@ -148,7 +148,7 @@ works the same way once it has a TagApproach call in a TeleOp.
       down. Move it to the robot's right: right error goes positive. Rotate the tag so the robot
       would have to turn left to face it squarely: yaw error goes positive. A sign that goes the
       other way is fixed by flipping the matching `TAG_*_SIGN` constant at the top of the
-      TagSighting section of `common/VisionUtil.java` (or setting `TAG_SQUARE_YAW_OFFSET_DEG` to
+      TagSighting section of `common/vision/VisionUtil.java` (or setting `TAG_SQUARE_YAW_OFFSET_DEG` to
       180 if the yaw reads 180 when square). Never change TagApproach for a sign problem.
 - [x] **H2. Power directions, still on the stand.** Hold RB. With the tag too far away the wheels
       spin forward; tag to the right, the wheels spin in the strafe-right pattern (front-left and
@@ -222,7 +222,7 @@ Every procedure ends by printing Java; paste it where the row says, redeploy, co
 | K8 | `Test2027: Teleop (RUN ME)` after K6 | drives as before; telemetry X/Y/heading still track a push (the Follower owns the Pinpoint, TeleOp still drives through moveRobot) |
 | K9 | `Test2027: Teleop (Pedro drive)` (group TestTeam2027 Test), same lap twice, X toggles | both drive from the same sticks; X mid-move hands over without a lurch; with Pedro on, releasing the sticks brakes (not coasts) and a straight push stays straight |
 
-If K2 disagrees with section I's push test on the same robot, the bridge (`common/PedroBridge`)
+If K2 disagrees with section I's push test on the same robot, the bridge (`common/drive/PedroBridge`)
 is wrong, not the pods. If the robot drives away from the line in K4, check the config's motor
 directions against K1 first; Pedro uses the same four directions as the TeleOp.
 
