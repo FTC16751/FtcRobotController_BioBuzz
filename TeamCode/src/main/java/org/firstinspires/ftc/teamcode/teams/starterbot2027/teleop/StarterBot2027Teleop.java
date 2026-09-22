@@ -13,7 +13,8 @@ import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
  * Controls (gamepad 1), as in goBILDA's example plus a slow mode:
  *   Left stick      drive (forward/back) and strafe
  *   Right stick X   turn
- *   Left bumper     hold for slow mode (ours)
+ *   L stick click   hold for slow mode (ours)
+ *   Left bumper     hold to run the windmill backwards (unjam). Ignored while launching
  *   Right trigger   intake in, proportional; left trigger: intake out. Both: off
  *   Right bumper    HOLD to launch: the wheel spins up; once it is fast enough the windmill feeds
  *                   and the intake runs harder to push elements through. Release: everything stops
@@ -57,8 +58,8 @@ public abstract class StarterBot2027Teleop extends OpMode {
         double drive  = deadband(-gamepad1.left_stick_y);
         double strafe = deadband( gamepad1.left_stick_x);
         double turn   = deadband( gamepad1.right_stick_x);
-        double speed  = gamepad1.left_bumper ? StarterBot2027Constants.Drive.SLOW_SPEED
-                                             : StarterBot2027Constants.Drive.NORMAL_SPEED;
+        double speed  = gamepad1.left_stick_button ? StarterBot2027Constants.Drive.SLOW_SPEED
+                                                   : StarterBot2027Constants.Drive.NORMAL_SPEED;
         robot.drive.arcadeDrive(strafe, drive, turn, 0, speed);
     }
 
@@ -69,7 +70,8 @@ public abstract class StarterBot2027Teleop extends OpMode {
     private double handleLauncher() {
         if (!gamepad1.right_bumper) {
             robot.launcher.spinDown();
-            robot.launcher.feedStop();
+            if (gamepad1.left_bumper) robot.launcher.feedBack();   // unjam: windmill backwards
+            else                      robot.launcher.feedStop();
             return 0;
         }
         robot.launcher.spinUp(StarterBot2027Constants.Launcher.TARGET_VELOCITY);

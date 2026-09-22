@@ -29,8 +29,7 @@ public final class StarterBot2027Constants {
         /** Feed only above this. 1200 of 1250 is 96%, the ready fraction below. */
         public static final double MIN_VELOCITY    = 1200;
         public static final double READY_FRACTION  = MIN_VELOCITY / TARGET_VELOCITY;
-        /** goBILDA's velocity PIDF for this motor. Different motor from the Skyline launcher's, so different numbers. */
-        public static final double PIDF_P = 40, PIDF_I = 0, PIDF_D = 0, PIDF_F = 12.5;
+        // The velocity PIDF is per robot (GG needs a gentler P than P3): StarterBotConfig.launcherPidf.
         /** While the windmill feeds, the intake runs this much harder to shake loose a stuck element. */
         public static final double INTAKE_BOOST_WHILE_FEEDING = 0.5;
         /** For the timed shot() in an auto; the TeleOp feeds continuously while the bumper is held instead. */
