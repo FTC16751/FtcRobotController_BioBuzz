@@ -9,7 +9,7 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
 
 | Step | State | Commits |
 |---|---|---|
-| R1 remove unreferenced Common code (DriveUtil2025 kept, slimmed) | done | d4b2708 |
+| R1 remove unreferenced Common code (DriveUtilSimple kept, slimmed) | done | d4b2708 |
 | R2 Road Runner kept, moved to `roadrunner/` | done | d4b2708 |
 | R4 one Alliance, one SharedState, CommonConstants | done | d4b2708 |
 | R6 folder reorganization + Driver Station groups | done | b72f53d, 1d9f7a7 |
@@ -20,9 +20,9 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
 | R9 AutoSelector / AutoBase | **deferred**: build with the first new-season auto | |
 | R10 TeleOpBase / ButtonEdge | **closed**, will not be done; gamepad layouts stay as drivers learned them | |
 | R12 template: `teams/testteam2027` built as the template and test bed | done; TeleOp, beginner auto, encoder check, tag approach all proven on the Skyline chassis 2026-09-07 | |
-| DriveUtil2026b focus: fixes, tiers (Beginner, Intermediate), pure-math tests, cleanup, TagApproach | done (see the completed-focus section); Advanced tier remains | a107f3f..dd00eb0 |
+| DriveUtil focus: fixes, tiers (Beginner, Intermediate), pure-math tests, cleanup, TagApproach | done (see the completed-focus section); Advanced tier remains | a107f3f..dd00eb0 |
 | Drive-side review: was point-to-point + waypoints reusable? | done, `doc/DRIVE_STRATEGY_REVIEW.md`; mentor chose to lean into Pedro for a real comparison | |
-| **Pedro revisit (hard rule 6), laptop side** | **done 2026-09-07**: Pedro 2.0.1 to 2.1.2, config-driven bridge (`common/PedroBridge`, pod-offset swap fixed), one Pinpoint owner in DriveUtil2026b (`followPath`), Test2027 Pedro square auto, `PedroBridgeTest`. Robot side (tuning, comparison) in `doc/PEDRO_ON_TEST2027.md` section 3 and test plan K. Committed a35e8cb; then `Test2027PedroTeleop` (Pedro drive toggle, K10) and section 5 answered (SDK: wait for the 2026-27 release, bump once). **Robot side done 2026-09-08**: K1 to K10 pass on the Skyline chassis; Pedro about 40% faster than driveTo at the same 0.6 cap with the same accuracy (`DRIVE_STRATEGY_REVIEW.md` section 4 result). Open: the readability call, decision 1 in that review | |
+| **Pedro revisit (hard rule 6), laptop side** | **done 2026-09-07**: Pedro 2.0.1 to 2.1.2, config-driven bridge (`common/PedroBridge`, pod-offset swap fixed), one Pinpoint owner in DriveUtil (`followPath`), Test2027 Pedro square auto, `PedroBridgeTest`. Robot side (tuning, comparison) in `doc/PEDRO_ON_TEST2027.md` section 3 and test plan K. Committed a35e8cb; then `Test2027PedroTeleop` (Pedro drive toggle, K10) and section 5 answered (SDK: wait for the 2026-27 release, bump once). **Robot side done 2026-09-08**: K1 to K10 pass on the Skyline chassis; Pedro about 40% faster than driveTo at the same 0.6 cap with the same accuracy (`DRIVE_STRATEGY_REVIEW.md` section 4 result). Open: the readability call, decision 1 in that review | |
 | Skeleton subsystems: `common/subsystems` Roller, PresetServo, Claw, PresetMotor, VelocityMotor + tests, MechanismBenchTest, one Clock | done 2026-09-07 (see the late-session subsection under Next focus); robot check owed | 1e997fe..ff4de57 |
 | R11 live defects (TeleOp-side items), R13-R15 | not started | |
 | **AprilTag relocalization on top of Pedro** | researched and designed 2026-09-08, `doc/APRILTAG_RELOCALIZATION.md`: coordinate frames read out of the Pedro 2.1.2 bytecode (`FTCCoordinates` vs `InvertedFTCCoordinates`, the DECODE inversion), six defects found (D1-D6), a `FieldFrame` / `FieldPoseSource` / `TagRelocalizer` design so a new season changes one line, and an 8-step plan (test plan section N). Nothing built | |
@@ -37,7 +37,7 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
    GearGirls Bot 2 TeleOp fixed; P3 Bot 3 and Skyline V2 already complied.)
 1. `@Disabled` means "hidden from the Driver Hub for event day," never "dead." Delete only files with
    zero callers or a newer replacement for the same robot, confirmed by diff, and ask first.
-2. Prior-season robots are kept for demos. Road Runner, DriveUtil2025, the Into The Deep auto, the
+2. Prior-season robots are kept for demos. Road Runner, DriveUtilSimple, the Into The Deep auto, the
    pushbot and StarterBot code all stay. "No callers in this season's code" is not grounds for deletion.
 3. RobotConfig ("what the robot is") stays separate from each team's Constants ("how it operates").
    Two files per team. Never merge them.
@@ -49,7 +49,7 @@ Tag `pre-r6-reorg` marks the tree before the folder move.
    does the beginner's auto get simpler or stay simple? Direction in the name, inches, one speed,
    blocking with a time limit, a reached flag. The advanced idioms (`driveTo` waypoints, `drive_p3`,
    the tag approach) stay, but nobody should need them to write "drive forward 24, turn left 90."
-6. **Keep the `OpMode` constructor parameter and `myOpMode` field in DriveUtil2026b.** (Mentor,
+6. **Keep the `OpMode` constructor parameter and `myOpMode` field in DriveUtil.** (Mentor,
    2026-09-07.) The OpMode hook is deliberately reserved; every robot passes null today and that is
    fine. The second half of this rule, keep the commented-out Pedro blocks, was satisfied the same
    day: the Pedro revisit happened and those blocks became working code (`followPath`, a Follower
@@ -63,7 +63,7 @@ and should measure their own (Skyline was measured 2026-09-07: 140 mm wheels, st
 circle 73 in, left side reversed after the hub config was corrected; its TeleOps no longer negate
 the turn; its last-season autos were tuned around the old errors and, per the mentor, will not run
 again, so they were left as they are); Skyline has no Constants class; no PushbotConfig (pushbots stay on
-DriveUtil2025 with phantom `limelight`/`odo` config entries, mentor is fine with that).
+DriveUtilSimple with phantom `limelight`/`odo` config entries, mentor is fine with that).
 
 **Hardware checks still owed:** see `doc/ROBOT_TEST_PLAN.md` (added 2026-09-07) for the full
 checklist with expected values. In short: each competition robot drives with its RUN ME TeleOp
@@ -79,7 +79,7 @@ rewrite must be quote-aware. `gh pr` needs `--repo FTC16751/FtcRobotController_D
 
 ## Where things stand (end of 2026-09-07, two sessions)
 
-DriveUtil2026b is reorganized by tier (Beginner, Intermediate, then the advanced idioms), down
+DriveUtil is reorganized by tier (Beginner, Intermediate, then the advanced idioms), down
 from 1450 to 1186 lines, with 102 laptop unit tests covering its math and the tag approach.
 **Robot session, evening of 2026-09-07, on the Skyline chassis** (results in
 `doc/ROBOT_TEST_PLAN.md`): the encoder fixes, the beginner `driveForward`, stall detection (a held
@@ -261,7 +261,7 @@ into Common utilities for a first-year programmer. Yardstick is hard rule 5. Sam
 lifting their math into `common/` needs only a one-line attribution comment; the pristine copies stay
 in `samples/` as they are.
 
-**Already covered by Common, nothing to do:** `SensorGoBildaPinpoint` (DriveUtil2026b), `SensorLimelight3A`
+**Already covered by Common, nothing to do:** `SensorGoBildaPinpoint` (DriveUtil), `SensorLimelight3A`
 (VisionUtil), `SensorIMUOrthogonal` (`RobotConfig.ImuConfig`), `RobotAutoDriveByEncoder_Linear`
 (`driveForward` and friends), `RobotTeleopPOV`/`BasicOmniOpMode` (`arcadeDrive`), `RobotAutoDriveByTime`
 (the beginner commands are better), `ConceptScanServo`/`ConceptRampMotorSpeed` (MechanismBenchTest's wrist
@@ -297,7 +297,7 @@ explanation of why the OpMode never touches `hardwareMap`.
    anyone measuring a turning circle. Gains to start from: `P_TURN_GAIN` 0.02, `P_DRIVE_GAIN` 0.03,
    threshold 1 deg, into `RobotConfig.Calibration` or a small `HeadingTuning`.
 
-2. **Hub bulk reads, from `ConceptMotorBulkRead`.** One line in the DriveUtil2026b constructor:
+2. **Hub bulk reads, from `ConceptMotorBulkRead`.** One line in the DriveUtil constructor:
    `for (LynxModule m : hardwareMap.getAll(LynxModule.class)) m.setBulkCachingMode(AUTO)`. Road Runner's
    `MecanumDrive` already does this; nothing on the DriveUtil path does. AUTO is safe with the current
    code (a second read of the same encoder in one loop just costs a second bulk read, which is what
@@ -406,7 +406,7 @@ comments about oscillation, overshoot, drift, "tuned", "hack"; (5) what a first-
 would have to understand to add one waypoint to one of these autos today.
 
 **What "reusable" would look like** (decide there, not here): `startPath(List<Pose2D>)` inside
-DriveUtil2026b with per-step timeouts and `currentWaypoint()`; waypoint tables per team as today,
+DriveUtil with per-step timeouts and `currentWaypoint()`; waypoint tables per team as today,
 but with `forAlliance(alliance, location)` returning the list, not a ternary per call;
 `relocalizeFromTag(vision)` promoted from GGRobot2; per-chassis `pointToPointTuning` measured with
 the test robot's Drive Square. The alternative worth stating honestly: adopt Pedro Pathing for
@@ -416,14 +416,14 @@ paths (hard rule 6, the mentor is revisiting it) and keep `driveTo` only for the
 the Skyline chassis with the +120/-120 mm offsets (test plan section I).
 
 
-## Completed focus (2026-09-07): analyze and improve `common/DriveUtil2026b`
+## Completed focus (2026-09-07): analyze and improve `common/DriveUtil`
 
 The mentor's next session is a dedicated look at the shared drive utility. Start from these facts,
 gathered by the 2026-09-06 audit and the R1/R5 work, rather than re-discovering them.
 
-**What it is.** `common/DriveUtil2026b.java`, 1,407 lines, 94 public members, the only drive class
-live team code uses (DriveUtil2025 is a 137-line legacy stub for the demo pushbots). Every robot
-class builds it as `new DriveUtil2026b(hardwareMap, telemetry, null, config)` and calls
+**What it is.** `common/DriveUtil.java`, 1,407 lines, 94 public members, the only drive class
+live team code uses (DriveUtilSimple is a 137-line legacy stub for the demo pushbots). Every robot
+class builds it as `new DriveUtil(hardwareMap, telemetry, null, config)` and calls
 `drive.update()` each loop. It bundles four generations of ideas in one file:
 1. TeleOp mixing: `moveRobot` (with `config.calibration.rightRearPowerScale`), `arcadeDrive`,
    `fieldCentricDrive`.
@@ -447,7 +447,7 @@ that is mostly comments.
   file as a plain getter. GearGirls bypass it and reach into the public `drive.pinpoint` field
   directly (571 accesses), so the odometry device is effectively public API.
 - `arcadeDrive(strafe, drive, turn, rightStickY, speed)` changed meaning between generations
-  (DriveUtil2025 negated Y internally; 2026b does not). Each TeleOp compensates differently: P3
+  (DriveUtilSimple negated Y internally; 2026b does not). Each TeleOp compensates differently: P3
   passes `-driveInput` at speed 0.25, Skyline negates turn at 0.80, GearGirls negates the stick at
   1.0 with a deadband. Not a bug, but a trap for a fourth team. Do NOT change gamepad layouts to fix it.
 - Two turning-circle numbers for the same robot: `robotDiameterCm` 60 (used by `rotateRobot`) vs
@@ -471,7 +471,7 @@ exist; `driveTo` can be tested with a fake pose source. Tests first, then restru
 
 **A reasonable shape to aim for** (decide in the session, not here): split by idiom into
 `MecanumMixer` (TeleOp math), `EncoderMoves` (RUN_TO_POSITION), `PointToPointDrive` (Pinpoint PID),
-with `DriveUtil2026b` kept as a thin facade so the 480+ call sites do not change.
+with `DriveUtil` kept as a thin facade so the 480+ call sites do not change.
 
 ### 2026-09-07 session: analysis results and the first two fixes
 
@@ -531,7 +531,7 @@ an encoder strafe), `driveToTagAsync` (one disabled caller), or `driveRelative`.
   **Steps 2 and 3 DONE 2026-09-07:** `VisionUtil implements TagSighting` from the Limelight's
   target-pose-in-robot-space; the four axis-sign constants at the top of that section are the one
   thing needing a stand check (test plan H1) and the only place to fix a sign.
-  `DriveUtil2026b.driveToTagAsync(sighting, tagId, standoffIn, holdSec)` starts a `TagApproach`,
+  `DriveUtil.driveToTagAsync(sighting, tagId, standoffIn, holdSec)` starts a `TagApproach`,
   `update()` steps it under `ALIGNING_TO_APRILTAG` and feeds `moveRobot`; `isBusy()` reflects it;
   `cancelDriveToTag()`, `lastTagApproachSucceeded()`, `getTagApproach()` added; the six write-only
   fields and `holdTimer` deleted. Gains are `RobotConfig.tagApproach` (a `TagApproach.Settings`
@@ -612,7 +612,7 @@ thing. Still owed: everything in doc/ROBOT_TEST_PLAN.md sections B, F, H on the 
   values are the pre-change tick counts). `AngleTest` covers `Angle.normDelta` in place. 102 tests
   total. The sign conventions (forward, right, clockwise) are now stated by tests, not by comments.
 
-**Beginner tier DONE 2026-09-07 (hard rule 5).** DriveUtil2026b opens with a class comment
+**Beginner tier DONE 2026-09-07 (hard rule 5).** DriveUtil opens with a class comment
 pointing at a BEGINNER COMMANDS section placed right after the constructor: `driveForward`,
 `driveBackward`, `strafeLeft`, `strafeRight`, `turnLeft`, `turnRight` (inches or degrees, sign
 ignored, optional speed), `waitSeconds`, `stop`, and a blocking `driveToTag(vision, id, inches)`.
@@ -634,7 +634,7 @@ vocabulary table (Step 6b). Encoder Move Check bumpers use `driveForward`/`drive
 - Mentor tier already exists: pedropathing/, roadrunner/, PID internals, VisionUtil sign constants.
 - One object `robot.drive`, file ordered by tier; R13 becomes a one-page table of the tiers.
 
-**Intermediate tier DONE 2026-09-07.** New section in DriveUtil2026b after the beginner one:
+**Intermediate tier DONE 2026-09-07.** New section in DriveUtil after the beginner one:
 `getX/getY/getHeadingDegrees/getPose`, `setPosition/resetPosition`, static `pose(x, y, heading)`,
 `move(fwd, right, turn)` naming `drive_p3`, `startDriveTo(x, y, heading[, power])` (also `Pose2D`
 forms and a full form with hold and timeout), `turnToHeading`, `startDriveToTag`, one `cancel()`
@@ -681,15 +681,15 @@ any deletion list.
 ## The short version
 
 The three teams already converge on one good architecture: a per-team Robot hub class that owns
-Common's DriveUtil2026b, VisionUtil and LedUtil, built from a RobotConfig factory, with thin OpModes
+Common's DriveUtil, VisionUtil and LedUtil, built from a RobotConfig factory, with thin OpModes
 that delegate to it. That is the right shape and should be kept. The problems are around it:
 
 1. **Roughly half of the ~50,000 lines are older copies or have no callers.** A middle-generation
    drive class with zero callers (`DriveUtilDepricated`), two unused motion-planning stacks, and 30+
-   OpModes that a newer file has replaced all still build and still appear in the IDE. (`DriveUtil2025`
+   OpModes that a newer file has replaced all still build and still appear in the IDE. (`DriveUtilSimple`
    is a deliberate exception: it is still used by several OpModes and stays.)
-2. **Versioning is done with filenames instead of git.** `DriveUtil2025` / `DriveUtilDepricated` /
-   `DriveUtil2026b`, `IntakeSensorFusion` / `001` / `002`, `Score9_v4` / `_v5` / `_v7`, `old/` folders.
+2. **Versioning is done with filenames instead of git.** `DriveUtilSimple` / `DriveUtilDepricated` /
+   `DriveUtil`, `IntakeSensorFusion` / `001` / `002`, `Score9_v4` / `_v5` / `_v7`, `old/` folders.
    A student opening the team folder sees several files with the same purpose and no marker for
    which one the robot runs.
 3. **The same six things are hand-copied into every robot class and OpMode:** launcher state machine,
@@ -704,7 +704,7 @@ that delegate to it. That is the right shape and should be kept. The problems ar
 | Measure | Value | Source |
 |---|---|---|
 | Total TeamCode lines | ~49,800 | wc over all .java |
-| Common drive area with zero callers | ~3,380 of 7,843 lines | DriveUtilDepricated, EssentialMecanumRobot, SimplifiedOdometryRobot, EncoderOdometry, GBP2P/DriveToPoint (DriveUtil2025 excluded; it is still used) |
+| Common drive area with zero callers | ~3,380 of 7,843 lines | DriveUtilDepricated, EssentialMecanumRobot, SimplifiedOdometryRobot, EncoderOdometry, GBP2P/DriveToPoint (DriveUtilSimple excluded; it is still used) |
 | prismled folder, used only by two @Disabled tests | 1,659 lines | Common/prismled |
 | GearGirls auto code in older lineages that v7 replaced (Bot1/, BOT2/old/, earlyIdeas/) | 7,484 of 7,916 lines (94%) | diff against GGAutonomous_Score9_v7 |
 | P3 code belonging to the Bot1/Bot2 lineages that Bot3 replaced, or with zero callers | ~6,500 of 10,600 lines | grep call sites; diff Bot1 vs Bot2 vs Bot3 |
@@ -720,7 +720,7 @@ that delegate to it. That is the right shape and should be kept. The problems ar
 ## What is working well (keep these)
 
 - **Robot hub pattern.** `GGRobot2:38-48,98`, `P3_Robot3:30-38,101`, `Skyline_Robot:35-44` all build
-  `new DriveUtil2026b(hw, tel, null, RobotConfig.createXConfig())` and expose `update()`, `stopAll()`,
+  `new DriveUtil(hw, tel, null, RobotConfig.createXConfig())` and expose `update()`, `stopAll()`,
   `addTelemetry()`. This is the de facto template.
 - **RobotConfig injection** for motor directions, Pinpoint offsets, IMU orientation, and P2P tuning
   (`RobotConfig.java:26-126`). Right idea, just incomplete.
@@ -746,21 +746,21 @@ Priority: **P1** = before next season starts (mentor, off-season). **P2** = firs
 
 ### P1. Cleanup and structure (mentor-led, off-season)
 
-**R1. Delete the unreferenced Common drive and support code. DriveUtil2025 stays.** Medium effort,
+**R1. Delete the unreferenced Common drive and support code. DriveUtilSimple stays.** Medium effort,
 one afternoon plus a compile.
-`DriveUtil2025` is still used by OpModes the mentor runs (`TeleOp/Other/Coachbot`, `BasicDriveTeleop`,
+`DriveUtilSimple` is still used by OpModes the mentor runs (`TeleOp/Other/Coachbot`, `BasicDriveTeleop`,
 `BasicOpMode_Linear1`, and `PriorSeason/Robot`), so it and those OpModes are **not** on this list.
-Order matters because of one hidden dependency: `DriveUtil2026b:121-123`, `EssentialMecanumRobot:55-57`
+Order matters because of one hidden dependency: `DriveUtil:121-123`, `EssentialMecanumRobot:55-57`
 and `SimplifiedOdometryRobot:53-55` all instantiate the package-private class
 `DriveUtilProportionalControldepricated` defined at the bottom of `DriveUtilDepricated.java:1786`.
 Steps:
-1. Move that class into its own file `Common/ProportionalControl.java` and point DriveUtil2026b at it.
-2. Delete `DriveUtilDepricated` (zero callers once step 1 is done; note it is newer than DriveUtil2025
+1. Move that class into its own file `Common/ProportionalControl.java` and point DriveUtil at it.
+2. Delete `DriveUtilDepricated` (zero callers once step 1 is done; note it is newer than DriveUtilSimple
    despite the name), `EssentialMecanumRobot`, `SimplifiedOdometryRobot`, `EncoderOdometry`,
    `GBP2P/DriveToPoint`, `GBPoint2Point` (empty), `RobotConfigorig` (zero callers, values have drifted
    from RobotConfig), `LimeLightVisionUtil` (zero callers), `Datalogger` (zero callers).
 3. `utilities/PriorSeason/` has no callers outside itself. Confirm with the mentor before removing;
-   if kept, it is fine as is since DriveUtil2025 is staying.
+   if kept, it is fine as is since DriveUtilSimple is staying.
 4. Delete `Common/prismled/` unless the Prism LED is planned for next season; if it is, keep only
    `GoBildaPrismDriver` and delete the duplicate `PrismI2c`, dead `LedPattern`, `PrismLedSubsystem`.
 5. Remove the unused imports this exposes in `GGRobot2:17-19`.
@@ -781,13 +781,13 @@ What to do instead:
   one import in Score2SpecimenPinPointAuto was updated. The root teamcode package has no loose files.
   Build verified.
 - Keep `pedroPathing/` as is for the possible re-attempt. If Pedro is dropped later, the only Common
-  coupling left is the three imports at the top of `DriveUtil2026b` for commented-out follower code.
+  coupling left is the three imports at the top of `DriveUtil` for commented-out follower code.
 - Keep the bylazar Panels dep (`build.dependencies.gradle:22`); the enabled P3 TeleOp uses it.
-Risk: low for Road Runner. Pedro removal requires first dropping `DriveUtil2026b`'s imports of
-`pedroPathing.Constants` and `com.pedropathing` (`DriveUtil2026b:5-6,24`), the `RobotConfig.PedroPathingConfig`
-field, and the `import static pedroPathing.Tuning.follower` at `DriveUtil2025:7`. That static is only
-used by a private Kalman method DriveUtil2025 never calls (`:1562-1592`), so the method and the import
-can go together without changing DriveUtil2025's behavior for the OpModes that use it.
+Risk: low for Road Runner. Pedro removal requires first dropping `DriveUtil`'s imports of
+`pedroPathing.Constants` and `com.pedropathing` (`DriveUtil:5-6,24`), the `RobotConfig.PedroPathingConfig`
+field, and the `import static pedroPathing.Tuning.follower` at `DriveUtilSimple:7`. That static is only
+used by a private Kalman method DriveUtilSimple never calls (`:1562-1592`), so the method and the import
+can go together without changing DriveUtilSimple's behavior for the OpModes that use it.
 
 **R3. Archive superseded team code in git, then delete it from the tree.** Medium effort.
 The criterion is strictly "a newer file for the same robot replaced it" or "zero callers." Nothing is
@@ -837,26 +837,26 @@ into the team's own Constants class.** Medium effort.
 *DONE 2026-09-06 in two commits (c7cb5ca Common side, then the per-chassis files), build verified,
 values verified equal to the old factories by script.* RobotConfig now has `robotName`, `HardwareNames`
 (nullable pinpoint/limelight, led), `Calibration` (the 1.15 / 1.1 / 27.5 / 45.33 and wheel constants),
-and named setters on `PointToPointTuning`. DriveUtil2026b reads everything from config and the
+and named setters on `PointToPointTuning`. DriveUtil reads everything from config and the
 Pinpoint is optional (`hasPinpoint()`); VisionUtil takes the Limelight name. Config files:
 `GGBot2Config`, `P3Bot1Config`, `P3Bot3Config`, `SkylineBotConfig`, `common/test/StandardBotConfig`.
 Open items for the mentor: GGRobot (Bot 1) shares GGBot2Config; P3_Robot (Bot 2) shares P3Bot3Config;
 every Calibration is still at the shared defaults, so each chassis should measure its own; Skyline
-still has no Constants class; no PushbotConfig was created because the pushbots stay on DriveUtil2025.
+still has no Constants class; no PushbotConfig was created because the pushbots stay on DriveUtilSimple.
 - Add to `RobotConfig`: `robotName`, drive motor names, `imuName`, `pinpointName` (nullable), `limelightName`,
   `ledName`, wheel diameter, ticks per rev, and the four tuning literals currently baked into
-  `DriveUtil2026b`: `rightBackPower * 1.15` (`:494`), turn circumference `27.5` (`:657`), strafe fudge
+  `DriveUtil`: `rightBackPower * 1.15` (`:494`), turn circumference `27.5` (`:657`), strafe fudge
   `1.1` (`:651`), `ENCODER_COUNTS_PER_INCH 45.33` (`:37`). Also resolve the conflict between
   `ENCODER_RESOLUTION 537` (`:38`) and `COUNTS_PER_REV 384.5` (`:47`), both used.
 - Replace the 10-positional-double `PointToPointTuning` constructor (`RobotConfig:85`) with named
   setters or a builder so students cannot transpose `yawD` and `yawI`.
-- Make the Pinpoint optional in DriveUtil2026b and the Limelight optional in VisionUtil (`tryGet`
+- Make the Pinpoint optional in DriveUtil and the Limelight optional in VisionUtil (`tryGet`
   plus a null check, skip setup when absent). Skyline's autos only use encoder `drive_p3` but the
-  constructor requires an `odo` device (`DriveUtil2026b:174, 219-222`). A fourth team without a
+  constructor requires an `odo` device (`DriveUtil:174, 219-222`). A fourth team without a
   Pinpoint or Limelight cannot use the drive or vision classes today. The demo pushbots show the
   cost of not doing this: they have neither device and carry phantom `limelight` and `odo` entries in
   their Control Hub configs purely to get past `hardwareMap.get`. The mentor is fine living with that
-  on DriveUtil2025, but Common should not require it of any new robot.
+  on DriveUtilSimple, but Common should not require it of any new robot.
 - Move `createDefaultGearGirlsConfig` etc. (`RobotConfig:157-330`) out of Common into the team's
   folder, but **keep them separate from the team's Constants class**. The mentor's design intent is
   "what the robot is" (RobotConfig: hardware names, directions, offsets, calibration) versus "how it
@@ -878,7 +878,7 @@ still has no Constants class; no PushbotConfig was created because the pushbots 
   is loaded. Location options: (1) in the team folder beside Constants, simplest for the template;
   (2) a `robots/` package at the teamcode root with one file per chassis that team robot classes
   reference. Option 2 gives retired demo robots a home and is the recommendation for this mentor.
-  Either way, the legacy DriveUtil2025 robots can then get their own config, which unblocks the
+  Either way, the legacy DriveUtilSimple robots can then get their own config, which unblocks the
   migration ruled out on 2026-09-06.
 - `robotName` fixes the bug at `P3_Robot3_TeleOp:170`, which compares `ROBOT_CONFIG == RobotConfig.createP3Robot2Config()`
   by reference and therefore always reports "Other".
@@ -995,12 +995,12 @@ Original recommendation follows for the record.
 | All 10 P3 autos `preselectTeleOp` a TeleOp that is `@Disabled` | `Auto/P3/**` → `"P3: Teleop (Team Version)"` |
 | Enabled autos never write `SharedState.alliance` | `P3Autonomous_QueueBot3`, all `Auto/Skyline/*` |
 | `arcadeDrive` called twice per loop; diverter LEFT/RIGHT inverted | `GearGirlsBot1:259-264, 338-347` |
-| `driveToTagAsync` sets a drive state with no handler, so `isBusy()` stays true forever | `DriveUtil2026b:1137-1153, 744-746` |
-| `getOdoPosition()` writes five telemetry lines per call; P3 autos call it up to 19 times per loop | `DriveUtil2026b:331-339` |
-| Blocking helpers loop with no `opModeIsActive()` check because the OpMode param is always `null` | `DriveUtil2026b:592, 996, 1043, 1070` |
+| `driveToTagAsync` sets a drive state with no handler, so `isBusy()` stays true forever | `DriveUtil:1137-1153, 744-746` |
+| `getOdoPosition()` writes five telemetry lines per call; P3 autos call it up to 19 times per loop | `DriveUtil:331-339` |
+| Blocking helpers loop with no `opModeIsActive()` check because the OpMode param is always `null` | `DriveUtil:592, 996, 1043, 1070` |
 | Autos label `drive()`/`rotate()` non-blocking but they busy-wait | `Auto/Skyline/*:131-138, 181-188` |
 | Two OpModes registered with the same Driver Station name `FlywheelTunerTutorial` | `Common/FlywheelTunerTutorial:13`, `Concepts/PIDMotorTunerTutorial:12` |
-| Kalman correction updates the Y filter with X (dead code, but do not port it) | `DriveUtil2025:1583`, `DriveUtilDepricated:1733` |
+| Kalman correction updates the Y filter with X (dead code, but do not port it) | `DriveUtilSimple:1583`, `DriveUtilDepricated:1733` |
 
 **R12. Build `teams/_template/` for the fourth team.** Small effort once R4-R10 exist.
 Use Skyline's shape (it is the cleanest) after cleanup: `Robot.java` extending a small
@@ -1016,7 +1016,7 @@ without touching `common/`.
 **R13. Documentation.** A `common/README.md` covering the drive API (`arcadeDrive` argument order
 changed silently between generations; P3 still passes `-driveInput`), `RobotConfig` fields, the
 Limelight pipeline contract, and the alliance handoff. A repo `CONTRIBUTING.md` with the naming and
-`@Disabled` rules from R3 and R6. Javadoc on the public methods of `DriveUtil2026b`.
+`@Disabled` rules from R3 and R6. Javadoc on the public methods of `DriveUtil`.
 
 **R14. Generic actuator wrappers.** `common/SimpleMotor(name, direction, zeroPower)`,
 `common/SimpleServo(name)`, `common/TimedServoAction` (the IDLE/ACTIVE/RETRACT-with-timer shape that
@@ -1030,7 +1030,7 @@ across `Concepts/`, `Concepts/Tests/`, and `TeleOp/GGRobot`. Put them in `teams/
 
 ## Suggested order (revised 2026-09-06 with the mentor)
 
-Done so far in PR #1: R1 (except DriveUtil2025, which stays), R2 (Road Runner moved, kept), R4.
+Done so far in PR #1: R1 (except DriveUtilSimple, which stays), R2 (Road Runner moved, kept), R4.
 
 1. Tag the current state. **R3 is deferred**: the mentor will not delete any superseded team code
    until the reorganization (R6) and the config/constants work (R5) are finished. Superseded files
@@ -1040,7 +1040,7 @@ Done so far in PR #1: R1 (except DriveUtil2025, which stays), R2 (Road Runner mo
 2. **R6 first, with a `demobots/` folder.** Layout: `common/`, `teams/<team>/`, `demobots/`, `samples/`.
    The six demo robots are two code sets, not six: four identical pushbots and two identical
    goBILDA StarterBots for this season. So `demobots/` has two subfolders:
-   - `demobots/pushbot/`: the DriveUtil2025-based drive-only TeleOps (BasicDriveTeleop,
+   - `demobots/pushbot/`: the DriveUtilSimple-based drive-only TeleOps (BasicDriveTeleop,
      BasicOpMode_Linear1, and Coachbot if it is still used). One folder, one TeleOp.
    - `demobots/starterbot/`: StarterBotTeleop, StarterBotTeleop_DEBUG, StarterBotAuto. This is
      goBILDA's standalone code with its own hardware names (`left_drive`, `right_drive`, `launcher`,
@@ -1050,9 +1050,9 @@ Done so far in PR #1: R1 (except DriveUtil2025, which stays), R2 (Road Runner mo
    demo. Pure moves, compile, one PR with no logic changes.
    R5 consequence: identical chassis share one RobotConfig. Pushbots get one `PushbotConfig` (a
    second only if one is wired differently). StarterBots need no RobotConfig at all. Once
-   `PushbotConfig` exists the pushbots can move to DriveUtil2026b and DriveUtil2025 can finally go.
+   `PushbotConfig` exists the pushbots can move to DriveUtil and DriveUtilSimple can finally go.
 3. **R5 after R6**, so the one-config-per-chassis files are created in their final home. Demo bots get
-   their own RobotConfig here, which is what makes it safe for them to share DriveUtil2026b later.
+   their own RobotConfig here, which is what makes it safe for them to share DriveUtil later.
 4. **R3 now**, with the tree in its final shape: delete the superseded copies, mentor-reviewed file
    by file. (Still on hold as of 2026-09-07.)
 5. R7 and R8 done in the off-season. R9 deferred until the first new-season auto exists. R10 closed.
@@ -1079,7 +1079,7 @@ Superseded files move along with their team and wait for R3.
 ```
 org.firstinspires.ftc.teamcode/
 ├── common/                         shared library code, NO team names inside
-│   ├── CommonConstants  SharedState  RobotConfig  RobotConfigorig*  DriveUtil2026b  DriveUtil2025
+│   ├── CommonConstants  SharedState  RobotConfig  RobotConfigorig*  DriveUtil  DriveUtilSimple
 │   ├── ProportionalControl  EncoderOdometry*  InterpolatingLookupTable  LedUtil  VisionUtil
 │   ├── prismled/                   (as is)
 │   └── test/                       OpModes that exercise Common code only
@@ -1132,7 +1132,7 @@ Driver Station `group=` convention (second, text-only commit inside R6 so the mo
 Open questions for the mentor before moving:
 - **Q1** Score2SpecimenPinPointAuto (Into The Deep auto on Road Runner, in GearGirls earlyIdeas): stay
   with GearGirls history, or go to `demobots/intothedeep/` with the PriorSeason robot class?
-- **Q2** Coachbot builds GearGirls launcher/intake classes on DriveUtil2025. Is it a pushbot TeleOp, a
+- **Q2** Coachbot builds GearGirls launcher/intake classes on DriveUtilSimple. Is it a pushbot TeleOp, a
   GearGirls test, or unused?
 - **Q3** Is there still an Into The Deep robot among the demo bots? If not, `demobots/intothedeep/`
   is just a holding place until R3.

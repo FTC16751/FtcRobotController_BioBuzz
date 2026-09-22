@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.common.DriveUtil2026b;
+import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 
 
@@ -35,7 +35,7 @@ import org.firstinspires.ftc.teamcode.common.RobotConfig;
 @Disabled
 public class MechanumWheelTestDriveUtil extends OpMode {
     //Declare SubSystems
-    private DriveUtil2026b drive;
+    private DriveUtil drive;
 
 
     /*
@@ -45,7 +45,7 @@ public class MechanumWheelTestDriveUtil extends OpMode {
     public void init() {
         RobotConfig config = StandardBotConfig.create();
         // --- DRIVE ---
-        drive = new DriveUtil2026b(hardwareMap, telemetry, null, config); // Pass opMode context
+        drive = new DriveUtil(hardwareMap, telemetry, null, config); // Pass opMode context
 
         // --- Tell the driver that initialization is complete.---
         telemetry.addData("Status", "Initialized");

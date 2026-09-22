@@ -10,7 +10,7 @@
  *   A wheel plus a feeder that shoots       launcher, shooter                   -> Launcher
  * </pre>
  * Launcher is the one composite: a VelocityMotor and a Roller with the spin-up / feed / cooldown
- * sequence ({@code common.LaunchController}) and distance-table aiming built in.
+ * sequence ({@code common.launch.LaunchController}) and distance-table aiming built in.
  *
  * <b>How every class here behaves</b>
  * <ul>

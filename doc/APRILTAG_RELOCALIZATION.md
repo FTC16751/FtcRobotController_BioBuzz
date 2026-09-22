@@ -20,20 +20,20 @@ Limelight MegaTag2 docs.
 ### 1.1 The Pedro side (working, untuned, one robot)
 
 - `com.pedropathing:ftc:2.1.2` + `telemetry:1.0.0`.
-- `common/PedroBridge` builds `FollowerConstants` / `MecanumConstants` / `PinpointConstants` /
+- `common/drive/PedroBridge` builds `FollowerConstants` / `MecanumConstants` / `PinpointConstants` /
   `PinpointLocalizer` / `Follower` **from a `RobotConfig`**. Six unit tests pin it.
-- `common/DriveUtil2026b` builds the Follower first when `config.pedroPathing != null` and takes the
+- `common/drive/DriveUtil` builds the Follower first when `config.pedroPathing != null` and takes the
   Pinpoint from it, so exactly one object owns the device. `DriveState` makes the two motion sources
   exclusive (`FOLLOWING_PATH`, `HOLDING_POINT`, `TELEOP_PEDRO` vs `DRIVING_TO_POINT_PINPOINT`,
   `ALIGNING_TO_APRILTAG`).
-- `DriveUtil2026b.setPosition(x, y, headingDeg)` already routes through `follower.setPose(...)` when
+- `DriveUtil.setPosition(x, y, headingDeg)` already routes through `follower.setPose(...)` when
   Pedro exists. **That is the door relocalization walks through — it is already built.**
 - Only `Test2027BotConfig` has a `PedroPathingConfig`. Nothing is tuned on a robot yet (test plan K).
 
 ### 1.2 The vision side (working, robot-relative only)
 
-- `common/VisionUtil` wraps a Limelight 3A. It implements `AimTarget` and `TagSighting`.
-- `common/TagSighting` + `common/TagApproach` are the good pattern: an interface in front of the
+- `common/vision/VisionUtil` wraps a Limelight 3A. It implements `AimTarget` and `TagSighting`.
+- `common/vision/TagSighting` + `common/vision/TagApproach` are the good pattern: an interface in front of the
   camera, pure math behind it, a fake in `TagApproachTest`. But `TagSighting` is deliberately
   **robot-relative** (forward / right / square-up inches and degrees). It never mentions the field.
 - `VisionUtil` already reads all three field-space products and shows them in telemetry:
@@ -139,9 +139,9 @@ the same line must not appear in the Common version.
 | D1 | `teams/p3/teleop/P3_Robot3_TeleOp.java:260` | Pedro heading fed to `updateRobotOrientation`; 90° off (section 2.4) | fix when that OpMode is revived; never copy |
 | D2 | `GGRobot2.java:223-237`, `GGRobot.java:192` | `resetOdometryToVision` uses the **single-tag** field pose, applies no frame conversion, and gates on nothing | leave (R3 on hold); the Common version must not follow it |
 | D3 | same, line 228 | `Math.toDegrees(pose.getOrientation().getYaw())` — `YawPitchRollAngles.getYaw()` with no argument returns the raw stored value, and the Limelight driver constructs these with `AngleUnit.DEGREES` (verified in `Hardware-11.0.0`). So this multiplies degrees by 57.3 | always call `getYaw(AngleUnit.DEGREES)`; same for `getPitch`/`getRoll` |
-| D4 | `common/VisionUtil.java:158-165` | `hasMegaTag2FieldPose` is true whenever `getBotpose_MT2()` is non-null. The Limelight returns a **zero pose**, not null, when it has no fix | gate on `LLResult.getBotposeTagCount() > 0` |
-| D5 | `common/VisionUtil.java:145` | the "primary tag" is `tags.get(0)`, whichever the camera listed first | fine for `TagSighting` (which asks by id), not fine as a pose source |
-| D6 | `common/DriveUtil2026b.java:376-389` | `setPosition` means "field pose, 0..144" on a Pedro robot and "wherever you say the origin is" on a Pinpoint-only robot. `resetPosition()` calls `setPosition(0,0,0)`, which on a Pedro robot **teleports the follower to the field corner** | resolve by adopting one field frame everywhere (section 5.1) before adding relocalization, which uses the same door |
+| D4 | `common/vision/VisionUtil.java:158-165` | `hasMegaTag2FieldPose` is true whenever `getBotpose_MT2()` is non-null. The Limelight returns a **zero pose**, not null, when it has no fix | gate on `LLResult.getBotposeTagCount() > 0` |
+| D5 | `common/vision/VisionUtil.java:145` | the "primary tag" is `tags.get(0)`, whichever the camera listed first | fine for `TagSighting` (which asks by id), not fine as a pose source |
+| D6 | `common/drive/DriveUtil.java:376-389` | `setPosition` means "field pose, 0..144" on a Pedro robot and "wherever you say the origin is" on a Pinpoint-only robot. `resetPosition()` calls `setPosition(0,0,0)`, which on a Pedro robot **teleports the follower to the field corner** | resolve by adopting one field frame everywhere (section 5.1) before adding relocalization, which uses the same door |
 
 D6 is the one that matters most here: relocalization is only meaningful if the odometry frame *is* a
 field frame. On a Pinpoint-only robot whose auto never told the Pinpoint where the field is, there is
@@ -217,7 +217,7 @@ relocalization"):
 
 **Pedro's frame (0..144 in, radians, corner origin) becomes THE field frame**, on Pedro robots and
 Pinpoint-only robots alike. Reasons: Panels draws it, `Pose.mirror()` works in it, and it is already
-what `DriveUtil2026b.setPosition` means on a Pedro robot. Conversions happen at exactly two edges:
+what `DriveUtil.setPosition` means on a Pedro robot. Conversions happen at exactly two edges:
 the Limelight coming in, and any FTC-standard number a human quotes going out.
 
 New in `common/` (name to be argued about, `FieldFrame` is fine):
@@ -303,7 +303,7 @@ field, "why did it not correct?" is the only question you will have.
 
 ### 5.4 The surface students see
 
-In `DriveUtil2026b`, Advanced tier, next to `followPath`:
+In `DriveUtil`, Advanced tier, next to `followPath`:
 
 ```java
 /** Correct the robot's field position from an AprilTag, if this loop's sighting is trustworthy.
@@ -346,7 +346,7 @@ Laptop steps 1-4, robot steps 5-8. No live team OpMode changes; hard rules 1-6 h
    `assembleDebug` passes; a fake source in a test drives the interface.
 3. **`common/TagRelocalizer` + tests** covering each gate, the jump-agreement counter, the blend, and
    `lastRejectReason`. Check: ~20 tests, no hardware. (Total goes from 102 to ~130.)
-4. **`DriveUtil2026b.relocalizeFromTag`** plus the `setPosition` semantics fix (D6). Check: compiles;
+4. **`DriveUtil.relocalizeFromTag`** plus the `setPosition` semantics fix (D6). Check: compiles;
    `PedroBridgeTest` still passes; no existing call site changes behaviour.
 5. **Frame proof on the field.** Park the robot at a measured spot facing a known direction, with the
    goal tag visible. A new `Test2027FrameCheck` TeleOp prints: Limelight field pose (FTC frame),
@@ -380,7 +380,7 @@ The whole point of the structure above. In order:
 4. New field landmarks in `CommonConstants.Field` — and move them to **inches in the Pedro frame**
    while you are there. The two goal poses are currently metres in Limelight field space, which is a
    third unit system for no reason.
-5. Nothing in `TagRelocalizer`, `TagApproach`, `PedroBridge` or `DriveUtil2026b` should need to
+5. Nothing in `TagRelocalizer`, `TagApproach`, `PedroBridge` or `DriveUtil` should need to
    change. If it does, this design failed and the doc should say why.
 
 ---

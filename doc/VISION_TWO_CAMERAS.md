@@ -44,7 +44,7 @@ localization source only when you can prove the seesaw is at rest, which is exac
 doc describes and exactly what we are choosing not to build now. Its `FieldFrame` step is still the
 right first move if that changes.
 
-What stays untouched: `VisionUtil`, `TagApproach`, `DriveUtil2026b`, and every Limelight-only robot
+What stays untouched: `VisionUtil`, `TagApproach`, `DriveUtil`, and every Limelight-only robot
 (GearGirls, P3). This is additive.
 
 ---
@@ -221,7 +221,7 @@ A first auto, 30 s:
 ### 6.1 The seam already exists
 
 `TagApproach` asks a `TagSighting` four things: `canSee(id)`, `forwardInches()`, `rightInches()`,
-`squareUpDegrees()`. It never mentions a camera. `DriveUtil2026b.driveToTagAsync` takes any
+`squareUpDegrees()`. It never mentions a camera. `DriveUtil.driveToTagAsync` takes any
 `TagSighting`. `Launcher.aim`, `AimLed` and `VisionAim` take any `AimTarget`. So both new cameras
 are **adapters behind interfaces that exist**, and nothing in the drive or launcher changes.
 

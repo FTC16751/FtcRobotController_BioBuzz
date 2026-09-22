@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Clock;
-import org.firstinspires.ftc.teamcode.common.Feeder;
+import org.firstinspires.ftc.teamcode.common.launch.Feeder;
 
 import java.util.ArrayList;
 import java.util.List;

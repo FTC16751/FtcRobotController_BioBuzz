@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.common.LaunchController;
+import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.firstinspires.ftc.teamcode.common.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.common.subsystems.PresetMotor;
 import org.firstinspires.ftc.teamcode.common.subsystems.PresetServo;

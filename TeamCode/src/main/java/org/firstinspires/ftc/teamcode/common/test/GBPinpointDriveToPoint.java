@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.common.DriveUtil2026b;
+import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
 
 import java.util.Locale;
@@ -16,7 +16,7 @@ import java.util.Locale;
 @Autonomous(name="Modified Pinpoint Navigation Example", group = "Common Test")
 @Disabled
 public class GBPinpointDriveToPoint extends LinearOpMode {
-    DriveUtil2026b drive;
+    DriveUtil drive;
 
     enum StateMachine {
         WAITING_FOR_START,
@@ -39,7 +39,7 @@ public class GBPinpointDriveToPoint extends LinearOpMode {
     public void runOpMode() {
         RobotConfig config = StandardBotConfig.create();
         // Initialize all subsystems
-        drive = new DriveUtil2026b(hardwareMap, telemetry, null, config); // Pass opMode context
+        drive = new DriveUtil(hardwareMap, telemetry, null, config); // Pass opMode context
 
 
         //drive.setDriveType(MECANUM);

@@ -103,7 +103,7 @@ Set `TagTest.TAG_ID` in your constants to the tag on the wall. Follow `doc/ROBOT
 section H, in order: the sign check on a stand (H1), the wheel directions (H2), then
 `Tag Approach Test` from 3 ft away (H3). The TeleOp's right bumper does the same approach
 interactively, which is the quickest way to repeat H1 while someone adjusts the four sign
-constants at the top of the TagSighting section of `common/VisionUtil.java`. Those constants
+constants at the top of the TagSighting section of `common/vision/VisionUtil.java`. Those constants
 are shared by every robot, so once one robot has them right, every robot does.
 
 ## Step 6b. Write the first auto (the beginner vocabulary)
@@ -149,7 +149,7 @@ Power and hold time come from the defaults in your constants; add a power argume
 
 `auto/Test2027PedroSquareAuto.java` drives the same square as ONE Pedro Pathing path of four lines,
 without stopping at the corners. It works because the config has a `PedroPathingConfig` (section 6c
-of the config file) with AutoTune's Foresight numbers in it: DriveUtil2026b then builds a Pedro
+of the config file) with AutoTune's Foresight numbers in it: DriveUtil then builds a Pedro
 Follower for the robot, and the Follower owns the Pinpoint. Without those numbers Pedro is off,
 the telemetry says so, and everything else still drives. Tune first: open `http://192.168.43.1:10158`
 on the robot's WiFi and run the procedures in the order test plan section K gives, pasting what each

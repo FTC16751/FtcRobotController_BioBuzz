@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.Flywheel;
+import org.firstinspires.ftc.teamcode.common.launch.Flywheel;
 
 import java.util.ArrayList;
 import java.util.List;

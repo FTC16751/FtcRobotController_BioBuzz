@@ -6,6 +6,7 @@ import com.pedropathing.config.Configuration;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import org.firstinspires.ftc.teamcode.common.vision.TagApproach;
 
 /**
  * WHAT THE ROBOT IS.
@@ -42,7 +43,7 @@ public class RobotConfig {
         public String leftRear   = "Rear_Left";
         public String rightRear  = "Rear_Right";
         public String imu        = "imu";
-        /** goBILDA Pinpoint. Set to null if this robot has none; DriveUtil2026b then skips odometry. */
+        /** goBILDA Pinpoint. Set to null if this robot has none; DriveUtil then skips odometry. */
         public String pinpoint   = "odo";
         /** Limelight 3A. Set to null if this robot has none; VisionUtil then reports no targets. */
         public String limelight  = "limelight";
@@ -63,8 +64,8 @@ public class RobotConfig {
     }
 
     /**
-     * Physical calibration numbers used by DriveUtil2026b's encoder moves and motor mixing.
-     * Defaults are the values that were hardcoded in DriveUtil2026b before 2026-09-06. They were
+     * Physical calibration numbers used by DriveUtil's encoder moves and motor mixing.
+     * Defaults are the values that were hardcoded in DriveUtil before 2026-09-06. They were
      * tuned on one robot; each chassis should eventually measure its own.
      */
     public static final class Calibration {
@@ -151,7 +152,7 @@ public class RobotConfig {
     }
 
     /**
-     * Tuning for DriveUtil2026b.driveTo(), the Pinpoint point-to-point PID.
+     * Tuning for DriveUtil.driveTo(), the Pinpoint point-to-point PID.
      * Build it with the named setters so nobody has to remember the order of ten doubles:
      * <pre>
      *   new PointToPointTuning()
@@ -199,7 +200,7 @@ public class RobotConfig {
     }
 
     /**
-     * Pedro Pathing 3 on this robot. A non-null block makes DriveUtil2026b build a Pedro Follower
+     * Pedro Pathing 3 on this robot. A non-null block makes DriveUtil build a Pedro Follower
      * (which then owns the Pinpoint); null means "no Pedro on this robot".
      *
      * The numbers are Foresight's, Pedro 3's path-following algorithm, and they come from AutoTune:
@@ -213,10 +214,10 @@ public class RobotConfig {
      * </pre>
      * Foresight has twelve numbers with NO library default (top speeds, coast-down decelerations,
      * brake coefficients, controller gains): until AutoTune's lambda is pasted, PedroBridge refuses
-     * the config, DriveUtil2026b says so in telemetry and drives without Pedro (hasPedro() false),
+     * the config, DriveUtil says so in telemetry and drives without Pedro (hasPedro() false),
      * and AutoTune itself still runs, since its Mecanum, Pinpoint and Foresight procedures only need
      * the names, directions and offsets. Those come from the rest of the RobotConfig through
-     * common/PedroBridge, so nothing is typed twice.
+     * common/drive/PedroBridge, so nothing is typed twice.
      */
     public static final class PedroPathingConfig {
         /** Foresight tuning, as AutoTune prints it. Empty = not tuned yet = Pedro off on this robot. */
@@ -238,7 +239,7 @@ public class RobotConfig {
     public String robotName = "unnamed";
     public HardwareNames hardware = new HardwareNames();
     public Calibration calibration = new Calibration();
-    /** Gains and limits for DriveUtil2026b.driveToTagAsync (TagApproach). Defaults are gentle; tune per chassis. */
+    /** Gains and limits for DriveUtil.driveToTagAsync (TagApproach). Defaults are gentle; tune per chassis. */
     public TagApproach.Settings tagApproach = new TagApproach.Settings();
 
     public final DrivetrainConfig drivetrain;

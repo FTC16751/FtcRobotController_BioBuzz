@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.teams.testteam2027;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.common.LedUtil;
+import org.firstinspires.ftc.teamcode.common.hardware.LedUtil;
 
 /**
  * HOW test2027bot OPERATES: speeds, timings, waypoints, and the tag it drives to. These change
@@ -90,7 +90,7 @@ public final class Test2027Constants {
         public static final double FLYWHEEL_INITIAL_FALLBACK = 1200.0*1.045;
     }
 
-    /** The aiming LED (common/AimLed): green when lined up on the goal tag, else which way to turn. */
+    /** The aiming LED (common/vision/AimLed): green when lined up on the goal tag, else which way to turn. */
     public static final class Aim {
         public static final double LED_TOLERANCE_DEG = 2.0;
         public static final double LED_GOAL_RIGHT = LedUtil.Color.ORANGE;
