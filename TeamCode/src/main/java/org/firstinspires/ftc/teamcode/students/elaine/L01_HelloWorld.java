@@ -11,14 +11,14 @@
 //  and the class name below MUST match the filename.
 // ============================================================
 
-package org.firstinspires.ftc.teamcode.learning.lesson01_hello_world;
+package org.firstinspires.ftc.teamcode.students.elaine;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 // @TeleOp makes this program appear in the TeleOp list on the Driver Station.
 // The name in the parentheses is optional — if left empty it uses the class name.
-@TeleOp(name = "L01 Hello World")
+@TeleOp(name = "L01 Hello World - Elaine", group = "Elaine")
 public class L01_HelloWorld extends OpMode {
 
     // ── CLASS MEMBERS ──────────────────────────────────────────────────────────
