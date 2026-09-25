@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class L02_Variables_Solution extends OpMode {
 
     // TODO 1
-    int teamNumber = 17651;
+    int teamNumber = 16751;
 
     // TODO 2
     double maxMotorPower = 0.75;

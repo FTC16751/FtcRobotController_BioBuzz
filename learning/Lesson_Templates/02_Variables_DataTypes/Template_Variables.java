@@ -20,7 +20,7 @@ public class L02_Variables extends OpMode {
     // These variables are available in EVERY method of this class.
     // They keep their value between loop() calls.
 
-    // TODO 1: Declare an int for your team number (value: 17651)
+    // TODO 1: Declare an int for your team number (value: 16751)
     //   int teamNumber = ???;
 
 

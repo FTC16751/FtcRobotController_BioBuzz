@@ -41,7 +41,7 @@ double motorPower;
 boolean touchSensorPressed;
 
 // Pattern:  type  name = initialValue;   (declare + assign at once)
-int teamNumber = 17651;
+int teamNumber = 16751;
 double motorPower = 0.5;
 boolean touchSensorPressed = true;
 ```

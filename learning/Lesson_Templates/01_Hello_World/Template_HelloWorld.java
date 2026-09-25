@@ -26,7 +26,7 @@ public class L01_HelloWorld extends OpMode {
     // Variables declared here are accessible in ALL methods below.
     // They keep their values between calls to loop().
 
-    // TODO 1: Declare an int variable named teamNumber and set it to 17651
+    // TODO 1: Declare an int variable named teamNumber and set it to 16751
     //         (or your actual team number)
     //
     //         Format:   int variableName = value;

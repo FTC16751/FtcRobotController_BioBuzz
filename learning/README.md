@@ -1,7 +1,7 @@
-# FTC 17651 — Student Learning Curriculum
+# FTC 16751 — Student Learning Curriculum
 
 **Based on**: *"Learn Java for FTC"* by Alan G. Smith (May 2026 edition)
-**Team**: FTC 17651 | Playful Lobsters
+**Team**: FTC 16751 | BioBuzz
 
 ---
 

@@ -1,7 +1,7 @@
 # Student Progress Tracker
 
 **Student Name**: [Replace with student's name]
-**Team**: FTC 17651
+**Team**: FTC 16751
 **Start Date**: [Replace with start date]
 **Coach**: [Replace with coach name]
 
