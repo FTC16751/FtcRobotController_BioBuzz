@@ -32,7 +32,7 @@ goBILDA's own example with our motor names is `samples/BioBuzzStarterbotTeleopMe
 | four drive motors (`left_front_drive` ...), left side reversed, brake mode, max-normalised mixing | `DriveUtil` with `StarterBotConfig`'s `DrivetrainConfig`, motors named `Front_Left` etc. like every robot of ours; same mixing in `MecanumMixer` |
 | `intake` motor + `left_intake_servo` + `right_intake_servo` (right reversed), on the triggers | one `Roller` with two `add` calls and `.brake()`; `robot.intake.setPower(right_trigger - left_trigger)` |
 | `launcher` in velocity mode, PIDF 40/0/0/12.5, target 1250, minimum 1200 | a `VelocityMotor` inside `Launcher`; velocities in `StarterBot2027Constants.Launcher`, the PIDF per robot in `StarterBotConfig` (P3 keeps goBILDA's, GG uses 10/0/0/12.6) |
-| `windmillServo` (reversed) feeds while the bumper is held and the wheel is above the minimum | the `Roller` inside `Launcher`; `handleLauncher()` in the TeleOp does exactly goBILDA's `launch()` |
+| `windmillServo` (reversed) feeds while the bumper is held and the wheel is above the minimum | the `Roller` inside `Launcher`; `handleLauncher()` in the TeleOp does exactly goBILDA's `launch()`. P3 swapped the servo for a motor named `windmill`; the name and direction are per robot in `StarterBotConfig` |
 | intake gets +0.5 power while feeding | `INTAKE_BOOST_WHILE_FEEDING`, returned from `handleLauncher()` |
 
 Nothing in `common/` changed for this team except `Roller.brake()`.

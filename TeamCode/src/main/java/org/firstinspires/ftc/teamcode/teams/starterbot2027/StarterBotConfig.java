@@ -14,8 +14,9 @@ import org.firstinspires.ftc.teamcode.common.RobotConfig;
  * WHAT a goBILDA BIOBUZZ StarterBot IS, all in this one file: every device name as typed in the
  * Control Hub configuration, which way each one spins, how the hub is mounted, and the drive
  * calibration. Two robots are built from the same kit, P3's and GearGirls': {@link #p3()} and
- * {@link #gg()}. Two differences so far, both on GG: its intake gear is mounted on the other side of
- * the robot, so its intake motor runs reversed; and its launcher needs a gentler velocity PIDF.
+ * {@link #gg()}. Three differences so far: GG's intake gear is mounted on the other side of the
+ * robot, so its intake motor runs reversed; GG's launcher needs a gentler velocity PIDF; and P3's
+ * windmill feeder is a motor instead of goBILDA's servo.
  *
  * Rewired or renamed something? Edit here. Want it to drive or shoot differently? That is
  * StarterBot2027Constants.
@@ -29,24 +30,32 @@ public final class StarterBotConfig {
     public static final String INTAKE_LEFT  = "left_intake_servo";   // corner servos that pull elements in
     public static final String INTAKE_RIGHT = "right_intake_servo";
     public static final String LAUNCHER     = "launcher";            // flywheel motor, encoder plugged in beside it
-    public static final String WINDMILL     = "windmillServo";       // the feeder servo
+    public static final String WINDMILL_SERVO = "windmillServo";     // the feeder, goBILDA's servo (GG)
+    public static final String WINDMILL_MOTOR = "windmill";          // the feeder, a motor (P3)
 
     // ---- Directions that are the same on both robots. The intake motor's is per robot, below.
     public static final DcMotorSimple.Direction INTAKE_LEFT_DIR  = FORWARD;
     public static final DcMotorSimple.Direction INTAKE_RIGHT_DIR = REVERSE;
     public static final DcMotorSimple.Direction LAUNCHER_DIR     = FORWARD;
-    public static final DcMotorSimple.Direction WINDMILL_DIR     = REVERSE;
 
     /** The chassis: drive directions, IMU mounting, calibration, and which sensors exist (none yet). */
     public final RobotConfig chassis;
     /** Which way the intake roller motor spins to pull elements in. */
     public final DcMotorSimple.Direction intakeDir;
+    /** The windmill feeder's hub name and which way it spins to feed. A servo or a motor, either works. */
+    public final String windmill;
+    public final DcMotorSimple.Direction windmillDir;
     /** The launcher's velocity PIDF (P, I, D, F). Tune it with the Starterbot: Launcher Test OpMode. */
     public final PIDFCoefficients launcherPidf;
 
-    /** P3 shoots fine on goBILDA's shipped PIDF. */
+    /**
+     * P3 shoots fine on goBILDA's shipped PIDF. Its windmill servo was swapped for a motor
+     * (2026-09-23). Direction UNVERIFIED, kept the servo's REVERSE: hold right bumper with the wheel
+     * up to speed; if the windmill pushes elements away from the wheel, flip it to FORWARD.
+     */
     public static StarterBotConfig p3() {
-        return new StarterBotConfig("P3 Starterbot", FORWARD, new PIDFCoefficients(40, 0, 0, 12.5));
+        return new StarterBotConfig("P3 Starterbot", FORWARD, WINDMILL_MOTOR, REVERSE,
+                new PIDFCoefficients(40, 0, 0, 12.5));
     }
 
     /**
@@ -58,11 +67,16 @@ public final class StarterBotConfig {
      * 40 / 12.5 like P3.
      */
     public static StarterBotConfig gg() {
-        return new StarterBotConfig("GG Starterbot", REVERSE, new PIDFCoefficients(10, 0, 0, 12.6));
+        return new StarterBotConfig("GG Starterbot", REVERSE, WINDMILL_SERVO, REVERSE,
+                new PIDFCoefficients(10, 0, 0, 12.6));
     }
 
-    private StarterBotConfig(String name, DcMotorSimple.Direction intakeDir, PIDFCoefficients launcherPidf) {
+    private StarterBotConfig(String name, DcMotorSimple.Direction intakeDir,
+                             String windmill, DcMotorSimple.Direction windmillDir,
+                             PIDFCoefficients launcherPidf) {
         this.intakeDir = intakeDir;
+        this.windmill = windmill;
+        this.windmillDir = windmillDir;
         this.launcherPidf = launcherPidf;
         this.chassis = new RobotConfig(
                 // Drive motor directions, goBILDA's: left side reversed. Left stick forward MUST

@@ -21,7 +21,7 @@ public final class StarterBot2027Constants {
 
     /**
      * The launcher: one flywheel motor held at a velocity (encoder ticks per second; goBILDA's
-     * motor has 28 ticks per revolution, so 1250 is about 2680 rpm) and the windmill servo that
+     * motor has 28 ticks per revolution, so 1250 is about 2680 rpm) and the windmill (servo or motor) that
      * feeds it once the wheel is fast enough.
      */
     public static final class Launcher {
