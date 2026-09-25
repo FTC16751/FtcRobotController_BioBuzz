@@ -23,7 +23,7 @@
 
 | Lesson | Topic | Book Ch. | Done? | Date | Notes |
 |--------|-------|----------|-------|------|-------|
-| L01 | Hello World & OpMode Structure | Ch. 1 | ☐ | | |
+| L01 | Hello World & OpMode Structure | Ch. 1 | ☐ | 2026-09-24 | Paired with Grace. TODOs 1–4 done; challenges 5 (loop counter) and 6 (start()) to go |
 | L02 | Variables & Data Types | Ch. 2 | ☐ | | |
 | L03 | Gamepad & Basic Math | Ch. 3 | ☐ | | |
 | L04 | Making Decisions (if/else) | Ch. 4 | ☐ | | |
