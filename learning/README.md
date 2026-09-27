@@ -21,7 +21,7 @@ to writing competition-ready FTC code. Every lesson maps directly to a chapter i
 *"Learn Java for FTC"* — read the book section alongside each lesson for the best
 results.
 
-**Total estimated time**: 26–38 hours across 4 phases
+**Total estimated time**: 26–38 hours across 4 phases, plus about 10 hours for Phase 5
 
 ---
 
@@ -29,8 +29,8 @@ results.
 
 1. **Coaches**: create the student's package and progress file (see *Per-student package*).
 2. **Students**: start at Lesson 01. Lessons 01, 02, 04 and 05 need no hardware.
-3. **Each lesson**: in Android Studio, create a new Java class in your package, paste in the
-   lesson template, fix the `package` line, and follow the TODO comments in order.
+3. **Each lesson**: open the lesson's folder in your package (e.g. `students/jane/l01_hello_world/`),
+   delete the `@Disabled` line, and follow the TODO comments in order.
 
 ---
 
@@ -84,6 +84,19 @@ results.
 | `20_Making_Robots_Drive/` | Making Robots Drive | Ch. 20 | Arcade/mecanum formulas, normalization, field-relative | 3–4 hrs |
 | `24_Control_Theory_PID/` | Control Theory & PID | Ch. 24 | Bang-bang, P control, PID(f), tuning, integral windup | 3–4 hrs |
 
+### Phase 5 — This Season's Robot
+
+> **Hardware needed**: the StarterBot with a goBILDA Pinpoint, a Limelight 3A and a goBILDA RGB indicator light
+> **Time**: ~10 hours. The book has no chapters for these; the lessons are the team's own.
+
+| Folder | Lesson | Book Chapter | Key Concepts | Time |
+|--------|--------|-------------|--------------|------|
+| `25_Pinpoint_Odometry/` | Pinpoint Odometry | (Ch. 21 is background) | pose (x, y, heading), pod offsets and directions, `update()`, drive-to-position states | 2 meetings |
+| `26_Limelight/` | Limelight 3A | — | pipelines, `tx`/`ty`/`ta`, `isValid()`, `List` + for-each, P control on `tx` | 2 meetings |
+| `27_LEDs/` | LEDs: a status light | — | indicator light as a `Servo`, a method that returns a color, aim status | 1 meeting |
+
+Order: L25 after L12 and L20 (its last exercise after L24); L26 after L24; L27 after L26.
+
 ---
 
 ## Book Chapter Cross-Reference
@@ -108,7 +121,7 @@ results.
 | Ch. 16 — Computer Vision | — | See FTC_PATTERNS_REFERENCE.md |
 | Ch. 17 — Javadoc | — | Covered in L14 exercises |
 | Ch. 20 — Making Robots Drive | L20 | Mecanum + field-relative |
-| Ch. 21 — Odometry Hardware | — | Reference team's actual code |
+| Ch. 21 — Odometry Hardware | L25 | Pinpoint instead of three dead wheels |
 | Ch. 24 — Control Theory/PID | L24 | Bang-bang through full PID |
 
 ---
@@ -125,47 +138,55 @@ XX_LessonName/
 └── Exercises.txt          ← 4–6 progressive challenges (★☆☆☆ to ★★★★)
 ```
 
-Some lessons (05, 06, 14, 20) have multiple template files — the README explains the order.
+Some lessons (05, 06, 14, 20, 25, 26) have multiple template files — the README explains the order.
 
 ---
 
 ## Per-student package
 
-Every student gets their own package under `TeamCode`, so two students can both have an
-`L01_HelloWorld` class without colliding, and their finished work stays in git next to the team
-code:
+Every student gets their own package under `TeamCode`, with one folder per lesson that already
+holds that lesson's templates. Two students can both have an `L01_HelloWorld` class without
+colliding, and their finished work stays in git next to the team code:
 
 ```
 TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/
 ├── jane/
-│   ├── PROGRESS.md        ← copied from learning/STUDENT_PROGRESS.md
-│   ├── L01_HelloWorld.java
-│   └── L02_Variables.java
+│   ├── PROGRESS.md              ← copied from learning/STUDENT_PROGRESS.md
+│   ├── l01_hello_world/
+│   │   └── L01_HelloWorld.java  ← the template, set up for Jane
+│   ├── l02_variables_datatypes/
+│   └── ...                      ← one folder per lesson, l27_leds last
 └── alex/
     └── ...
 ```
 
-**To onboard a new student** (lowercase first name, no spaces):
+**To onboard a new student** (run from the repo root; the folder is the name in lowercase):
 
 ```bash
-mkdir -p TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/jane
-cp learning/STUDENT_PROGRESS.md TeamCode/src/main/java/org/firstinspires/ftc/teamcode/students/jane/PROGRESS.md
+learning/new_student.sh Jane
 ```
+
+The script copies every template with its `package` line fixed and the student's name in the
+OpMode (`@TeleOp(name = "L01 Hello World - Jane", group = "Jane")`), so no two students' OpModes
+share a name on the Driver Station, which the SDK refuses. Every OpMode starts `@Disabled` so the
+Driver Station list only shows the lessons each student has started.
+
+It never overwrites a file, so **after adding or changing a lesson, re-run it for every student**
+to give them the new templates. Every template must build as-is (see *Notes for Coaches*).
 
 **Each lesson, the student**:
 
-1. In Android Studio, right-clicks their `students/<name>` folder → New → Java Class, named
-   after the template's class (the README of each lesson says which, e.g. `L01_HelloWorld`).
-2. Pastes the whole template over the new file.
-3. Changes the first line from `package org.firstinspires.ftc.teamcode;` to
-   `package org.firstinspires.ftc.teamcode.students.<name>;` (Android Studio underlines the
-   wrong one in red; Alt+Enter → *Move to package* also works).
-4. Puts their name in the OpMode annotation so two students' OpModes never share a name on the
-   Driver Station, which the SDK refuses: `@TeleOp(name = "L01 Hello World - Jane", group = "Jane")`.
-   The `group` keeps each student's OpModes together in the list.
+1. Opens their lesson folder, e.g. `students/jane/l01_hello_world/`.
+2. Deletes the line `@com.qualcomm.robotcore.eventloop.opmode.Disabled` so the OpMode shows up.
+3. Follows the TODOs in order, and commits when the lesson is done.
 
-Solutions are pasted the same way when a coach wants one on the robot; their class and OpMode
-names already end in `_Solution` / `(Solution)`, so they never clash with the student's copy.
+**To rename a student** later: in Android Studio, right-click their `students/<name>` package →
+Refactor → Rename (it fixes every `package` line), then change the name and group in each OpMode
+annotation and in `PROGRESS.md`.
+
+Solutions are not copied. When a coach wants one on the robot, paste it into the lesson folder and
+fix its `package` line; its class and OpMode names already end in `_Solution` / `SOLUTION`, so
+they never clash with the student's copy.
 
 ---
 
@@ -184,7 +205,7 @@ names already end in `_Solution` / `(Solution)`, so they never clash with the st
 
 - **L01, L02, L04, L05** require NO hardware. Students can work from any computer.
   Great for first sessions or when hardware is unavailable.
-- The whole curriculum, templates and solutions, compiles against SDK 12.0. Templates whose
-  first TODO is "declare the motor" (L07) will not build until that TODO is done; that is
-  deliberate.
+- The whole curriculum, templates and solutions, compiles against SDK 12.0, and every template
+  builds as-is. Keep it that way: every student's package holds every template, so one template
+  that does not build breaks the build for the whole team.
 - See `COACHING_GUIDE.md` for full session plans and differentiation strategies.

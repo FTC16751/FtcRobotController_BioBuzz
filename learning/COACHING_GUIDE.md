@@ -6,10 +6,10 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 
 ## Quick Start for Coaches
 
-1. **Understand the progression**: the 16 lessons in `README.md` build in order, in four phases
+1. **Understand the progression**: the 19 lessons in `README.md` build in order, in five phases
 2. **Prepare hardware** using HARDWARE_SETUP_GUIDE.md
 3. **Have students read the README** before coding
-4. **Give students the Template code** to complete
+4. **Onboard each student** with `learning/new_student.sh <Name>`; their templates are waiting in their lesson folders
 5. **Circulate and help with TODOs**
 6. **Compare solutions** together as a team
 7. **Assign exercises** for extra challenge
@@ -24,6 +24,7 @@ A guide for coaches, mentors, and team leads running the FTC Learning System.
 | 2 Hardware basics | L06–L11 | programming board | 8–10 hrs |
 | 3 Programming patterns | L12–L14 | programming board | 6–8 hrs |
 | 4 Advanced FTC | L20, L24 | a drivable robot | 6–8 hrs |
+| 5 This season's robot | L25–L27 | StarterBot + Pinpoint, Limelight, indicator light | ~10 hrs |
 
 **Total Time**: 26–38 hours per student. The full lesson table, with book chapters, is in
 `README.md`; the board wiring is in `HARDWARE_SETUP_GUIDE.md`.
@@ -93,6 +94,9 @@ One key point, one common struggle, and one question to ask, per lesson.
 | L14 Inheritance | `abstract` says "you must implement this" | missing `super()`; forgetting `@Override` | "Why does `TestWiring` not care which `TestItem` it holds?" |
 | L20 Driving | normalize so no wheel exceeds 1.0 | one motor reversed; mecanum wheel order | "Why divide by the max instead of clipping?" |
 | L24 PID | start with P only; add I and D one at a time | integral windup; tuning all three at once | "What does the robot do with P too high?" |
+| L25 Pinpoint | X forward, Y **left**, heading **left** are positive | skipping the three checks; forgetting `update()`; bumping the robot during init | "Why does the pose wander when you turn in place?" |
+| L26 Limelight | check `isValid()` before trusting `tx` | no `start()`; wrong pipeline number; kP too big | "What does tx = 0 mean when nothing is in view?" |
+| L27 LEDs | the light is a `Servo`; each position is a color | override placed after `setPosition()`; colors that look alike | "What would a driver 10 feet away see?" |
 
 ---
 
@@ -271,8 +275,10 @@ one row per lesson, one per exercise, and a space for coach notes.
 - Read the team code in `TeamCode/.../teamcode/common/` and `teams/`; `teams/testteam2027`
   is a complete minimal team and its README walks through it
 - Give them a real mechanism on the competition robot, with a driver to please
-- Vision (AprilTags), odometry and the launcher are covered by `doc/` and the team code, not
-  by these lessons
+- L25–L27 cover Pinpoint, the Limelight and the status light; the next step is reading their
+  full versions in `common/drive/DriveUtil.java`, `common/vision/VisionUtil.java` and `AimLed.java`
+- AprilTags on the webcam and the launcher are covered by `doc/` and the team code, not by
+  these lessons
 
 ---
 

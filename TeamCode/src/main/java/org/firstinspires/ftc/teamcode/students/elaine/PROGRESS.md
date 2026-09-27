@@ -67,6 +67,16 @@
 | L20 | Making Robots Drive | Ch. 20 | ☐ | | |
 | L24 | Control Theory & PID | Ch. 24 | ☐ | | |
 
+## Phase 5 — This Season's Robot
+> Pinpoint, Limelight and the status light on the StarterBot.
+> Estimated time: **about 5 meetings**
+
+| Lesson | Topic | Book Ch. | Done? | Date | Notes |
+|--------|-------|----------|-------|------|-------|
+| L25 | Pinpoint Odometry | — | ☐ | | Pod offsets: X ____ mm, Y ____ mm. Directions: X ____ Y ____ |
+| L26 | Limelight 3A | — | ☐ | | My kP: ____ |
+| L27 | LEDs | — | ☐ | | |
+
 ---
 
 ## Exercises Completed
@@ -95,6 +105,9 @@ Record each exercise you've finished here. Be honest — these are for YOUR lear
 | L14 | Ex 1–4 | ★★–★★★★ | ☐ | |
 | L20 | Ex 1–4 | ★★–★★★★ | ☐ | |
 | L24 | Ex 1–5 | ★★–★★★★ | ☐ | |
+| L25 | Ex 1–5 | ★–★★★★ | ☐ | |
+| L26 | Ex 1–5 | ★–★★★★ | ☐ | |
+| L27 | Ex 1–4 | ★–★★★ | ☐ | |
 
 ---
 

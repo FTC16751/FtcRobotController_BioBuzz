@@ -11,7 +11,7 @@
 //  and the class name below MUST match the filename.
 // ============================================================
 
-package org.firstinspires.ftc.teamcode.students.elaine;
+package org.firstinspires.ftc.teamcode.students.elaine.l01_hello_world;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

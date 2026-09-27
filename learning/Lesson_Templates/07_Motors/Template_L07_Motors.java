@@ -59,8 +59,9 @@ public class L07_Motors extends LinearOpMode {
             // Wait 1 second
             sleep(1000);
 
-            // Display the current motor power on the driver station
-            telemetry.addData("Motor Power", motor.getPower());
+            // TODO 6: Display the current motor power on the driver station
+            // (it needs the motor from TODO 1, so it stays a comment until then)
+            // Hint: telemetry.addData("Motor Power", motor.getPower());
             telemetry.update();
         }
     }
