@@ -1,0 +1,37 @@
+======================================================
+  LESSON 27 EXERCISES — LEDs
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Rainbow  (★☆☆☆)
+------------------------------------------------------
+Make the light slowly sweep through every color:
+  double position = (getRuntime() * 0.1) % 0.72;
+Why stop at 0.72 instead of 1.0?
+
+------------------------------------------------------
+EXERCISE 2 — Endgame Warning  (★★☆☆)
+------------------------------------------------------
+TeleOp lasts 2 minutes. Reset a timer in start(), then turn the
+light VIOLET for the last 20 seconds so the driver knows it is endgame.
+Should endgame beat the aiming colors, or the other way round? Why?
+
+------------------------------------------------------
+EXERCISE 3 — Ball Count  (★★☆☆)
+------------------------------------------------------
+With the ball detector pipeline (Lesson 26, TODO 6), show:
+  no balls seen → OFF,  1 ball → WHITE,  2 or more → ORANGE
+
+------------------------------------------------------
+EXERCISE 4 — CHALLENGE: Use the Team's Class  (★★★☆)
+------------------------------------------------------
+Rewrite this lesson using the team's classes instead of a raw Servo:
+  LedUtil led = new LedUtil(hardwareMap, "led_servo");
+  led.setColor(LedUtil.Color.GREEN);
+Then read common/vision/AimLed.java. Which part of it is your
+chooseAimColor()? What does it do that yours does not?
+
+======================================================
+  Save your work in your own package:
+  TeamCode/.../teamcode/students/<name>/
+======================================================

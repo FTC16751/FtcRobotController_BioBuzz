@@ -60,6 +60,20 @@ run it. Quick checks:
 - **L24** runs on the programming board's `motor` (with encoder), but a flywheel or an arm on a
   real robot makes the PID tuning far more visible.
 
+## L25–L27: the StarterBot
+
+These run on the StarterBot, whose drive motors are `Front_Left`, `Front_Right`, `Rear_Left`,
+`Rear_Right` (left side reversed). Add to its config:
+
+| Device | Port | Config type | Config name | Used by |
+|--------|------|-------------|-------------|---------|
+| goBILDA Pinpoint + two 4-bar pods | I2C | goBILDA Pinpoint Odometry Computer | `odo` | L25 |
+| Limelight 3A | USB | (appears on its own) | `limelight` | L26, L27 |
+| goBILDA RGB Indicator Light | Servo | Servo | `led_servo` | L27 |
+
+L26 Part 1 and L27's first TODOs also work on the programming board with the Limelight or light
+plugged in. Measure the Pinpoint pod offsets once and write them in `StarterBotConfig` too.
+
 ## Before a session
 
 - [ ] Board powered, `programming_board` active, a solution OpMode deployed and run once

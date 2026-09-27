@@ -1,0 +1,48 @@
+======================================================
+  LESSON 26 EXERCISES — Limelight 3A
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — Pipeline Switcher  (★☆☆☆)
+------------------------------------------------------
+In Part 1, make the gamepad pick the pipeline:
+  A → pipeline 0,  B → pipeline 1
+Show which pipeline is running with result.getPipelineIndex().
+What changes on telemetry when you switch?
+
+------------------------------------------------------
+EXERCISE 2 — The Closest Ball  (★★☆☆)
+------------------------------------------------------
+The closest ball looks the biggest. Loop over the detector results and
+remember the one with the largest ball.getTargetArea().
+Show only that ball's class name and x angle.
+
+------------------------------------------------------
+EXERCISE 3 — Only Our Color  (★★☆☆)
+------------------------------------------------------
+Add a constant: static final String OUR_NECTAR = "red_nectar";
+Make Exercise 2 ignore any ball that is not yellow_pollen or OUR_NECTAR.
+Why does this matter in a match?
+
+------------------------------------------------------
+EXERCISE 4 — Drive Up to It  (★★★☆)
+------------------------------------------------------
+In Part 2, when the right bumper is held, also drive FORWARD toward the
+target with P control on ta:
+  double forward = Range.clip(kP_DRIVE * (TARGET_AREA - result.getTa()), 0, 0.4);
+Pick TARGET_AREA by reading ta with the target where you want the robot
+to stop. What happens if the target is lost halfway there?
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Search Then Aim  (★★★★)
+------------------------------------------------------
+Write an autonomous state machine (Lesson 12):
+  SEARCH  → turn slowly until the camera sees a target
+  AIM     → P control on tx until |tx| < TOLERANCE_DEG
+  DONE    → stop
+Add a time limit to SEARCH so the robot never spins forever.
+
+======================================================
+  Save your work in your own package:
+  TeamCode/.../teamcode/students/<name>/
+======================================================

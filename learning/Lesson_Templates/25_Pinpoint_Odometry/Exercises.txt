@@ -1,0 +1,53 @@
+======================================================
+  LESSON 25 EXERCISES — Pinpoint Odometry
+======================================================
+
+------------------------------------------------------
+EXERCISE 1 — How Good Is It?  (★☆☆☆)
+------------------------------------------------------
+With Part 1 running, push the robot in a big square (24 in on each side)
+and bring it back to exactly where it started.
+Write down X, Y and Heading. How far from 0, 0, 0 did it end up?
+Do it again, this time turning in place four times on the way.
+Which run drifted more? What does that tell you about the offsets?
+
+------------------------------------------------------
+EXERCISE 2 — Distance to Home  (★★☆☆)
+------------------------------------------------------
+Add a telemetry line showing how far the robot is from (0, 0) in inches.
+  double distance = Math.hypot(x, y);
+Then show which way home is, as an angle:
+  double homeAngle = Math.toDegrees(Math.atan2(-y, -x));
+
+------------------------------------------------------
+EXERCISE 3 — P Control Instead of Bang-Bang  (★★★☆)  (do after Lesson 24)
+------------------------------------------------------
+In Part 2, replace the fixed DRIVE_POWER in DRIVE_FORWARD with P control:
+  double error = TARGET_X_IN - x;
+  double power = Range.clip(kP * error, -0.5, 0.5);
+  drive(power, 0, 0);
+  if (Math.abs(error) < 0.5) { ... next state ... }
+Start with kP = 0.05. Run it three times and compare with TODO 5's
+overshoot. Then do the same for STRAFE_LEFT and TURN_LEFT.
+(Range is com.qualcomm.robotcore.util.Range.)
+
+------------------------------------------------------
+EXERCISE 4 — Turn Past 180  (★★★☆)
+------------------------------------------------------
+Change TARGET_HEADING_DEG to 180. Why does the robot spin forever?
+Fix it by working with the ERROR instead of the heading, wrapped into
+−180..+180:
+  double error = AngleUnit.normalizeDegrees(TARGET_HEADING_DEG - heading);
+  if (Math.abs(error) < 2) { ... done ... }
+
+------------------------------------------------------
+EXERCISE 5 — CHALLENGE: Drive Back Home  (★★★★)
+------------------------------------------------------
+Add states that drive the robot back to (0, 0, 0) along the same path
+in reverse: turn right to 0°, strafe right to Y = 0, drive back to X = 0.
+Mark a spot on the floor with tape. How close to it does the robot stop?
+
+======================================================
+  Save your work in your own package:
+  TeamCode/.../teamcode/students/<name>/
+======================================================
