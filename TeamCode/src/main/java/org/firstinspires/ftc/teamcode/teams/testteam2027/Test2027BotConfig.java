@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.teams.testteam2027;
 
+import com.pedropathing.controllers.Controller;
+import com.pedropathing.math.Matrix;
+import com.pedropathing.math.Vector2D;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -83,15 +86,30 @@ public final class Test2027BotConfig {
                 //     a Pedro Follower for this robot, and the Follower owns the Pinpoint. The lambda is
                 //     Foresight's tuning; AutoTune (http://192.168.43.1:10158 on the robot, Foresight
                 //     procedure, test plan K) prints one like it at the end: paste it here whole.
-                //     UNTUNED for Pedro 3 as of 2026-09-15, so Pedro is OFF on this robot until the lambda
-                //     is complete: DriveUtil drives without it and says so in telemetry. Only the
-                //     top speeds carried over from the 2026-09-08 session on 2.1.2 (K2); the 2.1.2 braking
-                //     numbers (predictive braking 0.1 / 0.0962 / 0.00165, mass 9.15 kg) do not map onto
-                //     Foresight and were dropped. AutoTune's Foresight procedure re-measures everything.
+                //     AutoTune Foresight values pasted whole, tuned on this robot (pasted 2026-10-04).
                 new RobotConfig.PedroPathingConfig()
                         .foresight(c -> {
-                            c.maxAchievableForwardVelocity.set(81.1);
-                            c.maxAchievableStrafeVelocity.set(67.8);
+                            Controller primaryTranslationalForward = Controller.proportional(0.28317089657508826);
+                            Controller secondaryTranslationalForward = Controller.proportional(0.10462407981878503);
+                            Controller primaryTranslationalLateral = Controller.proportional(0.396788347937868);
+                            Controller secondaryTranslationalLateral = Controller.proportional(0.14660269218311853);
+
+                            c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
+                            c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
+
+                            c.coast.set(Controller.proportionalFeedforward(0.011856884988906989));
+                            c.brake.set(Controller.proportionalFeedforward(0.01007835224057094));
+
+                            c.headingFeedback.set(Controller.proportional(4.530977902932695));
+                            c.headingBrakeCoefficients.set(Vector2D.cartesian(0.07024306897921102, 0.005941667562194246));
+
+                            c.linearBrakeCoefficients.set(Matrix.diag(0.1056683617953527, -0.03389891868108379));
+                            c.quadraticBrakeCoefficients.set(Matrix.diag(0.0015025370495418736, 0.0033679915169762195));
+
+                            c.maxAchievableForwardVelocity.set(80.79898841655479);
+                            c.maxAchievableStrafeVelocity.set(64.94288002181756);
+                            c.naturalForwardDeceleration.set(24.41527767226122);
+                            c.naturalStrafeDeceleration.set(47.51477536822605);
                         })
         )
         .named("test2027bot")

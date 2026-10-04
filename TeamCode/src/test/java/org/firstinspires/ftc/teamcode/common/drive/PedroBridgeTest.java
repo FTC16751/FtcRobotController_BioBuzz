@@ -88,16 +88,27 @@ public class PedroBridgeTest {
 
     @Test
     public void anIncompleteForesightLambdaIsRefusedByName() {
-        // Test2027's block carries only the top speeds until AutoTune runs (2026-09-15).
+        RobotConfig untuned = Test2027BotConfig.create();
+        untuned.pedroPathing.foresight(c -> {   // only the top speeds, as before AutoTune ran
+            c.maxAchievableForwardVelocity.set(81.1);
+            c.maxAchievableStrafeVelocity.set(67.8);
+        });
         try {
-            PedroBridge.foresightConfigFor(test2027);
+            PedroBridge.foresightConfigFor(untuned);
             fail("expected an IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains(test2027.robotName));
+            assertTrue(e.getMessage(), e.getMessage().contains(untuned.robotName));
             assertTrue(e.getMessage(), e.getMessage().contains("AutoTune"));
         }
         assertTrue("the Pinpoint and mecanum halves still build for AutoTune",
                 PedroBridge.pinpointConfigFor(test2027) != null && PedroBridge.mecanumConfigFor(test2027) != null);
+    }
+
+    @Test
+    public void test2027IsTunedAndBuilds() {   // AutoTune values pasted 2026-10-04
+        ForesightConfig fc = PedroBridge.foresightConfigFor(test2027);
+        assertEquals(80.79898841655479, fc.maxAchievableForwardVelocity.get(), 1e-9);
+        assertEquals(47.51477536822605, fc.naturalStrafeDeceleration.get(), 1e-9);
     }
 
     @Test

@@ -22,10 +22,10 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:12.0.0'
     implementation 'org.firstinspires.ftc:Vision:12.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    // Pedro Pathing 3.0.0 (2026-09-10): revhub carries core; tuning is AutoTune, the robot-hosted
+    // Pedro Pathing 3.0.1 (2026-09-18; 3.0.0 was 2026-09-10): revhub carries core; tuning is AutoTune, the robot-hosted
     // tuning page at http://192.168.43.1:10158 (pedropathing/Tuning.java registers our tuners).
     // Migrated from 2.1.2 on 2026-09-15: doc/PEDRO_ON_TEST2027.md sections 6 and 7. Panels is gone.
-    implementation 'com.pedropathing:revhub:3.0.0'
+    implementation 'com.pedropathing:revhub:3.0.1'
     implementation 'com.pedropathing:tuning:1.0.0'
 }
 
