@@ -200,7 +200,7 @@ mark them as samples. The Coach tests and `P3PedroPathAuto` stay `@Disabled` for
 - `RobotConfig.PedroPathingConfig`: no-arg constructor plus named setters (`mass`, `zeroPowerAccel`,
   `translationalPIDF`, `headingPIDF`, `velocities`, `pathConstraints`, `predictiveBraking`,
   `centripetalScaling`), defaults equal to Pedro's library defaults; the ten-argument constructor is
-  deprecated. `Test2027BotConfig` now carries a `PedroPathingConfig` (untuned). `GGBot2Config`,
+  deprecated. `Test2027BotConfig` now carries a `PedroPathingConfig` (AutoTune values pasted 2026-10-04, section 8). `GGBot2Config`,
   `P3Bot3Config`, `P3Bot1Config` have theirs set to **null** with the old numbers kept in a comment:
   a non-null block now makes DriveUtil build a Follower, and those robots must not change in
   demo season. Consequence: the disabled `P3_Robot3_TeleOp`, which builds its own Follower from
@@ -347,3 +347,33 @@ Open questions for the robot session: whether Foresight's `maxPathSpeed` is the 
 square assumes (if the Pedro square runs flat out, it is not, and the comparison needs another
 knob); whether Pedro's cached motor writes and `moveRobot` interfere when toggling in K9.
 
+
+## 8. Pedro 3.0.1 and the first AutoTune, 2026-10-04
+
+- **3.0.1** (released 2026-09-18) replaces 3.0.0: `com.pedropathing:revhub:3.0.1`, `tuning` still
+  1.0.0. Nothing needed changing in our code (`Test2027PedroSquareAuto` already passes explicit
+  units via `PoseFactory.degrees()`). Release notes: path completion calculation fixed, a 500 ms
+  sleep in `PinpointLocalizer` so the IMU can calibrate (init is a little slower), `PoseFactory`
+  takes explicit angle units and mirrors more, new `driveOrHold()` that holds when the stick is idle.
+- **AutoTune finished on Test2027** and its Foresight lambda is pasted whole into
+  `Test2027BotConfig`, so Pedro is no longer OFF on this robot. Nothing has run on the robot with
+  these numbers yet; K-plan Tests and the Pedro square are the next check.
+
+| Foresight value | Measured |
+|---|---|
+| maxAchievableForwardVelocity / Strafe (in/s) | 80.80 / 64.94 (2.1.2 session: 81.1 / 67.8) |
+| naturalForwardDeceleration / Strafe (in/s²) | 24.42 / 47.51 |
+| forward translational kP, primary / secondary | 0.2832 / 0.1046 |
+| strafe translational kP, primary / secondary | 0.3968 / 0.1466 |
+| heading kP | 4.531 |
+| coast kV / brake kV | 0.01186 / 0.01008 |
+| heading brake, linear / quadratic | 0.07024 / 0.005942 |
+| forward brake, linear / quadratic | 0.10567 / 0.001503 |
+| strafe brake, linear / quadratic | -0.03390 / 0.003368 |
+
+The strafe linear brake coefficient is negative; that is what AutoTune printed, kept as is. If
+strafe stops oddly (overshoot or early braking) in the Tests procedure, re-run Foresight before
+touching it by hand.
+
+Tests run in `PedroBridgeTest`: `test2027IsTunedAndBuilds` pins two of the values, and the
+incomplete-lambda refusal test now builds its own untuned config instead of using Test2027's.
