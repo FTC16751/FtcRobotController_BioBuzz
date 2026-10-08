@@ -526,6 +526,29 @@ public class DriveUtil {
     }
 
     /**
+     * Actively hold a pose with Pedro (it pushes back if the robot is shoved), non-blocking: call
+     * once, keep calling update() every loop. Unlike a path with holdEnd, no move comes first. Holds
+     * until cancel() or the next move; isBusy() is false while holding. Poses are the Pinpoint's
+     * (inches, degrees counter-clockwise). To turn in place, hold the same x and y with a new
+     * heading. Without Pedro in the config this does nothing and lastMoveSucceeded() reads false.
+     */
+    public void holdPose(double xInches, double yInches, double headingDegrees) {
+        cancel();
+        if (follower == null) {
+            lastMoveSucceeded = false;
+            return;
+        }
+        setMotorMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);   // same reason as followPath
+        follower.hold(new Pose(xInches, yInches, Math.toRadians(headingDegrees)));
+        driveState = DriveState.HOLDING_POINT;
+    }
+
+    /** Hold the pose the robot is at right now (for shooting). */
+    public void holdPose() {
+        holdPose(getX(), getY(), getHeadingDegrees());
+    }
+
+    /**
      * Hand TeleOp driving to Pedro (its own drive vectors, centripetal correction, brake mode) for a
      * comparison against moveRobot. Call once, then pedroTeleopDrive(...) every loop while update()
      * runs; cancel() hands driving back to moveRobot. Only in a SEPARATE OpMode from the RUN ME

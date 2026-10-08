@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.drive.PedroBridge;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
-import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
+import org.firstinspires.ftc.teamcode.teams.p3.decode.DecodeConfig;
 
 /**
  * Which robot AutoTune tunes. Pedro 3's tuning procedures (Tuning.java, procedures/) ask for a
@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
  *
  * To tune a different chassis: change ACTIVE_CONFIG, redeploy, open http://192.168.43.1:10158.
  * When AutoTune prints a ForesightConfig at the end, paste its lambda into that robot's
- * PedroPathingConfig (Test2027BotConfig section 6c); the Pinpoint and drivetrain procedures print
+ * PedroPathingConfig (Test2027BotConfig section 6c, DecodeConfig.create()); the Pinpoint and drivetrain procedures print
  * names, directions and offsets that belong in sections 1, 2 and 4 of the same file (offsets in
  * inches there, mm in ours: multiply by 25.4). Robot code never uses this class; it goes through
  * DriveUtil.
@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.teams.testteam2027.Test2027BotConfig;
 public class Constants {
 
     /** The robot AutoTune tunes. Change this one line to tune another chassis. */
-    public static final RobotConfig ACTIVE_CONFIG = Test2027BotConfig.create();
+    public static final RobotConfig ACTIVE_CONFIG = DecodeConfig.create();   // was Test2027BotConfig.create() until 2026-10-06
 
     public static PinpointLocalizer localizer(HardwareMap hardwareMap) {
         return PedroBridge.createPinpointLocalizer(hardwareMap, ACTIVE_CONFIG);

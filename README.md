@@ -8,6 +8,7 @@ Our code lives under [TeamCode/src/main/java/org/firstinspires/ftc/teamcode](Tea
 
 * `common/` shared drive, vision, launcher and hardware code. Never names a specific robot.
 * `teams/starterbot2027/` the goBILDA StarterBot with its launcher.
+* `teams/p3/` P3's robots, one folder each: `rex/` (2027) and `decode/` (the 2025-26 DECODE robot).
 * `teams/testteam2027/` a complete minimal team (config, robot, teleop, autos). Copy this to start a new team; its README walks through it.
 * `teams/demobots/` drive-only TeleOps for a two-wheel pushbot and a basic mecanum chassis, on `DriveUtilSimple`. No config files, no sensors. See its README.
 * `doc/` design notes and plans.

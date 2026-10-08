@@ -13,6 +13,7 @@ teams/p3/
     teleop/             (empty) the driver TeleOp goes here
     auto/               (empty) Pedro autos go here
     test/RexShooterTest "Rex: Shooter Test", the bench test for the shooter prototype
+  decode/               P3's 2025-26 DECODE robot (the old "Bot 3"), see decode/README.md
 ```
 
 A second robot is a sibling folder, `teams/p3/<name>/`, copied from `rex/` and renamed.
