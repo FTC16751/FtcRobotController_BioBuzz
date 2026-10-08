@@ -119,6 +119,7 @@ public class DriveUtil {
 
     // --- General Members ---
     private Telemetry telemetry;
+    private String startupStatus = "";     // what the constructor told telemetry; the SDK clears that at the first update, so addTelemetry repeats it
     private OpMode myOpMode; // Even if unused, grouping it here is correct.
     private RobotConfig config; // The injected robot configuration object
 
@@ -178,12 +179,14 @@ public class DriveUtil {
                 // configured; nothing here reconfigures it (no configurePinpoint()).
                 pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, config.hardware.pinpoint);
                 localizer.reset();                 // same resetPosAndIMU the non-Pedro path does
-                telemetry.addData("DriveUtil", "Pedro Pathing follower built; it owns the Pinpoint");
+                startupStatus = "Pedro Pathing follower built; it owns the Pinpoint";
+                telemetry.addData("DriveUtil", startupStatus);
             } catch (IllegalArgumentException e) {
                 // Pedro 3 cannot run on an untuned robot (PedroBridge says which number is missing).
                 // The rest of the robot must still work, so drive without Pedro and say why.
                 built = null;
-                telemetry.addData("DriveUtil", "Pedro Pathing OFF: %s", e.getMessage());
+                startupStatus = "Pedro Pathing OFF: " + e.getMessage();
+                telemetry.addData("DriveUtil", startupStatus);
             }
         }
         follower = built;
@@ -229,7 +232,8 @@ public class DriveUtil {
     private void initOdo(HardwareMap hardwareMap) {
         if (config.hardware.pinpoint == null) {
             pinpoint = null;
-            telemetry.addData("DriveUtil", "No Pinpoint in this robot's config; odometry disabled");
+            startupStatus = "No Pinpoint in this robot's config; odometry disabled";
+            telemetry.addData("DriveUtil", startupStatus);
             return;
         }
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, config.hardware.pinpoint);
@@ -726,6 +730,7 @@ public class DriveUtil {
 
     public void addTelemetry() {
         telemetry.addLine("--- drive telemetry ---");
+        if (!startupStatus.isEmpty()) telemetry.addData("DriveUtil", startupStatus);
         telemetry.addData("robot config", config.robotName);
         if (pinpoint == null) {
             telemetry.addData("odometry", "none (no Pinpoint in config)");

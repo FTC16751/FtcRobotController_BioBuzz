@@ -27,6 +27,8 @@ public class DecodeDriveTeleop extends OpMode {
     @Override
     public void init_loop() {
         drive.update();
+        telemetry.addData("Status", "Initialized: drive only");   // init() lines are cleared at the first update, so show it here
+        telemetry.addLine("Left stick drive/strafe, right stick X turn, LB slow, Back reset position");
         drive.addTelemetry();
     }
 

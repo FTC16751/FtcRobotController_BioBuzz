@@ -48,6 +48,8 @@ public class DecodeTeleop extends OpMode {
     @Override
     public void init_loop() {
         robot.update();
+        telemetry.addData("Status", "Initialized: %s", robot.config.robotName);   // the SDK clears init()'s lines at the first update
+        robot.addTelemetry();
     }
 
     @Override

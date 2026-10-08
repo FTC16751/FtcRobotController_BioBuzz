@@ -147,10 +147,7 @@ public class DecodeQueueAuto extends OpMode {
         telemetry.addData("Wait Duration", "%.1f sec (DPad Up/Down)", waitDuration);
         telemetry.addLine();
         telemetry.addLine();
-        telemetry.addLine("=== PINPOINT ODOMETRY DATA ===");
-        telemetry.addData("X: ",        robot.drive.pinpoint.getPosition().getX(DistanceUnit.INCH));
-        telemetry.addData("Y: ",        robot.drive.pinpoint.getPosition().getY(DistanceUnit.INCH));
-        telemetry.addData("Heading: ",  robot.drive.pinpoint.getPosition().getHeading(AngleUnit.DEGREES));
+        robot.drive.addTelemetry();   // Pedro status and the Pinpoint pose
     }
 
 
