@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class L03_Gamepad extends LinearOpMode {
 
     // TODO 1: Declare a DcMotor and Servo
+    private DcMotor motor;
+    private Servo servo;
     // Hint: private DcMotor motor;
     //       private Servo servo;
     

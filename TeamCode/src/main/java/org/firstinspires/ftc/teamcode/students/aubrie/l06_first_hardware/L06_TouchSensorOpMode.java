@@ -14,14 +14,13 @@ package org.firstinspires.ftc.teamcode.students.aubrie.l06_first_hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@com.qualcomm.robotcore.eventloop.opmode.Disabled   // DELETE this line when you start the lesson
 @TeleOp(name = "L06 Touch Sensor - Aubrie", group = "Aubrie")
 public class L06_TouchSensorOpMode extends OpMode {
 
     // TODO 1: Create an L06_ProgrammingBoard object named 'board'
     //
     //   L06_ProgrammingBoard board = new L06_ProgrammingBoard();
-
+    L06_ProgrammingBoard board = new L06_ProgrammingBoard();
 
     // For press counting (edge detection)
     boolean wasTouchPressed = false;
@@ -37,6 +36,7 @@ public class L06_TouchSensorOpMode extends OpMode {
         //         hardwareMap is provided automatically by the OpMode base class.
         //
         //   board.init(hardwareMap);
+        board.init(hardwareMap);
 
 
         telemetry.addLine("L06: Touch sensor ready. Press and release the sensor.");
@@ -52,10 +52,12 @@ public class L06_TouchSensorOpMode extends OpMode {
         //         Store the result in a boolean variable named 'isPressed'
         //
         //   boolean isPressed = board.isTouchSensorPressed();
+        boolean isMyTouchSensorPressed = board.isTouchSensorPressed();
 
 
         // TODO 4: Display the raw boolean state:
         //   telemetry.addData("Touch Pressed", isPressed);
+        telemetry.addData("Was it pressed or not am i cooking: ", isMyTouchSensorPressed);
 
 
         // TODO 5: Display a human-readable string instead of true/false.

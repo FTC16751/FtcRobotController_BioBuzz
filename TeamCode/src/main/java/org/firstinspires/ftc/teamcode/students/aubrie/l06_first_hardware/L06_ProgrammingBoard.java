@@ -20,6 +20,7 @@ public class L06_ProgrammingBoard {
     // TODO 1: Declare a private DigitalChannel field named 'touchSensor'
     //
     //   private DigitalChannel touchSensor;
+    private DigitalChannel touchSensor;
 
 
     // ── INIT ───────────────────────────────────────────────────────────────────
@@ -30,11 +31,13 @@ public class L06_ProgrammingBoard {
         //         The name in quotes MUST match your configuration file.
         //
         //   touchSensor = hwMap.get(DigitalChannel.class, "touch_sensor");
+        touchSensor = hwMap.get(DigitalChannel.class,"george_touch_sensor");
 
 
         // TODO 3: Set the channel mode to INPUT (we are reading from it).
         //
         //   touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        touchSensor.setMode(DigitalChannel.Mode.INPUT);
 
     }
 
@@ -47,9 +50,9 @@ public class L06_ProgrammingBoard {
     //         (inverted logic). Your method should return TRUE when pressed.
     //         Use the ! operator to flip the value.
     //
-    //   public boolean isTouchSensorPressed() {
-    //       return !touchSensor.getState();
-    //   }
+       public boolean isTouchSensorPressed() {
+           return !touchSensor.getState();
+       }
 
 
     // TODO 5 (BONUS): Write a companion method isTouchSensorReleased()
