@@ -2,19 +2,23 @@
 
 **Written 2026-10-06.** Companion to `PEDRO_ON_TEST2027.md` (why Pedro failed in 2025, how the Pedro 3 bridge
 works) and `DRIVE_STRATEGY_REVIEW.md`. Sources: `DecodeQueueAuto`, `DriveUtil.driveTo`, `PinpointPIDLoop`,
-`DecodeConstants.Waypoints`, and the Pedro 3.0.1 `core` jar (read with `javap`). Nothing here has run on the robot.
+`DecodeConstants.Waypoints`, and the Pedro 3.0.1 `core` jar (read with `javap`). **Updated 2026-10-07: Decode is tuned.** The AutoTune Foresight lambda is in `DecodeConfig`, so Pedro is on.
+No Pedro path has been run on the robot yet; section 5 says what is left.
 
 ## 1. What was done
 
-- `DecodeConfig` now passes an empty `PedroPathingConfig` (it was `null`). With it empty, `DriveUtil` tries Pedro,
-  `PedroBridge` refuses the untuned config, and `DriveUtil` falls back to the plain Pinpoint and says
-  "Pedro Pathing OFF". So **the robot drives exactly as it did until AutoTune's numbers are pasted.** The one
-  visible change is a slower init (Pedro's localizer sleeps 500 ms, and the Pinpoint is configured twice).
+- `DecodeConfig` carries a `PedroPathingConfig` (it was `null` in the Decode season). It started empty, in which case
+  `PedroBridge` refuses the config and `DriveUtil` falls back to the plain Pinpoint with "Pedro Pathing OFF". The
+  AutoTune Foresight lambda has since been pasted in, so **Pedro is on.** Every OpMode that builds a `DriveUtil` on this
+  config now has a Pedro Follower that owns the Pinpoint, including `DecodeTeleop` (it still drives through
+  `moveRobot`; Pedro is only stepped during a Pedro move) and `DecodeQueueAuto` (still `driveTo`). Init is a little
+  slower (the localizer sleeps 500 ms).
 - `pedropathing/Constants.ACTIVE_CONFIG` now points at `DecodeConfig.create()`, so AutoTune
   (`http://192.168.43.1:10158`) tunes Decode. **It no longer tunes Test2027** until that line is flipped back; it is
   one global, by design.
-- Not done, because it cannot be: the Foresight numbers. They are measured per chassis (top speed, braking,
-  gains) and Test2027's would be wrong here.
+- The Foresight numbers (top speeds 77.2 forward / 63.5 strafe in/s, heading kP 5.83) were measured on the robot with
+  AutoTune. Test2027's are different and must not be reused. Re-run AutoTune if the weight or wheels change.
+- Done on top of this: `DriveUtil.holdPose` (4.1) and `DecodePedroParkAuto`, a one-line Pedro park.
 
 ## 2. What the current auto actually does
 
@@ -96,12 +100,10 @@ Follower is never stepped. Pedro TeleOp is optional and separate (`Test2027Pedro
 
 ## 5. Order of work
 
-1. **Hub check.** Deploy; the TeleOp and the Pinpoint auto behave as before; telemetry says "Pedro Pathing OFF".
-2. **AutoTune** (`ROBOT_TEST_PLAN.md` section K, same steps): Mecanum Tuner (names and directions must match
-   `DecodeConfig`), Pinpoint Tuner (it prints inches: 50 mm = 1.97 in, -152 mm = -5.98 in should come back close),
-   Foresight Tuner (48 in clear forward and left). Paste the lambda into `DecodeConfig`'s `PedroPathingConfig`.
-   Telemetry then says the Follower owns the Pinpoint.
-3. **AutoTune Tests**: Line, Curve, Hold. Push the robot while it holds.
+1. **Hub check.** Deploy; the TeleOp and the Pinpoint auto behave as before with Pedro on (telemetry says the Follower
+   owns the Pinpoint). Pose in `Decode: Drive Only` still tracks a push.
+2. **AutoTune: done** (Mecanum, Pinpoint, Foresight); the lambda is in `DecodeConfig`.
+3. **AutoTune Tests** (Line, Curve, Hold), then `Decode: Park Red (Pedro)`. Push the robot while it holds.
 4. **Baseline.** Run today's `Decode: Auto Queue` (Pinpoint) from each start and write down the time to finish
    each cycle. That is the number Pedro has to beat. Use the existing telemetry (`State Time`, `Total Time`).
 5. **Port, smallest first**, each step re-measured against the baseline:
