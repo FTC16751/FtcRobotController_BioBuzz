@@ -11,6 +11,7 @@ teams/p3/decode/
   Turret.java            servo turret with magnetic-switch homing (not used by the TeleOp)
   teleop/DecodeTeleop    "Decode: Teleop (RUN ME)", single driver
   teleop/DecodeDriveTeleop "Decode: Drive Only", drive motors and Pinpoint only
+  auto/DecodePedroParkAuto "Decode: Park Red (Pedro)", one Pedro line, drive only
   auto/DecodeQueueAuto   "Decode: Auto Queue", red/blue, close/far, 0-4 cycles, optional gate
   test/DecodeEncoderMoveCheck, test/DecodeTurretCalibration
 ```
@@ -25,8 +26,8 @@ Same hardware and same numbers. The old `P3_Robot3` plus `P3_IntakeUtil`, `P3_La
 `P3_RubberBandIndexerUtil` became `DecodeRobot` built from `common/subsystems` (Roller, VelocityMotor,
 Launcher, PresetServo), and `DriveUtil2026b` is now `common/drive/DriveUtil`.
 
-- **Pedro Pathing is configured but untuned** (`doc/PEDRO_ON_DECODE.md`). The old config had none. Until
-  AutoTune has run, DriveUtil reports "Pedro Pathing OFF" and the auto uses `DriveUtil.driveTo` on the Pinpoint.
+- **Pedro Pathing is on and tuned** (AutoTune, `doc/PEDRO_ON_DECODE.md`). The old config had none. `DecodeQueueAuto`
+  still drives with `DriveUtil.driveTo` on the Pinpoint; only `DecodePedroParkAuto` uses Pedro so far.
 - **Shots finish after the trigger is released.** The old TeleOp only stepped the shot sequence while
   the trigger was held; `Launcher.update()` now steps it every loop.
 - **Intake and indexer zero-power behavior:** the intake used to be set to FLOAT; it now uses the SDK

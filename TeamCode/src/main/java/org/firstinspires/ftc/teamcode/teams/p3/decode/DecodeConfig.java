@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.teams.p3.decode;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
+import com.pedropathing.controllers.Controller;
+import com.pedropathing.math.Matrix;
+import com.pedropathing.math.Vector2D;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -61,11 +64,34 @@ public final class DecodeConfig {
                         .xyToleranceMm(18.0).yawToleranceRad(0.055)
                         .xyGains(0.00350, 0.000010, 0.00035).xyAccel(8.0)
                         .yawGains(2.5, 0.00005, 0.08).yawAccel(10.0),
-                // Pedro Pathing 3: empty until AutoTune has run on this robot (doc/PEDRO_ON_DECODE.md).
-                // Until then DriveUtil says "Pedro Pathing OFF" in telemetry and the robot drives on
-                // the Pinpoint with driveTo, exactly as in the Decode season. Paste AutoTune's
-                // Foresight lambda here whole (doc/PEDRO_ON_TEST2027.md, section 8 shows what it looks like).
-                new RobotConfig.PedroPathingConfig())
+                // Pedro Pathing 3, tuned with AutoTune on this robot (Foresight lambda pasted whole, 2026-10).
+                // Re-run AutoTune and paste again if the robot's weight or wheels change
+                // (doc/PEDRO_ON_DECODE.md, doc/PEDRO_ON_TEST2027.md section 8).
+                new RobotConfig.PedroPathingConfig()
+                        .foresight(c -> {
+                            Controller primaryTranslationalForward = Controller.proportional(0.3771885791283783);
+                            Controller secondaryTranslationalForward = Controller.proportional(0.13936110132348004);
+                            Controller primaryTranslationalLateral = Controller.proportional(0.6069154710320314);
+                            Controller secondaryTranslationalLateral = Controller.proportional(0.22423904946627538);
+
+                            c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
+                            c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
+
+                            c.coast.set(Controller.proportionalFeedforward(0.01216235802064684));
+                            c.brake.set(Controller.proportionalFeedforward(0.010338004317549814));
+
+                            c.headingFeedback.set(Controller.proportional(5.826051056815965));
+                            c.headingBrakeCoefficients.set(Vector2D.cartesian(0.05217106188519486, 0.004088424046176246));
+
+                            c.linearBrakeCoefficients.set(Matrix.diag(0.12768784975010228, 0.07107016915442102));
+                            c.quadraticBrakeCoefficients.set(Matrix.diag(9.611913921042032E-4, 0.0015287313360453046));
+
+                            c.maxAchievableForwardVelocity.set(77.19774973164238);
+                            c.maxAchievableStrafeVelocity.set(63.50269229731865);
+                            c.naturalForwardDeceleration.set(28.48893176747052);
+                            c.naturalStrafeDeceleration.set(61.939145054980116);
+                        })
+        )
             .named("decode")
             // Device names, exactly as in the Control Hub configuration. Drive motors, imu, pinpoint
             // and limelight use the standard names, so only the LED is named here.

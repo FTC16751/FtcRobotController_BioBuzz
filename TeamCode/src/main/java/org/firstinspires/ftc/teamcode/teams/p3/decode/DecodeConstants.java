@@ -86,6 +86,8 @@ public final class DecodeConstants {
     public static final class Drive {
         /** arcadeDrive speed in TeleOp. 0.25 is what the Decode TeleOp ran. */
         public static final double TELEOP_SPEED = 0.25;
+        /** Pedro path speed cap, a fraction of top speed. A first guess: raise it once the path runs clean. */
+        public static final double PEDRO_PATH_SPEED = 0.6;
     }
 
     /** Autonomous waypoints on the Pinpoint's frame, which resets to (0, 0) at the start. */
