@@ -190,6 +190,13 @@ public class DriveUtil {
             }
         }
         follower = built;
+        if (follower != null) {
+            // Pedro's Mecanum constructor sets FLOAT on the same motors, after initMotors set BRAKE.
+            // moveRobot (TeleOp, aiming) relies on BRAKE to stop; a Pedro move sets what it needs itself.
+            for (DcMotorEx motor : motors) {
+                motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            }
+        }
         if (follower == null) {
             initOdo(hardwareMap);
         }
