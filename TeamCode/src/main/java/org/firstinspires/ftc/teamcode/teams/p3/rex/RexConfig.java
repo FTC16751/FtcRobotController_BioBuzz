@@ -37,7 +37,7 @@ public final class RexConfig {
     public static final DcMotorSimple.Direction INTAKE_DIR   = FORWARD;   // UNVERIFIED
     public static final DcMotorSimple.Direction TRANSFER_DIR = FORWARD;   // UNVERIFIED
     public static final DcMotorSimple.Direction FEEDER_DIR   = FORWARD;   // UNVERIFIED
-    public static final DcMotorSimple.Direction SHOOTER_DIR  = FORWARD;   // UNVERIFIED: the ball should leave the wheel, not get pulled in
+    public static final DcMotorSimple.Direction SHOOTER_DIR  = REVERSE;   // UNVERIFIED: the ball should leave the wheel, not get pulled in
 
     public static RobotConfig create() {
         return new RobotConfig(
