@@ -49,6 +49,7 @@ public class CommonConstants {
         public static final int MOTIF_PIPELINE     = 0;   // AprilTags 21/22/23, the obelisk motif
         public static final int RED_GOAL_PIPELINE  = 1;   // AprilTag 24
         public static final int BLUE_GOAL_PIPELINE = 2;   // AprilTag 20
+        public static final int HIVE_TAG_PIPELINE  = 4;   // BIOBUZZ Hive clusters, AprilTags 30-45, tag size 3.25 in (82.55 mm)
         /** The season's goal tag ids, so code can pick a pipeline from a tag id (VisionUtil.selectPipelineForTag). */
         public static final int RED_GOAL_TAG  = 24;
         public static final int BLUE_GOAL_TAG = 20;
