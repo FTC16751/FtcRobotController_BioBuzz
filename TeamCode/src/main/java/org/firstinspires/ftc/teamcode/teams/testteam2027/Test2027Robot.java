@@ -109,9 +109,7 @@ public class Test2027Robot {
         if (!LogUtil.isRunning()) return;
         drive.addLog();
         LogUtil.logBattery();
-        LogUtil.log("Launcher/Velocity", launcher.getVelocity());
-        LogUtil.log("Launcher/Target", launcher.getTargetVelocity());
-        LogUtil.log("Launcher/State", launcher.getState().toString());
+        launcher.log();
         boolean visible = vision.isTargetVisible();
         LogUtil.log("Vision/TagVisible", visible);
         LogUtil.log("Vision/TagId", visible ? vision.getDetectedTagId() : -1);

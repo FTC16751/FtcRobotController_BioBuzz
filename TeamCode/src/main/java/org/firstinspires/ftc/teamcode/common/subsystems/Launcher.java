@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.common.subsystems;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.vision.AimTarget;
 import org.firstinspires.ftc.teamcode.common.Clock;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 import org.firstinspires.ftc.teamcode.common.launch.FlywheelVelocityModel;
 import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 
@@ -149,5 +150,22 @@ public class Launcher {
         if (!sequence.getLastAbortReason().isEmpty()) {
             telemetry.addData(label + " last abort", sequence.getLastAbortReason());
         }
+    }
+
+    /**
+     * Everything about the launcher for the AdvantageScope log, under "Launcher/": Velocity, Target
+     * (what was asked for), State, Ready, AimSource, the wheel's motors, the feeder and the shot
+     * counters. Call once per loop; free when LogUtil is not running.
+     */
+    public void log() {
+        if (!LogUtil.isRunning()) return;
+        LogUtil.log("Launcher/Velocity", wheel.getVelocity());
+        LogUtil.log("Launcher/Target", velocity);
+        LogUtil.log("Launcher/State", sequence.getState());
+        LogUtil.log("Launcher/Ready", wheel.isReady());
+        LogUtil.log("Launcher/AimSource", getAimSource());
+        wheel.log("Launcher/Wheel");
+        feeder.log("Launcher/Feeder");
+        sequence.log("Launcher/Sequence");
     }
 }
