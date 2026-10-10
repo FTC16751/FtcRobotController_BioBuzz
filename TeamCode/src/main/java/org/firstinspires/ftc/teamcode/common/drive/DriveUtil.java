@@ -112,6 +112,9 @@ public class DriveUtil {
     private double asyncHoldTimeSec;
     private double asyncTimeoutSec;
     private final ElapsedTime asyncTimer = new ElapsedTime();
+    private double asyncTargetHeadingDeg;          // turnToHeading on the IMU (robots with no Pinpoint)
+    // IMU turn tuning, from FIRST's RobotAutoDriveByGyro_Linear sample. Start values: tune on the robot.
+    private static final double IMU_TURN_KP = 0.02, IMU_TURN_MIN_POWER = 0.06, IMU_TURN_THRESHOLD_DEG = 1.0;
     private boolean lastMoveSucceeded = false;      // result of the most recent async move (waypoint or tag)
 
     // --- Field-centric TeleOp: which way is "forward" for the driver (see resetFieldForward) ---
@@ -125,7 +128,7 @@ public class DriveUtil {
 
     // --- Enums ---
     private enum Direction { x, y, h }
-    private enum DriveState { IDLE, DRIVING_TO_POINT_PINPOINT, ALIGNING_TO_APRILTAG, FOLLOWING_PATH, HOLDING_POINT, TELEOP_PEDRO }
+    private enum DriveState { IDLE, DRIVING_TO_POINT_PINPOINT, ALIGNING_TO_APRILTAG, TURNING_IMU, FOLLOWING_PATH, HOLDING_POINT, TELEOP_PEDRO }
     private DriveState driveState = DriveState.IDLE;
 
     /**
@@ -468,8 +471,21 @@ public class DriveUtil {
         driveState = DriveState.DRIVING_TO_POINT_PINPOINT;
     }
 
-    /** Turn in place to face a field heading (degrees, counter-clockwise positive), non-blocking. */
+    /**
+     * Turn in place to face a field heading (degrees, counter-clockwise positive), non-blocking.
+     * With a Pinpoint the heading is in its frame. Without one the Control Hub IMU does it, and 0
+     * is wherever resetHeading() was last called (the robot's start by default); no calibration
+     * number needed. A robot with neither finishes at once and lastMoveSucceeded() reads false.
+     */
     public void turnToHeading(double headingDegrees) {
+        if (pinpoint == null && imu != null) {
+            cancel();
+            asyncTargetHeadingDeg = headingDegrees;
+            asyncTimeoutSec = MOVE_MIN_TIMEOUT_SEC;   // a turn in place; generous
+            asyncTimer.reset();
+            driveState = DriveState.TURNING_IMU;
+            return;
+        }
         startDriveTo(getX(), getY(), headingDegrees, defaultTurnSpeed);
     }
 
@@ -624,7 +640,7 @@ public class DriveUtil {
      * driver. Only fieldCentricDrive uses this; waypoints and autos keep the Pinpoint's own frame.
      */
     public void resetFieldForward() {
-        fieldForwardOffsetRad = getPinpointHeading();
+        fieldForwardOffsetRad = fieldHeadingRad();
     }
 
     /** Time limit for a startDriveTo: three times the straight-line time at this power, plus 3 s, never under 3 s. */
@@ -714,6 +730,12 @@ public class DriveUtil {
     public double getHeading() {
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         return (orientation.getYaw(AngleUnit.DEGREES) - headingOffset);
+    }
+
+    /** Heading for field-centric driving: the Pinpoint's, or the IMU's when the robot has no Pinpoint. */
+    private double fieldHeadingRad() {
+        if (pinpoint == null && imu != null) return Math.toRadians(getHeading());
+        return getPinpointHeading();
     }
 
     public double getPinpointHeading() {
@@ -827,9 +849,8 @@ public class DriveUtil {
     }
 
     public void fieldCentricDrive(double strafe, double drive, double turn, double speed) {
-        // Heading from the Pinpoint (radians, counter-clockwise positive). No Pinpoint: 0,
-        // and this silently becomes robot-centric driving.
-        double botHeading = getPinpointHeading() - fieldForwardOffsetRad;
+        // Heading from the Pinpoint, or the Control Hub IMU when there is none (radians, counter-clockwise positive).
+        double botHeading = fieldHeadingRad() - fieldForwardOffsetRad;
 
         // Rotate the stick command from the field frame into the robot frame. The stick's
         // strafe is right-positive; fieldToRobot takes field-left, hence the minus.
@@ -1125,6 +1146,23 @@ public class DriveUtil {
                     driveState = DriveState.IDLE;
                 }
                 break;
+            case TURNING_IMU: {
+                double error = HeadingMath.errorDegrees(asyncTargetHeadingDeg, getHeading());
+                if (Math.abs(error) <= IMU_TURN_THRESHOLD_DEG) {
+                    stopRobot();
+                    lastMoveSucceeded = true;
+                    driveState = DriveState.IDLE;
+                } else if (asyncTimer.seconds() > asyncTimeoutSec) {
+                    stopRobot();
+                    lastMoveSucceeded = false;
+                    driveState = DriveState.IDLE;
+                } else {
+                    // moveRobot's yaw is clockwise-positive; a positive error means turn counter-clockwise
+                    moveRobot(0, 0, -HeadingMath.turnPower(error, IMU_TURN_KP, IMU_TURN_MIN_POWER,
+                            defaultTurnSpeed, IMU_TURN_THRESHOLD_DEG));
+                }
+                break;
+            }
             case ALIGNING_TO_APRILTAG:
                 // Step the tag approach; it reads the sighting and hands back three powers.
                 if (tagApproach.update(tagSighting)) {
