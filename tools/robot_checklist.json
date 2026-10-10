@@ -1,0 +1,14 @@
+[
+  {"id": "batt",     "group": "Power and safety", "text": "Battery is charged and strapped in"},
+  {"id": "wires",    "group": "Power and safety", "text": "Wires are tucked away from wheels and moving parts"},
+  {"id": "drive-fwd","group": "Drive",            "text": "Drive motors all spin the right way (forward, strafe, turn)"},
+  {"id": "pinpoint", "group": "Drive",            "text": "Pinpoint reads a sensible x, y and heading when you push the robot"},
+  {"id": "auto",     "group": "Drive",            "text": "Auto runs once from the starting spot without hitting anything"},
+  {"id": "fly",      "group": "Launcher",         "text": "Flywheel reaches ready speed and holds it"},
+  {"id": "feed",     "group": "Launcher",         "text": "Feeder pushes one ball and stops"},
+  {"id": "claw",     "group": "Mechanisms",       "text": "Claw / servo presets open and close fully"},
+  {"id": "ll",       "group": "Vision",           "text": "Limelight connects and sees a tag"},
+  {"id": "cam",      "group": "Vision",           "text": "Webcam shows the Hive tag in the camera preview"},
+  {"id": "led",      "group": "Final",            "text": "Status LEDs show the right state"},
+  {"id": "log",      "group": "Final",            "text": "Logging is on and a fresh log file appears after a short run"}
+]
