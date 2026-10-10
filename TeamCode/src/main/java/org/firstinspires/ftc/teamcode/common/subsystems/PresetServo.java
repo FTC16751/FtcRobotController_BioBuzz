@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Clock;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -162,6 +163,15 @@ public class PresetServo {
 
     public void addTelemetry(Telemetry telemetry, String label) {
         telemetry.addData(label, "%s %.3f%s", presetName, position, isBusy() ? " (flick)" : "");
+    }
+
+    // ---------------------------------------------------------------- logging
+
+    /** To the AdvantageScope log: "group/Preset", "group/Position" (NaN until commanded) and "group/Flicking". */
+    public void log(String group) {
+        LogUtil.log(group + "/Preset", presetName);
+        LogUtil.log(group + "/Position", position);
+        LogUtil.log(group + "/Flicking", isBusy());
     }
 
     // ---------------------------------------------------------------- internals

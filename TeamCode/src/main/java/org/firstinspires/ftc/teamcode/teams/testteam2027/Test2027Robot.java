@@ -4,12 +4,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.vision.AimLed;
-import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
 import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.firstinspires.ftc.teamcode.common.hardware.LedUtil;
-import org.firstinspires.ftc.teamcode.common.LogUtil;
-import org.firstinspires.ftc.teamcode.common.RobotConfig;
-import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
+import org.firstinspires.ftc.teamcode.common.RobotBase;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
@@ -30,25 +27,13 @@ import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
  * the battery, once per loop. stopAll() closes the file; a run that never reaches stop() keeps what
  * was flushed.
  */
-public class Test2027Robot {
+public class Test2027Robot extends RobotBase {
 
-    public final RobotConfig config;
-    public final DriveUtil drive;
-    public final VisionUtil vision;       // null-safe inside: reports nothing if the Limelight is absent
-    public final Launcher launcher;       // flywheel + feeder + shot sequence + distance table
     public final LedUtil led;             // null if the config has no LED
     private final AimLed aimLed;          // LED shows lined up / turn left / turn right / no goal
-    public final Telemetry telemetry;
 
     public Test2027Robot(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
-        this.config = Test2027BotConfig.create();
-
-        if (Test2027Constants.Logging.ENABLED) {
-            LogUtil.start(hardwareMap);   // one .wpilog per OpMode run, named by time and OpMode
-        }
-        drive  = new DriveUtil(hardwareMap, telemetry, null, config);
-        vision = new VisionUtil(hardwareMap, telemetry, config.hardware.limelight);
+        super(hardwareMap, telemetry, Test2027BotConfig.create(), Test2027Constants.Logging.ENABLED);
 
         // The launcher: two flywheel motors held at a velocity, two feeder servos, and the shot
         // sequence. Names and directions from the config, numbers from the constants.
@@ -82,39 +67,12 @@ public class Test2027Robot {
         drive.setDefaultHoldTime(Test2027Constants.Auto.HOLD_SEC);
     }
 
-    /** Point the camera's pipeline at this tag (goal tags and motif tags live on different pipelines). */
-    public void lookForTag(int tagId) {
-        vision.selectPipelineForTag(tagId);
-    }
-
-    /** Call in every loop() and init_loop(). Steps the Pinpoint, any async drive, the camera, the launcher and the LED. */
-    public void update() {
-        vision.update();     // camera first, so this loop's drive step sees this loop's tag
-        drive.update();
-        launcher.update();
+    @Override protected void onUpdate() {
         aimLed.update();     // does nothing without an LED
-        addLog();
     }
 
-    public void stopAll() {
-        drive.cancel();
-        drive.stop();
-        launcher.stop();
-        vision.stop();
-        LogUtil.stop();      // flush and close this run's log
-    }
-
-    /** This loop's values for the AdvantageScope log. Nothing happens when logging is off. */
-    private void addLog() {
-        if (!LogUtil.isRunning()) return;
-        drive.addLog();
-        LogUtil.logBattery();
-        launcher.log();
-        vision.log("Vision");
-    }
-
-    /** The standard telemetry footer for this robot. */
-    public void addTelemetry() {
+    /** Launcher, drive and the tag approach, plus the sighting in detail instead of the camera's own lines. */
+    @Override public void addTelemetry() {
         launcher.addTelemetry(telemetry, "launcher");
         drive.addTelemetry();
         drive.getTagApproach().addTelemetry(telemetry);

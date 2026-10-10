@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -243,6 +244,17 @@ public class PresetMotor {
     public void addTelemetry(Telemetry telemetry, String label) {
         telemetry.addData(label, "%s  pos %d  target %d%s%s", presetName, getPosition(), target,
                 isBusy() ? "  moving" : "", isAtHome() ? "  HOME" : "");
+    }
+
+    // ---------------------------------------------------------------- logging
+
+    /** To the AdvantageScope log: "group/Preset", "Position", "Target", "Moving" and "AtHome". */
+    public void log(String group) {
+        LogUtil.log(group + "/Preset", presetName);
+        LogUtil.log(group + "/Position", getPosition());
+        LogUtil.log(group + "/Target", target);
+        LogUtil.log(group + "/Moving", isBusy());
+        LogUtil.log(group + "/AtHome", isAtHome());
     }
 
     // ---------------------------------------------------------------- internals
