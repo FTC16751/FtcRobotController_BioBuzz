@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.firstinspires.ftc.teamcode.common.CommonConstants;
@@ -40,6 +41,8 @@ public class VisionUtil implements Vision {
     private double robotDistanceToTagInTagSpace = -1.0;
     private double lastTx = 0.0; // Horizontal angle
     private LLResult lastValidResult = null;
+    private int aimClusterBase = -1;                  // set by lookForTag() with a cluster base id (HiveMath); aim at that cluster's centre
+    private ClusterMath.Result aimCluster = null;     // that cluster this loop, or null
     private static final double METERS_TO_INCHES = CommonConstants.METERS_TO_INCHES;
 
     // --- Pose Data ---
@@ -141,6 +144,7 @@ public class VisionUtil implements Vision {
         processTagSpacePose(primaryTag);
         processFieldSpacePose(primaryTag);
         processMegaTagPose(currentResult);
+        aimCluster = aimClusterBase >= 0 ? solveCluster(aimClusterBase) : null;
 
     }
 
@@ -241,7 +245,7 @@ public class VisionUtil implements Vision {
      * @return The tag ID, or -1 if no target is visible.
      */
     public int getDetectedTagId() {
-
+        if (aimCluster != null) return aimClusterBase;   // a cluster has no id of its own; its base id is its key
         return lastTagId;
     }
 
@@ -265,6 +269,7 @@ public class VisionUtil implements Vision {
      * @return The distance in INCHES, or a negative value if no target is visible.
      */
     public double getDistanceToTagInches() {
+        if (aimCluster != null) return Math.hypot(aimCluster.rightIn, aimCluster.forwardIn);
         if (!isTargetVisible) {
             return -1.0;
         }
@@ -283,6 +288,7 @@ public class VisionUtil implements Vision {
      * @return The angle in degrees. Positive is right, negative is left.
      */
     public double getTargetAngleX() {
+        if (aimCluster != null) return Math.toDegrees(Math.atan2(aimCluster.rightIn, aimCluster.forwardIn));
         return lastTx;
     }
 
@@ -336,7 +342,7 @@ public class VisionUtil implements Vision {
      * @return true if a target is currently visible, false otherwise.
      */
     public boolean isTargetVisible() {
-        return isTargetVisible;
+        return isTargetVisible && (aimClusterBase < 0 || aimCluster != null);
     }
 
     // =================================================================================
@@ -362,10 +368,45 @@ public class VisionUtil implements Vision {
     private static final double TAG_SQUARE_YAW_OFFSET_DEG = 0.0;   // pitch reads 0 when square; no offset needed
 
     private LLResultTypes.FiducialResult sightedTag = null;   // the tag canSee() last found, this loop
+    private ClusterMath.Result sightedCluster = null;         // or the cluster it found, when asked for a cluster base id
 
-    /** Call this first each loop; the three getters below describe the tag it found. */
+    private static double rightOf(LLResultTypes.FiducialResult t) {
+        return TAG_RIGHT_SIGN * t.getTargetPoseRobotSpace().getPosition().x * METERS_TO_INCHES;
+    }
+
+    private static double forwardOf(LLResultTypes.FiducialResult t) {
+        return TAG_FORWARD_SIGN * t.getTargetPoseRobotSpace().getPosition().z * METERS_TO_INCHES;
+    }
+
+    /**
+     * The cluster whose first tag id is base (HiveMath.RED_SCORING and the others), built from
+     * whichever of its four tags the Limelight reports this loop. Null if it reports none.
+     */
+    private ClusterMath.Result solveCluster(int base) {
+        int[] index = new int[4];
+        double[] right = new double[4], forward = new double[4];
+        int n = 0;
+        for (LLResultTypes.FiducialResult t : getFiducialDetections()) {
+            int i = t.getFiducialId() - base;
+            if (i < 0 || i > 3 || t.getTargetPoseRobotSpace() == null) continue;
+            index[n] = i; right[n] = rightOf(t); forward[n] = forwardOf(t); n++;
+        }
+        return ClusterMath.solve(Arrays.copyOf(index, n), Arrays.copyOf(right, n), Arrays.copyOf(forward, n));
+    }
+
+    /**
+     * Call this first each loop; the three getters below describe what it found. A tag id of
+     * HiveMath.RED_SCORING (30), RED_AUDIENCE (34), BLUE_AUDIENCE (38) or BLUE_SCORING (42) means
+     * that whole cluster: the getters then describe its centre.
+     */
     @Override
     public boolean canSee(int tagId) {
+        if (HiveMath.clusterOf(tagId) == tagId) {
+            sightedTag = null;
+            sightedCluster = solveCluster(tagId);
+            return sightedCluster != null;
+        }
+        sightedCluster = null;
         sightedTag = getFiducialById(tagId);
         if (sightedTag != null && sightedTag.getTargetPoseRobotSpace() == null) {
             sightedTag = null;
@@ -375,14 +416,21 @@ public class VisionUtil implements Vision {
 
     @Override
     public double forwardInches() {
+        if (sightedCluster != null) return sightedCluster.forwardIn;
         if (sightedTag == null) return 0.0;
-        return TAG_FORWARD_SIGN * sightedTag.getTargetPoseRobotSpace().getPosition().z * METERS_TO_INCHES;
+        return forwardOf(sightedTag);
     }
 
     @Override
     public double rightInches() {
+        if (sightedCluster != null) return sightedCluster.rightIn;
         if (sightedTag == null) return 0.0;
-        return TAG_RIGHT_SIGN * sightedTag.getTargetPoseRobotSpace().getPosition().x * METERS_TO_INCHES;
+        return rightOf(sightedTag);
+    }
+
+    /** How many of the cluster's four tags canSee() built the cluster from (1 = centre uncorrected); 0 if it last looked for a single tag. */
+    public int sightedClusterMembers() {
+        return sightedCluster == null ? 0 : sightedCluster.members;
     }
 
     /**
@@ -400,6 +448,7 @@ public class VisionUtil implements Vision {
 
     @Override
     public double squareUpDegrees() {
+        if (sightedCluster != null) return sightedCluster.squareUpDeg;   // from the line through the tags, not from one tag's orientation
         if (sightedTag == null) return 0.0;
         // Rotation about the vertical axis is the PITCH component in the SDK's Limelight pose (Y is down).
         double aboutVerticalDeg = sightedTag.getTargetPoseRobotSpace().getOrientation().getPitch(AngleUnit.DEGREES);
@@ -449,14 +498,18 @@ public class VisionUtil implements Vision {
     /**
      * Switch to the pipeline that can see this tag. The Limelight only reports tags its current
      * pipeline is configured for: 21/22/23 (motif) on pipeline 0, the red goal 24 on 1, the blue
-     * goal 20 on 2 (CommonConstants.Limelight). A tag approach to a goal tag has to call this
+     * goal 20 on 2, the BIOBUZZ Hive tags 30-45 on 4 (CommonConstants.Limelight). A tag approach to a goal tag has to call this
      * first, or the tag is never "seen". Switching takes a moment; do it in init, not per loop.
      */
-    @Override public void lookForTag(int tagId) { selectPipelineForTag(tagId); }
+    @Override public void lookForTag(int tagId) {
+        aimClusterBase = HiveMath.clusterOf(tagId) == tagId ? tagId : -1;   // aim at a cluster's centre, not at whichever tag is first
+        selectPipelineForTag(tagId);
+    }
 
     public void selectPipelineForTag(int tagId) {
         if (tagId == CommonConstants.Limelight.BLUE_GOAL_TAG)      setPipeline(CommonConstants.Limelight.BLUE_GOAL_PIPELINE);
         else if (tagId == CommonConstants.Limelight.RED_GOAL_TAG)  setPipeline(CommonConstants.Limelight.RED_GOAL_PIPELINE);
+        else if (HiveMath.clusterOf(tagId) >= 0)                   setPipeline(CommonConstants.Limelight.HIVE_TAG_PIPELINE);
         else                                                       setPipeline(CommonConstants.Limelight.MOTIF_PIPELINE);
     }
 
@@ -492,6 +545,7 @@ public class VisionUtil implements Vision {
         this.lastTagId = -1;
         this.robotDistanceToTagInTagSpace = -1.0;
         this.lastTx = 0.0;
+        this.aimCluster = null;
         this.hasMegaTag2FieldPose = false;
         this.robotPoseInFieldSpace = null;
         this.robotPoseInTagSpace = null;
@@ -514,12 +568,15 @@ public class VisionUtil implements Vision {
         LogUtil.log(group + "/TagId", id);
         if (!visible) return;
         LLResultTypes.FiducialResult keep = sightedTag;
+        ClusterMath.Result keepCluster = sightedCluster;
         if (canSee(id)) {
             LogUtil.log(group + "/Forward_in", forwardInches());
             LogUtil.log(group + "/Right_in", rightInches());
             LogUtil.log(group + "/SquareUp_deg", squareUpDegrees());
+            if (sightedCluster != null) LogUtil.log(group + "/ClusterMembers", sightedCluster.members);
         }
         sightedTag = keep;
+        sightedCluster = keepCluster;
     }
 
     /**
