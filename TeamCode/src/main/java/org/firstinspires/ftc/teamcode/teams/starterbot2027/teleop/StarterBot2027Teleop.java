@@ -30,7 +30,7 @@ public abstract class StarterBot2027Teleop extends OpMode {
     @Override
     public void init() {
         robot = new StarterBot2027Robot(hardwareMap, telemetry, config());
-        telemetry.addData("Status", "Initialized: %s", robot.config.chassis.robotName);
+        telemetry.addData("Status", "Initialized: %s", robot.config.robotName);
     }
 
     @Override

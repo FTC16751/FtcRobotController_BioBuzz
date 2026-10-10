@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
+import org.firstinspires.ftc.teamcode.common.RobotBase;
 import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
-import org.firstinspires.ftc.teamcode.common.vision.Vision;
-import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
@@ -26,28 +24,19 @@ import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
  * Nothing here needs a Pinpoint or a Limelight; when one is added to the config, the drive's
  * odometry commands and the vision helpers switch on without changes to this class.
  */
-public class StarterBot2027Robot {
+public class StarterBot2027Robot extends RobotBase {
 
-    public final StarterBotConfig config;
-    public final DriveUtil drive;
-    public final Vision vision;       // null-safe inside: reports nothing without a Limelight
     public final Roller intake;           // the roller motor plus the two corner servos
-    public final Launcher launcher;       // flywheel plus windmill feeder
-    public final Telemetry telemetry;
 
     public StarterBot2027Robot(HardwareMap hardwareMap, Telemetry telemetry, StarterBotConfig config) {
-        this.telemetry = telemetry;
-        this.config = config;
-
-        drive  = new DriveUtil(hardwareMap, telemetry, null, config.chassis);
-        vision = new VisionUtil(hardwareMap, telemetry, config.chassis.hardware.limelight);
+        super(hardwareMap, telemetry, config.chassis, false);   // no log for the StarterBots yet; true turns it on
 
         // The intake: one motor (its direction is the one thing that differs between the two
         // robots) and two continuous servos that all pull elements in together.
-        intake = new Roller(hardwareMap, StarterBotConfig.INTAKE, config.intakeDir)
+        intake = track("intake", new Roller(hardwareMap, StarterBotConfig.INTAKE, config.intakeDir)
                 .add(StarterBotConfig.INTAKE_LEFT,  StarterBotConfig.INTAKE_LEFT_DIR)
                 .add(StarterBotConfig.INTAKE_RIGHT, StarterBotConfig.INTAKE_RIGHT_DIR)
-                .brake();
+                .brake());
 
         // The launcher: goBILDA's single flywheel motor (it has its encoder) and the windmill.
         launcher = new Launcher(
@@ -67,28 +56,5 @@ public class StarterBot2027Robot {
         // is added, a .table(...) here and aim(robot.vision) in the TeleOp is all it takes.
 
         drive.setDefaultSpeeds(StarterBot2027Constants.Drive.AUTO_DRIVE_SPEED, StarterBot2027Constants.Drive.AUTO_TURN_SPEED);
-    }
-
-    /** Call in every loop() and init_loop(). */
-    public void update() {
-        vision.update();
-        drive.update();
-        launcher.update();
-        intake.update();
-    }
-
-    public void stopAll() {
-        drive.cancel();
-        drive.stop();
-        launcher.stop();
-        intake.stop();
-        vision.stop();
-    }
-
-    /** The standard telemetry footer for this robot. */
-    public void addTelemetry() {
-        launcher.addTelemetry(telemetry, "launcher");
-        intake.addTelemetry(telemetry, "intake");
-        drive.addTelemetry();
     }
 }

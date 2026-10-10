@@ -55,6 +55,64 @@ Koala-Log also has `@AutoLog`: annotate a class and the annotation processor gen
 the explicit calls above say exactly what is logged, which is what a student debugging a subsystem
 wants to see in the code. The processor is in the build if a team wants it.
 
+## A new robot class: extend `RobotBase`
+
+`common/RobotBase` owns the log start/stop, the drive, the camera and the update / stop / telemetry /
+log order (vision, drive, launcher, then each tracked roller), so a robot class only builds its own
+subsystems. Copy `DecodeRobot` or `Test2027Robot`:
+
+```java
+public class MyRobot extends RobotBase {
+    public final Roller intake;
+
+    public MyRobot(HardwareMap hardwareMap, Telemetry telemetry) {
+        super(hardwareMap, telemetry, MyConfig.create(), MyConstants.Logging.ENABLED);
+        intake   = track("intake", new Roller(hardwareMap, MyConfig.INTAKE, MyConfig.INTAKE_DIR));
+        launcher = new Launcher(...);      // inherited field; may stay null
+    }
+    @Override protected void onUpdate() { /* LED, turret, anything extra */ }
+    @Override protected void onStop()   { /* park a servo */ }
+}
+```
+
+`track("intake", roller)` steps, stops, shows and logs the roller (log group "Intake"). Device names
+stay in the robot's own config file. The StarterBots pass `false` for logging today; Rex turns it on with `RexConstants.Logging.ENABLED`.
+
+How the pieces map (renders on GitHub and in AndroidStudio's Markdown preview; or paste into mermaid.live):
+
+```mermaid
+flowchart LR
+    OP["OpMode<br/>robot = new MyRobot(...)"]
+
+    subgraph YOU["You write (teams/yourteam/)"]
+        R["MyRobot extends RobotBase<br/>builds subsystems"]
+        C["MyConfig<br/>device NAMES + directions"]
+        K["MyConstants<br/>NUMBERS + Logging.ENABLED"]
+    end
+
+    subgraph SHARED["Shared, reuse as is (common/)"]
+        RB["RobotBase<br/>drive + camera + log<br/>update / stop / telemetry order"]
+        S["subsystems<br/>Roller, Launcher,<br/>PresetServo, Claw, PresetMotor"]
+    end
+
+    HUB["Control Hub config<br/>names must match MyConfig"]
+    OUT["Driver Station telemetry<br/>+ AdvantageScope log"]
+
+    OP -->|new| R
+    OP -->|"update() every loop<br/>stopAll() in stop()"| RB
+    R -->|extends| RB
+    R -->|builds| S
+    R -.-> C
+    R -.-> K
+    C -->|names| HUB
+    S -->|hardwareMap.get| HUB
+    RB --> OUT
+    S -->|log group| OUT
+```
+
+To add a mechanism: the name goes in `MyConfig`, the numbers in `MyConstants`, build it in the
+`MyRobot` constructor, then `track()` it (rollers) or step it from `onUpdate()` (anything else).
+
 ## Getting the log off the robot
 
 Koala-Log ships a Windows-only puller. On a Mac use `adb`, which Android Studio installs

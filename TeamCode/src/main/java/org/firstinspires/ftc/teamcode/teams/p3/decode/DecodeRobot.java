@@ -6,9 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.LogUtil;
-import org.firstinspires.ftc.teamcode.common.RobotConfig;
-import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
+import org.firstinspires.ftc.teamcode.common.RobotBase;
 import org.firstinspires.ftc.teamcode.common.hardware.LedUtil;
 import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
@@ -16,8 +14,6 @@ import org.firstinspires.ftc.teamcode.common.subsystems.PresetServo;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
 import org.firstinspires.ftc.teamcode.common.vision.AimLed;
-import org.firstinspires.ftc.teamcode.common.vision.Vision;
-import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 
 /**
  * Decode: the one object every OpMode for this robot creates. Mecanum drive on the Pinpoint, the
@@ -33,32 +29,20 @@ import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
  * This replaces the old P3_Robot3 and its P3_*Util classes. Same hardware, same numbers; the
  * launch sequence is common/launch/LaunchController through common/subsystems/Launcher.
  */
-public class DecodeRobot {
+public class DecodeRobot extends RobotBase {
 
-    public final RobotConfig config;
-    public final DriveUtil drive;
-    public final Vision vision;
     public final Roller intake;
     public final Roller indexer;            // the belt; also the launcher's feeder, exposed for unjamming by hand
-    public final Launcher launcher;         // two-motor flywheel + indexer belt + shot sequence + distance table
     public final PresetServo stopper;       // "STOP" holds game pieces back, "SHOOT" lets them through
     public final LedUtil led;               // null if the config has no LED
     public final Turret turret;
     private final AimLed aimLed;            // LED shows lined up / goal left / goal right / none
-    public final Telemetry telemetry;
 
     public DecodeRobot(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
-        this.config = DecodeConfig.create();
+        super(hardwareMap, telemetry, DecodeConfig.create(), DecodeConstants.Logging.ENABLED);
 
-        if (DecodeConstants.Logging.ENABLED) {
-            LogUtil.start(hardwareMap);   // one .wpilog per OpMode run, named by time and OpMode
-        }
-        drive  = new DriveUtil(hardwareMap, telemetry, null, config);
-        vision = new VisionUtil(hardwareMap, telemetry, config.hardware.limelight);
-
-        intake = new Roller(hardwareMap, DecodeConfig.INTAKE, DecodeConfig.INTAKE_DIR)
-                .speeds(DecodeConstants.Intake.POWER, -DecodeConstants.Intake.POWER);
+        intake = track("intake", new Roller(hardwareMap, DecodeConfig.INTAKE, DecodeConfig.INTAKE_DIR)
+                .speeds(DecodeConstants.Intake.POWER, -DecodeConstants.Intake.POWER));
 
         indexer = new Roller(hardwareMap, DecodeConfig.INDEXER, DecodeConfig.INDEXER_DIR)
                 .speeds(DecodeConstants.Indexer.POWER, -DecodeConstants.Indexer.POWER).brake();
@@ -97,41 +81,11 @@ public class DecodeRobot {
                             hardwareMap.get(DigitalChannel.class, DecodeConfig.TURRET_LIMIT));
     }
 
-    /** Call in every loop() and init_loop(). Steps the camera, the drive, the launcher and the LED. */
-    public void update() {
-        vision.update();     // camera first, so this loop's drive step sees this loop's tag
-        drive.update();
-        launcher.update();
-        intake.update();
+    @Override protected void onUpdate() {
         aimLed.update();     // does nothing without an LED
-        addLog();
     }
 
-    public void stopAll() {
-        drive.cancel();
-        drive.stop();
-        intake.stop();
-        launcher.stop();
+    @Override protected void onStop() {
         stopper.goTo("STOP");
-        vision.stop();
-        LogUtil.stop();      // flush and close this run's log
-    }
-
-    /** This loop's values for the AdvantageScope log. Nothing happens when logging is off. */
-    private void addLog() {
-        if (!LogUtil.isRunning()) return;
-        drive.addLog();
-        LogUtil.logBattery();
-        launcher.log();
-        intake.log("Intake");
-        vision.log("Vision");
-    }
-
-    /** The standard telemetry footer for this robot. */
-    public void addTelemetry() {
-        launcher.addTelemetry(telemetry, "launcher");
-        intake.addTelemetry(telemetry, "intake");
-        drive.addTelemetry();
-        vision.addTelemetry();
     }
 }

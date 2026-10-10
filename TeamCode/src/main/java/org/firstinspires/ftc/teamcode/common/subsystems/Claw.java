@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.Clock;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 
 /**
  * A gripper: a {@link PresetServo} with OPEN and CLOSED filled in and the words a driver uses.
@@ -45,6 +46,12 @@ public class Claw extends PresetServo {
 
     public boolean isOpen()   { return isAt(OPEN); }
     public boolean isClosed() { return isAt(CLOSED); }
+
+    /** To the AdvantageScope log: the PresetServo's keys plus "group/Open". */
+    @Override public void log(String group) {
+        super.log(group);
+        LogUtil.log(group + "/Open", isOpen());
+    }
 
     // Keep the fluent setup returning a Claw so `new Claw(...).pair(...)` still reads as a Claw.
     @Override public Claw pair(String deviceName, Servo.Direction direction) { super.pair(deviceName, direction); return this; }

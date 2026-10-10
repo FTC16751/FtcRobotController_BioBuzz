@@ -29,6 +29,9 @@ public interface Vision extends AimTarget, TagSighting {
     /** Which alliance's goal to aim at. Default: a camera that does not care ignores it. */
     default void setTargetingAlliance(CommonConstants.Alliance alliance) {}
 
+    /** The raw robot-space numbers of the sighted tag, for telemetry while tuning. Default: nothing to show. */
+    default String sightedTagRaw() { return ""; }
+
     /** The tag the camera sees right now, or -1 for none. */
     int getDetectedTagId();
 }

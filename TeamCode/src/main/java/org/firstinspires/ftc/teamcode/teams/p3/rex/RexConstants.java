@@ -8,6 +8,11 @@ public final class RexConstants {
 
     private RexConstants() {}
 
+    /** AdvantageScope logging (common/LogUtil). One .wpilog per run on the Control Hub while true. */
+    public static final class Logging {
+        public static final boolean ENABLED = true;
+    }
+
     /** TeleOp driving and the speeds the beginner auto commands use. */
     public static final class Drive {
         public static final double NORMAL_SPEED   = 1.0;
