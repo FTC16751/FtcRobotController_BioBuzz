@@ -78,6 +78,41 @@ public class MyRobot extends RobotBase {
 `track("intake", roller)` steps, stops, shows and logs the roller (log group "Intake"). Device names
 stay in the robot's own config file. Rex and the StarterBots pass `false` for logging today.
 
+How the pieces map (renders on GitHub and in AndroidStudio's Markdown preview; or paste into mermaid.live):
+
+```mermaid
+flowchart LR
+    OP["OpMode<br/>robot = new MyRobot(...)"]
+
+    subgraph YOU["You write (teams/yourteam/)"]
+        R["MyRobot extends RobotBase<br/>builds subsystems"]
+        C["MyConfig<br/>device NAMES + directions"]
+        K["MyConstants<br/>NUMBERS + Logging.ENABLED"]
+    end
+
+    subgraph SHARED["Shared, reuse as is (common/)"]
+        RB["RobotBase<br/>drive + camera + log<br/>update / stop / telemetry order"]
+        S["subsystems<br/>Roller, Launcher,<br/>PresetServo, Claw, PresetMotor"]
+    end
+
+    HUB["Control Hub config<br/>names must match MyConfig"]
+    OUT["Driver Station telemetry<br/>+ AdvantageScope log"]
+
+    OP -->|new| R
+    OP -->|"update() every loop<br/>stopAll() in stop()"| RB
+    R -->|extends| RB
+    R -->|builds| S
+    R -.-> C
+    R -.-> K
+    C -->|names| HUB
+    S -->|hardwareMap.get| HUB
+    RB --> OUT
+    S -->|log group| OUT
+```
+
+To add a mechanism: the name goes in `MyConfig`, the numbers in `MyConstants`, build it in the
+`MyRobot` constructor, then `track()` it (rollers) or step it from `onUpdate()` (anything else).
+
 ## Getting the log off the robot
 
 Koala-Log ships a Windows-only puller. On a Mac use `adb`, which Android Studio installs
