@@ -37,8 +37,9 @@ lifted math needs a one-line attribution comment, and the pristine copies stay i
 
 `ConceptBlackboard` (`SharedState` does this), `ConceptGamepadEdgeDetection` (the SDK `*WasPressed()` calls are in use),
 `ConceptGamepadTouchpad` / `ConceptTelemetry` / `ConceptSounds*` (demo features), the color-locator and
-predominant-color samples, OctoQuad / OTOS / HuskyLens / navX / BNO055 / AndyMark / Modern Robotics / Blinkin / LED stick
-(hardware we do not own; the Prism LEDs cover status), `AprilTagMultiPortal` / `SwitchableCameras` (only for two webcams).
+predominant-color samples, OctoQuad / navX / BNO055 / AndyMark / Modern Robotics (hardware we do not own),
+`AprilTagMultiPortal` / `SwitchableCameras` (only for two webcams). **Correction 2026-10-10:** the first draft also
+skipped OTOS, HuskyLens, Blinkin and the LED stick as "not owned"; the team owns them. See the next section.
 
 ## What #1 and #2 changed
 
@@ -52,3 +53,21 @@ predominant-color samples, OctoQuad / OTOS / HuskyLens / navX / BNO055 / AndyMar
 - **L1 (new):** on a StarterBot, `turnToHeading(90)` then `turnToHeading(0)` returns to its mark within a few degrees, turning the right way. If it spins away from the target, flip the sign in `DriveUtil` `TURNING_IMU`.
 - **L2 (new):** field-centric on a Pinpoint-less robot: after `resetFieldForward()`, push the stick forward, rotate the robot by hand, forward still goes the same way on the field. Needs a TeleOp that calls `fieldCentricDrive`; the StarterBot TeleOp still uses `arcadeDrive`.
 - **L3 (new):** StarterBot launch: the controller blips once as the wheel reaches speed, not repeatedly while held.
+
+## Hardware we do own: OTOS, HuskyLens, Blinkin, LED stick (added 2026-10-10)
+
+**Pedro facts that change the plan** (read from the Pedro 3.0.1 jars):
+- `PinpointLocalizer` uses only the Pinpoint driver. **Pedro does not use the motor encoders for localization.**
+  Pinpoint fuses its own two pods and its own IMU internally; that is the only fusion in our stack today.
+- `OTOSLocalizer` + `OTOSConfig` (name, units, linear/angular scalar, offset) ship in `revhub`, and `OTOSTuner` is already in `pedropathing/procedures`.
+- `core` has **`FusionLocalizer`**: a Kalman filter wrapped around any base `Localizer`, with `addMeasurement(Pose, long timestamp[, Pose])` and a history buffer for late measurements. It is built for vision, and OTOS can feed it the same way. Its unit and noise-matrix arguments are not documented; read them off the bytecode before use.
+- `common/drive/EncoderOdometry` (motor encoders + IMU, "second opinion") exists and nothing calls it.
+
+| Device | Verdict | Build |
+|---|---|---|
+| OTOS | Yes, two stages. | 1. `OdometryWatchdog`: compare Pinpoint vs OTOS (and EncoderOdometry as tie-breaker) as pose *deltas* over a window, flag divergence, log it. No behaviour change. 2. Only if the watchdog shows real Pinpoint drift: feed OTOS into Pedro's `FusionLocalizer`. |
+| LED stick | Yes. Unique value is a 10-pixel bar. | `LedStickBar`: fill = flywheel speed / target, flash when ready, alliance colour at idle. SDK driver `SparkFunLEDStick`, I2C. |
+| Blinkin | Cheap fallback, not a priority. | `BlinkinLed` (servo-port, one call per pattern) only if the Prism stays broken and the goBILDA indicator is not enough. |
+| HuskyLens | Bench-check first, no subsystem yet. | `HuskyLensBenchCheck` showing block x/y/size per tag. See the vision answer below. |
+
+**HuskyLens and Limelight together:** yes. Limelight is USB/network, HuskyLens is I2C, so they do not touch. Each runs one algorithm/pipeline at a time. HuskyLens tag blocks carry only pixel x/y/width/height and id (36h11 family): no 3D pose, no yaw. It can give bearing and a size-based range for the Hive line-up, but it cannot fill `TagSighting.squareUpDegrees`. Better than the webcam on CPU load, worse on pose. The reverse (HuskyLens for balls) loses the Hive-Vision neural model.
