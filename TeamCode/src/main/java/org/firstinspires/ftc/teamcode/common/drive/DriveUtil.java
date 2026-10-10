@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.Arrays;
 import java.util.List;
-import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
+import org.firstinspires.ftc.teamcode.common.vision.Vision;
 import org.firstinspires.ftc.teamcode.common.vision.TagSighting;
 import org.firstinspires.ftc.teamcode.common.vision.TagApproach;
 import org.firstinspires.ftc.teamcode.common.RobotConfig;
@@ -342,12 +342,12 @@ public class DriveUtil {
      * robot is there, the tag has been out of view too long, or the time limit passes. Needs the
      * robot's camera; the gains come from the robot's config (tagApproach).
      *
-     * @param vision         the robot's VisionUtil
+     * @param vision         the robot's camera
      * @param tagId          the AprilTag id to drive to
      * @param standoffInches how far in front of the tag to stop
      * @return true if the robot got there; false if it gave up (see getTagApproach().getState())
      */
-    public boolean driveToTag(VisionUtil vision, int tagId, double standoffInches) {
+    public boolean driveToTag(Vision vision, int tagId, double standoffInches) {
         driveToTagAsync(vision, tagId, standoffInches, 0.25);
         while (isBusy()) {
             if (Thread.currentThread().isInterrupted()) {

@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.util.Collections;
 import java.util.List;
 import org.firstinspires.ftc.teamcode.common.CommonConstants;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 
 /**
  * A utility class for managing a Limelight 3A vision sensor.
@@ -28,7 +29,7 @@ import org.firstinspires.ftc.teamcode.common.CommonConstants;
  * 4. At the end of your OpMode, call the {@link #stop()} method to release resources.
  * </p>
  */
-public class VisionUtil implements AimTarget, TagSighting {
+public class VisionUtil implements Vision {
 
     private Limelight3A limelight;
     private final Telemetry telemetry;
@@ -428,6 +429,7 @@ public class VisionUtil implements AimTarget, TagSighting {
      * This is the primary method OpModes should use to configure vision targeting.
      * @param alliance The alliance color to target.
      */
+    @Override
     public void setTargetingAlliance(CommonConstants.Alliance alliance) {
         if (alliance == CommonConstants.Alliance.RED) {
             setPipeline(CommonConstants.Limelight.RED_GOAL_PIPELINE);
@@ -450,6 +452,8 @@ public class VisionUtil implements AimTarget, TagSighting {
      * goal 20 on 2 (CommonConstants.Limelight). A tag approach to a goal tag has to call this
      * first, or the tag is never "seen". Switching takes a moment; do it in init, not per loop.
      */
+    @Override public void lookForTag(int tagId) { selectPipelineForTag(tagId); }
+
     public void selectPipelineForTag(int tagId) {
         if (tagId == CommonConstants.Limelight.BLUE_GOAL_TAG)      setPipeline(CommonConstants.Limelight.BLUE_GOAL_PIPELINE);
         else if (tagId == CommonConstants.Limelight.RED_GOAL_TAG)  setPipeline(CommonConstants.Limelight.RED_GOAL_PIPELINE);
@@ -495,6 +499,28 @@ public class VisionUtil implements AimTarget, TagSighting {
     }
 
 
+
+    /**
+     * To the AdvantageScope log under "group/": TagVisible and TagId, and for the tag in view
+     * Forward_in, Right_in and SquareUp_deg as TagApproach sees them. Leaves canSee()'s last answer
+     * as it found it, so logging cannot change what the rest of the loop reads.
+     */
+    @Override
+    public void log(String group) {
+        if (!LogUtil.isRunning()) return;
+        boolean visible = isTargetVisible();
+        int id = visible ? getDetectedTagId() : -1;
+        LogUtil.log(group + "/TagVisible", visible);
+        LogUtil.log(group + "/TagId", id);
+        if (!visible) return;
+        LLResultTypes.FiducialResult keep = sightedTag;
+        if (canSee(id)) {
+            LogUtil.log(group + "/Forward_in", forwardInches());
+            LogUtil.log(group + "/Right_in", rightInches());
+            LogUtil.log(group + "/SquareUp_deg", squareUpDegrees());
+        }
+        sightedTag = keep;
+    }
 
     /**
      * Adds relevant vision data to the telemetry stream for debugging.

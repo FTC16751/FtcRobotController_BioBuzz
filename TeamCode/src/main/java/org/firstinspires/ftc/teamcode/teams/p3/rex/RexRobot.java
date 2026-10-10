@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
+import org.firstinspires.ftc.teamcode.common.vision.Vision;
 import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 
 /**
@@ -26,7 +27,7 @@ public class RexRobot {
 
     public final RobotConfig config;
     public final DriveUtil drive;
-    public final VisionUtil vision;
+    public final Vision vision;
     public final Roller intake;
     public final Roller transfer;
     public final Launcher launcher;       // flywheel + feeder wheel + shot sequence

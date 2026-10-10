@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
 import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
+import org.firstinspires.ftc.teamcode.common.vision.Vision;
 import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
@@ -29,7 +30,7 @@ public class StarterBot2027Robot {
 
     public final StarterBotConfig config;
     public final DriveUtil drive;
-    public final VisionUtil vision;       // null-safe inside: reports nothing without a Limelight
+    public final Vision vision;       // null-safe inside: reports nothing without a Limelight
     public final Roller intake;           // the roller motor plus the two corner servos
     public final Launcher launcher;       // flywheel plus windmill feeder
     public final Telemetry telemetry;

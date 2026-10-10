@@ -112,6 +112,8 @@ What is logged today, once per loop:
 | `Launcher/Sequence/State`, `Target`, `ShotsAttempted`, `ShotsFired`, `ShotsAborted`, `LastAbort` | `LaunchController.log()` |
 | `Intake/Power`, `Intake/Timed` | `intake.log("Intake")` on any `Roller` |
 
+A robot class also calls `vision.log("Vision")` (the `Vision` interface, `common/vision/Vision.java`: the Limelight's `VisionUtil` implements it, and a webcam class would too).
+
 A robot class calls `launcher.log()` and `intake.log("Intake")` from its own `addLog()`; the subsystems
 know what to write, so the robot class does not. `Flywheel` has a default `log(group)` (velocity only)
 for a team that wrote its own flywheel; `VelocityMotor` overrides it with the full set.
