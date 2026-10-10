@@ -26,9 +26,13 @@ import Ori.Coval.Logging.Logger.KoalaLog;
  * Names: "Group/Name", the way AdvantageScope builds its tree. Values are written with post=false:
  * nothing goes to the FTC Dashboard page, so the Dashboard is a dependency, not something a driver
  * has to open. Angles are logged in degrees except inside a pose, which AdvantageScope reads in
- * radians. Distances are in inches, the frame Pedro and the Pinpoint use.
+ * radians. Distances are in inches, the frame Pedro and the Pinpoint use, except inside a pose,
+ * which is meters (logPose converts).
  */
 public final class LogUtil {
+
+    private static final double METERS_PER_INCH = 0.0254;
+    private static final double FIELD_HALF_INCHES = 72;   // the field is 144 in square
 
     private static boolean running = false;
     private static VoltageSensor battery = null;
@@ -100,11 +104,18 @@ public final class LogUtil {
     }
 
     /**
-     * A robot position as an AdvantageScope Pose2d, for the 2D field view: inches, heading in
-     * degrees counter-clockwise (the Pinpoint and Pedro frame). Stored with the heading in radians.
+     * A robot position as an AdvantageScope Pose2d, for the 2D field view. Pass what Pedro and the
+     * Pinpoint give: inches, origin at a field corner, x right, y up, heading in degrees
+     * counter-clockwise from +x. AdvantageScope's FTC field is different (meters, origin at the
+     * field center, +x toward the bottom of the view, +y to the right, so heading is measured from
+     * there), so this converts: x' = 72 - y, y' = x - 72, heading' = heading + 90 degrees. Checked
+     * only against AdvantageScope's drawing of the sample log (doc/sample_logs), not on a robot.
      */
     public static void logPose(String name, double xInches, double yInches, double headingDegrees) {
-        if (running) KoalaLog.logPose2d(name, xInches, yInches, Math.toRadians(headingDegrees), false);
+        if (!running) return;
+        double x = (FIELD_HALF_INCHES - yInches) * METERS_PER_INCH;
+        double y = (xInches - FIELD_HALF_INCHES) * METERS_PER_INCH;
+        KoalaLog.logPose2d(name, x, y, Math.toRadians(headingDegrees + 90), false);
     }
 
     /** The main battery, under "Robot/BatteryVolts". Cheap; the hub bulk read already has it. */

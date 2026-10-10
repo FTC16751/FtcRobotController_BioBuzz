@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 import org.firstinspires.ftc.teamcode.common.launch.Flywheel;
 
 import java.util.ArrayList;
@@ -158,5 +159,22 @@ public class VelocityMotor implements Flywheel {
             for (DcMotorEx f : followers) each.append(String.format("follower %.2f pwr  ", f.getPower()));
             telemetry.addData(label + " motors", each.toString().trim());
         }
+    }
+
+    // ---------------------------------------------------------------- logging
+
+    /**
+     * To the AdvantageScope log under "group/": Velocity (the slowest motor), Target, Ready, and with
+     * more than one motor each motor's velocity as Motor0, Motor1 ... (a dead or backward encoder
+     * shows up there) and each follower's power.
+     */
+    @Override public void log(String group) {
+        LogUtil.log(group + "/Velocity", getVelocity());
+        LogUtil.log(group + "/Target", target);
+        LogUtil.log(group + "/Ready", isReady());
+        if (motors.size() > 1) {
+            for (int i = 0; i < motors.size(); i++) LogUtil.log(group + "/Motor" + i, motors.get(i).getVelocity());
+        }
+        for (int i = 0; i < followers.size(); i++) LogUtil.log(group + "/FollowerPower" + i, followers.get(i).getPower());
     }
 }

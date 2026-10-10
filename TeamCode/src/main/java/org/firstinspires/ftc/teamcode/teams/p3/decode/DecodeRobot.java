@@ -121,9 +121,8 @@ public class DecodeRobot {
         if (!LogUtil.isRunning()) return;
         drive.addLog();
         LogUtil.logBattery();
-        LogUtil.log("Launcher/Velocity", launcher.getVelocity());
-        LogUtil.log("Launcher/Target", launcher.getTargetVelocity());
-        LogUtil.log("Launcher/State", launcher.getState().toString());
+        launcher.log();
+        intake.log("Intake");
         LogUtil.log("Vision/TagVisible", vision.isTargetVisible());
     }
 

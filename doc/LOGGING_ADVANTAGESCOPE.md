@@ -87,10 +87,11 @@ Install AdvantageScope from its [releases page](https://github.com/Mechanical-Ad
 
 - **Line Graph**: drag `Drive/X_in`, `Drive/Velocity/LF` and so on onto the left or right axis.
   Drag `Drive/State` onto the discrete band at the bottom to see when a move started and ended.
-- **2D Field**: drag `Drive/Pose` onto the robot slot. The pose is in inches with Pedro's frame
-  (origin at a field corner, x and y across the 144 in field, heading counter-clockwise from +x).
-  The tab has coordinate-system and unit settings; test plan L4 records what makes an inch pose
-  draw correctly.
+- **2D Field**: drag `Drive/Pose` onto the robot slot. `logPose` takes Pedro's frame (inches, origin at a
+  field corner, heading counter-clockwise from +x) and converts it to AdvantageScope's FTC field
+  (meters, origin at the field center, +x down the view, +y right). Confirmed against the sample log in
+  AdvantageScope (start corner, position and heading all draw correctly); still to be confirmed with
+  a real run, where the robot should start in the corner Pedro says it does. The Size buttons set the drawn robot (14, 16 or 18 in).
 - **Table** shows every value at the cursor time, which is the fastest way to read the numbers at
   the moment a corner overshot.
 
@@ -105,11 +106,26 @@ What is logged today, once per loop:
 | `Drive/Pedro/Following`, `Mode`, `Completion`, `RemainingDistance_in` | Pedro's progress along the current path |
 | `Vision/TagVisible`, `TagId`, `Forward_in`, `Right_in`, `SquareUp_deg` | the Limelight's tag sighting, as TagApproach sees it |
 | `Robot/BatteryVolts` | main battery |
+| `Launcher/Velocity`, `Target`, `State`, `Ready`, `AimSource` | `Launcher.log()`: measured and requested flywheel velocity, the launch sequence state, the ready light, where the aim velocity came from |
+| `Launcher/Wheel/Velocity`, `Target`, `Ready`, `Motor0..n`, `FollowerPower0..n` | `VelocityMotor.log()`: each encoder motor on its own (a dead or backward one shows here), follower motor power |
+| `Launcher/Feeder/Power`, `Timed` | the feeder `Roller` |
+| `Launcher/Sequence/State`, `Target`, `ShotsAttempted`, `ShotsFired`, `ShotsAborted`, `LastAbort` | `LaunchController.log()` |
+| `Intake/Power`, `Intake/Timed` | `intake.log("Intake")` on any `Roller` |
+
+A robot class calls `launcher.log()` and `intake.log("Intake")` from its own `addLog()`; the subsystems
+know what to write, so the robot class does not. `Flywheel` has a default `log(group)` (velocity only)
+for a team that wrote its own flywheel; `VelocityMotor` overrides it with the full set.
+
+### Trying it without a robot
+
+`doc/sample_logs/make_sample_wpilog.py` writes `sample_decode_run.wpilog`: a made-up 40 s Decode run
+(drive to the launch spot, spin up, three shots, intake, drive away) using exactly the names above.
+Open it in AdvantageScope to learn the tabs before a real log exists.
 
 ## Open questions (answer on the robot, then update this file)
 
 1. Does FTC Dashboard 0.6.0 start cleanly on SDK 12.0 (a Dashboard failure would show in the robot
    log at boot, not in the OpMode)?
-2. What 2D Field setting draws an inch-unit `Drive/Pose` on the FTC field at the right scale (L4)?
+2. Does `logPose`'s Pedro-to-AdvantageScope conversion put a real robot in the right corner on the FTC field at the right scale (L4)?
 3. Is the loop time unchanged with logging on (L6)? If not, drop the velocities first; they are
    the only values that are not already in memory.

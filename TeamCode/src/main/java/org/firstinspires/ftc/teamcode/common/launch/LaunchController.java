@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.common.launch;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Clock;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 
 /**
  * ONE-SHOT LAUNCH SEQUENCE, shared by every robot.
@@ -202,6 +203,16 @@ public class LaunchController {
         t.addData("Launch", "%s  target %.0f  actual %.0f", state, targetVelocity, flywheel.getVelocity());
         t.addData("Shots", "fired %d / attempted %d / aborted %d", shotsFired, shotsAttempted, shotsAborted);
         if (!lastAbortReason.isEmpty()) t.addData("Last abort", lastAbortReason);
+    }
+
+    /** To the AdvantageScope log under "group/": State, Target, the shot counters and the last abort reason. */
+    public void log(String group) {
+        LogUtil.log(group + "/State", state);
+        LogUtil.log(group + "/Target", targetVelocity);
+        LogUtil.log(group + "/ShotsAttempted", shotsAttempted);
+        LogUtil.log(group + "/ShotsFired", shotsFired);
+        LogUtil.log(group + "/ShotsAborted", shotsAborted);
+        LogUtil.log(group + "/LastAbort", lastAbortReason);
     }
 
     private void finishShot() {

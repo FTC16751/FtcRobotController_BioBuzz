@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Clock;
+import org.firstinspires.ftc.teamcode.common.LogUtil;
 import org.firstinspires.ftc.teamcode.common.launch.Feeder;
 
 import java.util.ArrayList;
@@ -147,5 +148,13 @@ public class Roller implements Feeder {
 
     public void addTelemetry(Telemetry telemetry, String label) {
         telemetry.addData(label, "power %.2f%s", power, isBusy() ? " (timed)" : "");
+    }
+
+    // ---------------------------------------------------------------- logging
+
+    /** To the AdvantageScope log: "group/Power" and "group/Timed". */
+    public void log(String group) {
+        LogUtil.log(group + "/Power", power);
+        LogUtil.log(group + "/Timed", isBusy());
     }
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.launch;
 
+import org.firstinspires.ftc.teamcode.common.LogUtil;
+
 /**
  * The one thing LaunchController needs from a flywheel, whatever motor class a team wrote.
  *
@@ -20,4 +22,9 @@ public interface Flywheel {
 
     /** Current measured velocity in the same units as setVelocity. */
     double getVelocity();
+
+    /** Write this flywheel to the AdvantageScope log as "group/Velocity". Override to add more. */
+    default void log(String group) {
+        LogUtil.log(group + "/Velocity", getVelocity());
+    }
 }
