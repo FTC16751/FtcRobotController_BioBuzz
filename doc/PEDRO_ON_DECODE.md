@@ -87,10 +87,12 @@ non-Pedro drive command in the auto (the aim turn, `stopRobot`) needs `drive.can
 `((Foresight) follower.algorithm()).config.maxPathSpeed.set(x)`). 0.7 in one does not mean 0.7 in the other. Set it
 before each `followPath`, start with the same fractions the auto uses, and compare times.
 
-**4.4 End-of-path tolerance is Foresight's, not ours.** `translationalConstraint`, `headingConstraint`,
-`velocityConstraint` and `timeoutConstraint` decide when a path counts as done; they replace 18 mm / 0.055 rad /
-`holdSec`. Their defaults were not read here. Set them explicitly to match (about 0.7 in and 0.055 rad) for the
-first A/B, then loosen them where a looser stop is fine (a collect run does not need to end inside 0.7 in).
+**4.4 End-of-path tolerance is Foresight's, not ours.** From the Pedro docs (reference "End Constraints"), the defaults
+are `translationalConstraint` 0.1 in, `headingConstraint` 0.007 rad (0.4 degrees), `velocityConstraint` 0.1 in/s,
+`parametricTConstraint` 0.025, and `timeoutConstraint` **100 ms**. A path ends when it has reached the end of the curve
+AND (all three of velocity, translation and heading are inside, OR the timeout has run out). So the tolerances are far
+tighter than our 18 mm / 3.2 degrees, but the 100 ms timeout means a path never waits long for them. The docs give no
+per-path way to set these, only globally in `ForesightConfig`. Our own step timeouts stay as the backstop.
 
 **4.5 Mass changes.** Foresight is tuned on a bare robot. Decode carries up to three game pieces and the flywheel
 pulls the battery down. Tune with a typical battery and check the Tests procedure with pieces loaded.
@@ -116,3 +118,21 @@ Follower is never stepped. Pedro TeleOp is optional and separate (`Test2027Pedro
       exact mirrors, so mirroring throws away tuned differences: do it with real start poses on the field, not before.
 6. **Decide.** If Pedro is not clearly faster or more repeatable at the end of 5b, keep the Pinpoint auto: it is
    the one with a competition record. `driveTo` stays in `common/` either way.
+
+## 7. The Pedro-native rewrite, `DecodePedroAuto` (2026-10-07)
+
+Written from the Pedro docs (pedropathing.com/docs/pathing: Autonomous Usage, Modifying Constants, Follow States,
+End Constraints) next to `DecodePedroQueueAuto`, which is the same script ported state for state. Differences:
+
+- **Script as data.** A step list built once from the menu, four start layouts as a table. About 450 lines against
+  about 810, and the four script builders and the waypoint switch are gone.
+- **Planned paths, per-path speed.** Each route starts at the previous planned stop; speed is
+  `path.with(config.maxPathSpeed.at(x))`, a modifier that applies to that path only (Modifying Constants), instead of
+  setting the shared config before each move. The recovery park starts from the robot's real pose.
+- **Aim by re-targeting the hold.** The Limelight's tx turns the held heading and Pedro's heading controller does the
+  turn; no `moveRobot`, no cancel/re-hold handoff, no hand-tuned P gain (`TX_ALIGN_KP` is not used).
+- **Ivy.** The docs structure autos with Ivy (`sequential(follow(...))`, `Scheduler`). Ivy is not in our build
+  (`com.pedropathing:ivy` would need adding, with network access), so `Step` and `runSteps()` do the same job.
+- **Unverified:** that a two-leg compound path honours a modifier set on the whole path (it is set on the whole path,
+  not per leg, for that reason); that `holdPose` re-targeting turns cleanly with a path's hold still active; every
+  speed and timing. Compare it with the other two autos from the same start.

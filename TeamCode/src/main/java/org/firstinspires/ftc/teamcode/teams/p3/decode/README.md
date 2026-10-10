@@ -12,6 +12,9 @@ teams/p3/decode/
   teleop/DecodeTeleop    "Decode: Teleop (RUN ME)", single driver
   teleop/DecodeDriveTeleop "Decode: Drive Only", drive motors and Pinpoint only
   auto/DecodePedroParkAuto "Decode: Park Red (Pedro)", one Pedro line, drive only
+  auto/DecodePedroQueueAuto "Decode: Auto Queue (Pedro)", the queue auto driven by Pedro paths, same waypoints and start
+  auto/DecodePedroAuto   "Decode: Auto (Pedro rewrite)", the queue auto rewritten the Pedro way: script as data, planned paths, per-path speed, hold-and-aim
+  auto/DecodeRedAudienceAuto "Decode: red_audience", teaching version for the BIOBUZZ game: plain states, 3 plans (park / shoot+park / shoot, flower, shoot, park)
   auto/DecodeQueueAuto   "Decode: Auto Queue", red/blue, close/far, 0-4 cycles, optional gate
   test/DecodeEncoderMoveCheck, test/DecodeTurretCalibration
 ```
@@ -27,7 +30,7 @@ Same hardware and same numbers. The old `P3_Robot3` plus `P3_IntakeUtil`, `P3_La
 Launcher, PresetServo), and `DriveUtil2026b` is now `common/drive/DriveUtil`.
 
 - **Pedro Pathing is on and tuned** (AutoTune, `doc/PEDRO_ON_DECODE.md`). The old config had none. `DecodeQueueAuto`
-  still drives with `DriveUtil.driveTo` on the Pinpoint; only `DecodePedroParkAuto` uses Pedro so far.
+  still drives with `DriveUtil.driveTo` on the Pinpoint; `DecodePedroParkAuto`, `DecodePedroQueueAuto` and `DecodePedroAuto` use Pedro.
 - **Shots finish after the trigger is released.** The old TeleOp only stepped the shot sequence while
   the trigger was held; `Launcher.update()` now steps it every loop.
 - **Intake and indexer zero-power behavior:** the intake used to be set to FLOAT; it now uses the SDK
