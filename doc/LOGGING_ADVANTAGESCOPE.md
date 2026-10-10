@@ -76,7 +76,7 @@ public class MyRobot extends RobotBase {
 ```
 
 `track("intake", roller)` steps, stops, shows and logs the roller (log group "Intake"). Device names
-stay in the robot's own config file. Rex and the StarterBots pass `false` for logging today.
+stay in the robot's own config file. The StarterBots pass `false` for logging today; Rex turns it on with `RexConstants.Logging.ENABLED`.
 
 How the pieces map (renders on GitHub and in AndroidStudio's Markdown preview; or paste into mermaid.live):
 

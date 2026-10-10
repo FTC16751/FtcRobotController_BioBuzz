@@ -26,7 +26,7 @@ public class RexRobot extends RobotBase {
     public final Roller transfer;
 
     public RexRobot(HardwareMap hardwareMap, Telemetry telemetry) {
-        super(hardwareMap, telemetry, RexConfig.create(), false);   // no log for Rex yet; true turns it on
+        super(hardwareMap, telemetry, RexConfig.create(), RexConstants.Logging.ENABLED);
 
         intake   = track("intake", new Roller(hardwareMap, RexConfig.INTAKE, RexConfig.INTAKE_DIR)
                 .speeds(RexConstants.Intake.INTAKE_POWER, -RexConstants.Intake.INTAKE_POWER).brake());
