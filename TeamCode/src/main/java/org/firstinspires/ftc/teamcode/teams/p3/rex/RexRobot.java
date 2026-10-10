@@ -3,14 +3,11 @@ package org.firstinspires.ftc.teamcode.teams.p3.rex;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.common.RobotConfig;
-import org.firstinspires.ftc.teamcode.common.drive.DriveUtil;
+import org.firstinspires.ftc.teamcode.common.RobotBase;
 import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
-import org.firstinspires.ftc.teamcode.common.vision.Vision;
-import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 
 /**
  * Rex: the one object every OpMode for this robot creates. Mecanum drive (with the Pinpoint and
@@ -23,27 +20,18 @@ import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
  *   - OpModes never touch hardwareMap themselves (the bench tests in test/ are the exception:
  *     they build only the one mechanism they test, so the rest need not be wired).
  */
-public class RexRobot {
+public class RexRobot extends RobotBase {
 
-    public final RobotConfig config;
-    public final DriveUtil drive;
-    public final Vision vision;
     public final Roller intake;
     public final Roller transfer;
-    public final Launcher launcher;       // flywheel + feeder wheel + shot sequence
-    public final Telemetry telemetry;
 
     public RexRobot(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
-        this.config = RexConfig.create();
+        super(hardwareMap, telemetry, RexConfig.create(), false);   // no log for Rex yet; true turns it on
 
-        drive  = new DriveUtil(hardwareMap, telemetry, null, config);
-        vision = new VisionUtil(hardwareMap, telemetry, config.hardware.limelight);
-
-        intake   = new Roller(hardwareMap, RexConfig.INTAKE, RexConfig.INTAKE_DIR)
-                .speeds(RexConstants.Intake.INTAKE_POWER, -RexConstants.Intake.INTAKE_POWER).brake();
-        transfer = new Roller(hardwareMap, RexConfig.TRANSFER, RexConfig.TRANSFER_DIR)
-                .speeds(RexConstants.Intake.TRANSFER_POWER, -RexConstants.Intake.TRANSFER_POWER).brake();
+        intake   = track("intake", new Roller(hardwareMap, RexConfig.INTAKE, RexConfig.INTAKE_DIR)
+                .speeds(RexConstants.Intake.INTAKE_POWER, -RexConstants.Intake.INTAKE_POWER).brake());
+        transfer = track("transfer", new Roller(hardwareMap, RexConfig.TRANSFER, RexConfig.TRANSFER_DIR)
+                .speeds(RexConstants.Intake.TRANSFER_POWER, -RexConstants.Intake.TRANSFER_POWER).brake());
 
         launcher = new Launcher(
                 new VelocityMotor(hardwareMap, RexConfig.SHOOTER, RexConfig.SHOOTER_DIR)
@@ -61,31 +49,5 @@ public class RexRobot {
         // No distance table yet: the shooter's speeds come out of the shooter test first.
 
         drive.setDefaultSpeeds(RexConstants.Drive.AUTO_DRIVE_SPEED, RexConstants.Drive.AUTO_TURN_SPEED);
-    }
-
-    /** Call in every loop() and init_loop(). */
-    public void update() {
-        vision.update();
-        drive.update();
-        launcher.update();
-        intake.update();
-        transfer.update();
-    }
-
-    public void stopAll() {
-        drive.cancel();
-        drive.stop();
-        launcher.stop();
-        intake.stop();
-        transfer.stop();
-        vision.stop();
-    }
-
-    /** The standard telemetry footer for this robot. */
-    public void addTelemetry() {
-        launcher.addTelemetry(telemetry, "launcher");
-        intake.addTelemetry(telemetry, "intake");
-        transfer.addTelemetry(telemetry, "transfer");
-        drive.addTelemetry();
     }
 }

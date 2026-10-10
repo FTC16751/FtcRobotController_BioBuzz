@@ -55,6 +55,29 @@ Koala-Log also has `@AutoLog`: annotate a class and the annotation processor gen
 the explicit calls above say exactly what is logged, which is what a student debugging a subsystem
 wants to see in the code. The processor is in the build if a team wants it.
 
+## A new robot class: extend `RobotBase`
+
+`common/RobotBase` owns the log start/stop, the drive, the camera and the update / stop / telemetry /
+log order (vision, drive, launcher, then each tracked roller), so a robot class only builds its own
+subsystems. Copy `DecodeRobot` or `Test2027Robot`:
+
+```java
+public class MyRobot extends RobotBase {
+    public final Roller intake;
+
+    public MyRobot(HardwareMap hardwareMap, Telemetry telemetry) {
+        super(hardwareMap, telemetry, MyConfig.create(), MyConstants.Logging.ENABLED);
+        intake   = track("intake", new Roller(hardwareMap, MyConfig.INTAKE, MyConfig.INTAKE_DIR));
+        launcher = new Launcher(...);      // inherited field; may stay null
+    }
+    @Override protected void onUpdate() { /* LED, turret, anything extra */ }
+    @Override protected void onStop()   { /* park a servo */ }
+}
+```
+
+`track("intake", roller)` steps, stops, shows and logs the roller (log group "Intake"). Device names
+stay in the robot's own config file. Rex and the StarterBots pass `false` for logging today.
+
 ## Getting the log off the robot
 
 Koala-Log ships a Windows-only puller. On a Mac use `adb`, which Android Studio installs
