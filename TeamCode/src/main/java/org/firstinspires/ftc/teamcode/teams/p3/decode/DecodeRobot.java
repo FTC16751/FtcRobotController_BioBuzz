@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.subsystems.PresetServo;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
 import org.firstinspires.ftc.teamcode.common.vision.AimLed;
+import org.firstinspires.ftc.teamcode.common.vision.Vision;
 import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 
 /**
@@ -36,7 +37,7 @@ public class DecodeRobot {
 
     public final RobotConfig config;
     public final DriveUtil drive;
-    public final VisionUtil vision;
+    public final Vision vision;
     public final Roller intake;
     public final Roller indexer;            // the belt; also the launcher's feeder, exposed for unjamming by hand
     public final Launcher launcher;         // two-motor flywheel + indexer belt + shot sequence + distance table
@@ -123,7 +124,7 @@ public class DecodeRobot {
         LogUtil.logBattery();
         launcher.log();
         intake.log("Intake");
-        LogUtil.log("Vision/TagVisible", vision.isTargetVisible());
+        vision.log("Vision");
     }
 
     /** The standard telemetry footer for this robot. */

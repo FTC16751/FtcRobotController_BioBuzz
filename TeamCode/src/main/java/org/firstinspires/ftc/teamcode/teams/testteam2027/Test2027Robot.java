@@ -110,14 +110,7 @@ public class Test2027Robot {
         drive.addLog();
         LogUtil.logBattery();
         launcher.log();
-        boolean visible = vision.isTargetVisible();
-        LogUtil.log("Vision/TagVisible", visible);
-        LogUtil.log("Vision/TagId", visible ? vision.getDetectedTagId() : -1);
-        if (visible && vision.canSee(vision.getDetectedTagId())) {
-            LogUtil.log("Vision/Forward_in", vision.forwardInches());
-            LogUtil.log("Vision/Right_in", vision.rightInches());
-            LogUtil.log("Vision/SquareUp_deg", vision.squareUpDegrees());
-        }
+        vision.log("Vision");
     }
 
     /** The standard telemetry footer for this robot. */
