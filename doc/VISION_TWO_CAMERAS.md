@@ -132,14 +132,15 @@ it is the last two tiles of an approach. That fits the 30 deg / 12 in mount abov
 
 ## 4. The webcam side: Hive tags
 
-### 4.1 What the manual says (V1, sections 9.6 and 9.9, via team 36533's quoted constants)
+### 4.1 What the manual says (Competition Manual TU04, 2026-10-08, sections 9.6 and 9.9, Figures 9-9, 9-10, 9-15)
 
 | Fact | Value |
 |---|---|
 | Tag | **3.25 in**, family 36h11, an **AprilTag Cluster of 4** on the **bottom face of each Cell, facing the tiles** |
 | Ids | red Scoring-side cell 30-33, red Audience-side cell 34-37, blue Audience-side cell 38-41, blue Scoring-side cell 42-45. Verified in SDK 12's `AprilTagGameDatabase.getBioBuzzTagLibrary()`, cluster names RED SCORING / RED AUDIENCE / BLUE AUDIENCE / BLUE SCORING. |
-| Hive | a seesaw at field centre, two Cells per Hive, **bi-stable at +/-30 deg**, pivot **43.95 in** above the tiles, each Cell 18.84 in from the pivot, the two Hives 25.5 in apart |
-| Tag plane height | low Cell **25.5 in**, high Cell **about 44.3 in** (25.5 + 2 x 18.84 x sin 30) |
+| Hive | a seesaw at field centre, two Cells per Hive, **bi-stable at +/-30 deg**, pivot **43.95 in** above the tiles, the two Cells **18.84 in apart** (gap between them; each Cell is 12.04 in deep, 42.91 in overall), the two Hives 25.5 in apart. Lowest point of a tipped Hive 30.6 in above the tiles. |
+| Tag plane height | **not published.** The two Cells are identical and 180 deg apart, so a Cell's tag height when up and when down average to the pivot height: the UP/DOWN threshold is exactly **43.95 in**. Rough reading of Figure 9-10 puts the tag centre at about 34 in (down) and 54 in (up); measure on a practice Hive or the Onshape CAD before using either. (The earlier 25.5 / 44.3 in figures were wrong: 25.5 in is below the Hive's lowest point.) |
+| Cluster layout (Fig 9-15) | tag centres at -6.5, -2.75, +2.75, +6.5 in from the cluster centre along the Cell's width (13.0 in outer baseline), tag centreline 2.75 in above the reference holes; sticker's bottom edge faces the field centre |
 | Match start | red Hive's Audience cell up, blue Hive's Scoring cell up, 3 Nectar in each up cell (Field Setup Guide 11.1) |
 
 So a cluster id says **which alliance and which cell**. It never says which way the seesaw is
@@ -164,7 +165,7 @@ With the webcam mounted `h` inches up and pitched `p` degrees above level:
 
     tagHeightAboveTiles = h + range * sin(elevation + p)
 
-Threshold at **35 in**, the midpoint of 25.5 and 44.3. Add a settled gate: the tag plane's tilt must
+Threshold at **43.95 in**, the pivot height (section 4.1). Add a settled gate: the tag plane's tilt must
 be within a few degrees of +/-30 deg (which sign is the H1-style stand check, once; do not reason it
 out). Result per cell: `UP`, `DOWN`, `MOVING`, `NOT_SEEN`. The cell to shoot into is our alliance's
 cell that reads `UP`. One cluster in view is enough; the other cell of the same Hive is by definition
@@ -232,7 +233,7 @@ are **adapters behind interfaces that exist**, and nothing in the drive or launc
 | `LimelightBalls implements TagSighting` | owns the Limelight 3A on the detector pipeline. `update()` each loop reads `getDetectorResults()`, keeps the detections above the confidence floor for the wanted classes. `canSee(classId)` picks the best ball of that class (largest area = nearest, or the largest cluster); `forwardInches` / `rightInches` come from `FloorTargetMath`; `squareUpDegrees` = minus the ball's horizontal angle (turn to face it). Telemetry lists every detection with class, confidence, angles, area. |
 | `FloorTargetMath` | pure: camera height and pitch plus the detector's `tx`/`ty` to forward and right inches for a target on the floor (ball centre 1.4-1.8 in up, second order). Unit tested like `EncoderMoveMath`. |
 | `WebcamTags implements AimTarget, TagSighting` | owns a `VisionPortal` + `AprilTagProcessor` with the BIOBUZZ library. `canSee(clusterId)` finds that cluster (member tags ignored; `percentClusterFound` gate); `forward`/`right`/`squareUp` from `ftcPose` (SDK frame: X right, Y forward, bearing positive left; signs are the H1 stand check again). `AimTarget` from the same pose: `range` and `bearing`. Plus `hive(Cell) -> UP / DOWN / MOVING / NOT_SEEN`. |
-| `HiveMath` | pure: `tagHeightAboveTiles`, the 35 in threshold, the settled-tilt gate, the four cluster ids and their alliance/side. Unit tested. |
+| `HiveMath` | pure: `tagHeightAboveTiles`, the 43.95 in threshold, the settled-tilt gate, the four cluster ids and their alliance/side. Unit tested. |
 
 Naming is open (section 9). `TagSighting` being implemented by a ball detector reads oddly;
 renaming it `TargetSighting` is a mechanical refactor with 23 tests behind it and can wait.
@@ -292,7 +293,7 @@ Hard rule 0 holds: TeleOp launcher starts in PRESET; the webcam only feeds AIM w
 4. **Limelight OS 2026.0** for Cluster Strength; upload the model and `labels.txt` to pipeline 3,
    confidence 0.40, class filter Pollen plus our Nectar. Start with a short exposure and low gain
    (one team's published notes suggest 2.5 ms / gain 24); tune on our field.
-5. **A practice Hive**, or at least a printed cluster on a board at 25.5 in and 44.3 in at 30 deg
+5. **A practice Hive**, or at least a printed cluster on a board at the measured down and up heights at 30 deg
    tilt, for section 8's V5-V7.
 
 ---
@@ -311,7 +312,7 @@ No code for V1-V3 and V5; they answer the unknowns before anything is written.
   it. Then the four-Pollen Garden line in a corner. Cover the camera mid-approach: LOST, stops.
 - **V5 Cluster read.** Practice Hive, both states: every member id and the cluster id reported,
   `percentClusterFound`, range against a tape measure at 3 / 4 / 6 ft. Height calculation within
-  3 in of 25.5 / 44.3. Which sign of `pitch` means "settled" (write it into `HiveMath`).
+  3 in of the measured down / up heights. Which sign of `pitch` means "settled" (write it into `HiveMath`).
 - **V6 UP / DOWN.** Both states read correctly from 3-6 ft; `MOVING` during a hand tip; `NOT_SEEN`
   with the lens covered.
 - **V7 Line up and shoot.** `driveToTagAsync(robot.tags, ourCell, standoff)` ends square in front
