@@ -66,6 +66,9 @@ public final class PedroBridge {
             c.globalDistanceUnit.set(DistanceUnit.INCH);            // Pedro poses in inches, like the rest of our code
             c.xPodDirection.set(config.odometry.pinpointXPodDirection);
             c.yPodDirection.set(config.odometry.pinpointYPodDirection);
+            // Pedro's default only recalibrates the IMU; the Pinpoint read no heading until another OpMode
+            // (the SDK Pinpoint sample) had run resetPosAndIMU. Our non-Pedro path always did the full reset.
+            c.resetMode.set(PinpointLocalizer.ResetMode.RESET_AND_RECALIBRATE_IMU);
         });
     }
 

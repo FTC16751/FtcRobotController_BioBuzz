@@ -140,6 +140,7 @@ public class DecodeRedAudienceAuto extends OpMode {
     @Override
     public void init() {
         robot = new DecodeRobot(hardwareMap, telemetry);
+        robot.drive.setPosition(START.x(), START.y(), Math.toDegrees(START.heading()));   // so init telemetry shows the start pose, not 0, 0, 0
     }
 
     @Override

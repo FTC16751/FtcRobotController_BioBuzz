@@ -3,6 +3,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.MM;
 
 import com.pedropathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.common.SharedState;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.revhub.localizers.PinpointLocalizer;
@@ -136,7 +137,7 @@ public class DriveUtil {
      * Ten P3 autos still put it in telemetry as "imu heading"; they should call getHeading() instead.
      * Kept so they compile. Do not use in new code.
      */
-    public double heading           = 0;
+    public double heading            = 0;
 
     // --- Pedro Pathing (optional). Built in the constructor when config.pedroPathing is set. The
     //     Follower then OWNS the Pinpoint: it opens and configures the device once, and the public
@@ -338,6 +339,7 @@ public class DriveUtil {
     /** Stop all four wheels. */
     public void stop() {
         stopRobot();
+        if (pinpoint != null) SharedState.endPose = new double[] { getX(), getY(), getHeadingDegrees() };   // for the next OpMode
     }
 
     /**
