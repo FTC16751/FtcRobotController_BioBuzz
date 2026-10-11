@@ -53,6 +53,12 @@ fi
 
 # 2. The simulator at the pinned commit, patched.
 SIMSRC="$CACHE/virtual_robot"
+SIMOUT="$CACHE/sim-classes"
+STAMP="$(shasum -a 1 "$HERE/patch_sim.py" | cut -d' ' -f1)"
+if [ -d "$SIMSRC" ] && [ "$(cat "$CACHE/patch-stamp" 2>/dev/null)" != "$STAMP" ]; then
+  echo "patch_sim.py changed since the cached sim was built; fetching and patching it again."
+  rm -rf "$SIMSRC" "$SIMOUT"
+fi
 if [ ! -d "$SIMSRC/.git" ]; then
   echo "Fetching virtual_robot at $PINNED_COMMIT..."
   git init -q "$SIMSRC" && git -C "$SIMSRC" remote add origin "$SIM_URL"
@@ -60,12 +66,12 @@ if [ ! -d "$SIMSRC/.git" ]; then
   git -C "$SIMSRC" checkout -q FETCH_HEAD
 fi
 python3 "$HERE/patch_sim.py" "$SIMSRC"
+echo "$STAMP" > "$CACHE/patch-stamp"
 
 # 3. Compile the simulator once (and its assets).
 LIBS="$(ls "$SIMSRC"/lib/*.jar | tr '\n' ':')"
 KOALA="$(find "$HOME/.gradle" -name 'KoalaLogger-*-runtime.jar' 2>/dev/null | head -1)"
 [ -n "$KOALA" ] || { echo "Koala-Log jar not in ~/.gradle. Run ./gradlew :TeamCode:compileDebugJavaWithJavac once, then retry."; exit 1; }
-SIMOUT="$CACHE/sim-classes"
 if [ ! -d "$SIMOUT" ]; then
   echo "Compiling the simulator..."
   mkdir -p "$SIMOUT"
@@ -83,7 +89,8 @@ while IFS= read -r line; do
   [ -n "$line" ] && SOURCES+=("$TEAMCODE/$line")
 done < "$HERE/opmodes.txt"
 [ ${#SOURCES[@]} -gt 0 ] || { echo "sim/opmodes.txt lists no OpModes"; exit 1; }
-echo "Compiling ${#SOURCES[@]} OpMode(s) from sim/opmodes.txt..."
+echo "Compiling ${#SOURCES[@]} OpMode(s) from sim/opmodes.txt, plus the stand-in devices in sim/stubs..."
+while IFS= read -r f; do SOURCES+=("$f"); done < <(find "$HERE/stubs" -name '*.java')
 "$JDK/bin/javac" -proc:none -nowarn -d "$OURS" -cp "$SIMOUT:$LIBS$KOALA" -sourcepath "$TEAMCODE" "${SOURCES[@]}"
 
 [ "$BUILD_ONLY" = 1 ] && { echo "Build OK."; exit 0; }

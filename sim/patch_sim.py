@@ -83,6 +83,12 @@ def mecanum_base(s):
         if '"%s"' % old not in s:
             sys.exit("patch_sim: DynamicMecanumBase no longer mentions \"%s\"" % old)
         s = s.replace('"%s"' % old, '"%s"' % new)
+    s = sub1(s, """        hardwareMap.put("odo", new GoBildaPinpointDriverInternal());""",
+             """        hardwareMap.put("odo", new GoBildaPinpointDriverInternal());
+        """ + MARK + """: add our stand-in Decode mechanisms (sim/stubs/ours/sim/OurDevices.java) if they were compiled.
+        try { Class.forName("ours.sim.OurDevices").getMethod("register", HardwareMap.class).invoke(null, hardwareMap); }
+        catch (ClassNotFoundException e) { /* not compiled: drive-only sim */ }
+        catch (ReflectiveOperationException e) { throw new RuntimeException(e); }""")
     return sub1(s, """        hardwareMap.setActive(false);
 
         /*

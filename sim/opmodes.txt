@@ -1,3 +1,4 @@
 # OpModes the simulator compiles and shows in its dropdown. One source path per line, relative to
 # TeamCode/src/main/java. Classes they use are compiled automatically. Lines starting with # are ignored.
 org/firstinspires/ftc/teamcode/teams/p3/decode/auto/DecodePedroParkAuto.java
+org/firstinspires/ftc/teamcode/teams/p3/decode/auto/DecodeRedAudienceAuto.java
