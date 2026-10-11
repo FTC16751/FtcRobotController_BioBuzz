@@ -26,20 +26,30 @@ Intel only), `git`, `python3`, and one `./gradlew` build done so the Koala-Log j
 ## Adding an OpMode
 
 Add its source path to `sim/opmodes.txt` (relative to `TeamCode/src/main/java`) and run again. Its
-dependencies compile automatically. Expect it to fail if it needs hardware the sim does not have; see below.
+dependencies compile automatically. If INIT shows no telemetry, the OpMode thread died: read the terminal
+where you ran `run_sim.sh`; the stack trace is there (typically a device the sim does not have, or an
+SDK class missing from `sim/stubs`).
 
 ## What the simulator can and cannot tell you
 
-Checked 2026-10-10 with `DecodePedroParkAuto`: it ended at the park pose (9, 106.1, 180 degrees) in
-5.3 s on two runs in a row, and Pedro's reported pose matched where the robot sat on screen.
+Checked 2026-10-10: `DecodePedroParkAuto` ended at the park pose (9, 106.1, 180 degrees) in 5.3 s on two
+runs in a row, with Pedro's pose matching the robot on screen; `DecodeRedAudienceAuto` (shoot, flower,
+score table, park) ran start to finish.
 
 It tests: path order and sequencing, state machines, start-pose and heading handling, and whether the
 follower reaches and holds a pose.
 
 It does **not** test: your real tuning (the sim robot has its own physics, so times and accuracy are not
-your robot's), mechanisms (a flywheel is just numbers, there is no launching), vision (no Limelight or
-cameras), or game elements. Only drive-and-Pinpoint autos work today. The sim robot has no `intake`,
-`indexer`, `left_shooter` and so on, so autos that touch those fail at INIT with "No ... named ... is found".
+your robot's), whether mechanisms work (see below), vision (the Limelight never sees a tag), or game
+elements. Logging is off in the sim (your `LogUtil` prints "could not start" and carries on).
+
+**Mechanisms are stand-ins.** `sim/stubs/ours/sim/OurDevices.java` registers the Decode devices under
+`DecodeConfig`'s own names (intake, indexer, two shooter motors, stopper servo, turret servo and limit
+switch, LED), so `DecodeRobot` builds unmodified. They accept commands and give plausible readings. The
+flywheel approaches its commanded speed with a time constant of 0.5 s, which is a guess. Nothing launches
+or picks up a game piece, so a shot "fires" on timing alone. That is enough to check an auto's sequencing
+and timeouts (`DecodeRedAudienceAuto` runs start to finish), not to tell whether a shot would score.
+A robot with different devices needs its own stand-ins added there.
 
 ## How it is set up
 
@@ -56,6 +66,13 @@ changes, each an exact-text edit that stops with an error if the sim's code ever
    the bottom-left corner, heading 0 along +x; sim frame: pixels from the centre, heading 0 facing up),
    then resyncs its odometry baseline. Without the resync the jump counts as driven distance and each run
    ends somewhere different.
+
+4. Our stand-in mechanisms are added to the hardware map (by reflection, if `OurDevices` was compiled).
+
+`sim/stubs` also holds stand-ins for FTC SDK classes the sim lacks, compiled with your OpModes and used
+only here (not by Gradle): `ServoImplEx`, `PwmControl`, the Limelight result types, `Pose3D`/`Position`,
+`AppUtil`, and Koala-Log's `LogFileManager`. The last two make logging fail cleanly (`RuntimeException`),
+which `LogUtil` already handles.
 
 To move to a newer virtual_robot, change `PINNED_COMMIT` in `run_sim.sh`, run with `--rebuild`, and fix
 `patch_sim.py` if its error message says an edit no longer matches.
