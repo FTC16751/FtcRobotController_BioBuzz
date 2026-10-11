@@ -30,7 +30,7 @@ import org.firstinspires.ftc.teamcode.teams.p3.decode.DecodeRobot;
 @TeleOp(name = "Decode: Teleop (RUN ME)", group = "Decode")
 public class DecodeTeleop extends OpMode {
 
-    private DecodeRobot robot;
+    protected DecodeRobot robot;
 
     private enum LauncherMode { AUTO_TARGETING, MANUAL_OVERRIDE }
     private LauncherMode launcherMode = LauncherMode.MANUAL_OVERRIDE;
@@ -62,7 +62,7 @@ public class DecodeTeleop extends OpMode {
         displayTelemetry();
     }
 
-    private void handleDriving() {
+    protected void handleDriving() {
         double turn = gamepad1.right_stick_x;
         if (gamepad1.right_stick_button && robot.vision.isTargetVisible()) {
             turn = VisionAim.turnPower(robot.vision.getTargetAngleX(),
