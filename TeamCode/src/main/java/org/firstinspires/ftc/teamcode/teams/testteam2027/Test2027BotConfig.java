@@ -45,6 +45,15 @@ public final class Test2027BotConfig {
     public static final DcMotorSimple.Direction FEEDER_LEFT_DIR  = DcMotorSimple.Direction.REVERSE;
     public static final DcMotorSimple.Direction FEEDER_RIGHT_DIR = DcMotorSimple.Direction.FORWARD;
 
+    // 8. SparkFun OTOS (optical tracking), used by the Odometry Check OpMode as a second opinion for
+    //    the Pinpoint. Name exactly as in the configuration (the Pedro OTOS tuner's default is "otos").
+    //    Mount: glass face 10 mm (+-1) above the foam tiles, flat. Offset is where the sensor sits
+    //    relative to the robot center (inches; x forward, y left; heading degrees). Scalars come from
+    //    the Pedro OTOS tuner (angular first, then linear); 1.0 until that has been run.
+    public static final String OTOS = "otos";
+    public static final double OTOS_OFFSET_X_IN = 0, OTOS_OFFSET_Y_IN = 0, OTOS_OFFSET_HEADING_DEG = 0;
+    public static final double OTOS_LINEAR_SCALAR = 1.0, OTOS_ANGULAR_SCALAR = 1.0;
+
     public static RobotConfig create() {
         return new RobotConfig(
                 // 2. Motor directions. Verified on the Skyline chassis 2026-09-07: forward, both

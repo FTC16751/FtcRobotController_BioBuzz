@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.common.hardware.Rumble;
 import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBot2027Constants;
 import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBot2027Robot;
 import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
@@ -18,11 +19,13 @@ import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
  *   Right trigger   intake in, proportional; left trigger: intake out. Both: off
  *   Right bumper    HOLD to launch: the wheel spins up; once it is fast enough the windmill feeds
  *                   and the intake runs harder to push elements through. Release: everything stops
+ *                   The controller blips once when the wheel is up to speed
  *   Back            reset the position to (0, 0) facing 0 (only meaningful once there is a Pinpoint)
  */
 public abstract class StarterBot2027Teleop extends OpMode {
 
     private StarterBot2027Robot robot;
+    private Rumble readyBuzz;   // one blip when the held launch button's wheel reaches speed
 
     /** Which StarterBot this is: StarterBotConfig.p3() or .gg(). */
     protected abstract StarterBotConfig config();
@@ -30,6 +33,7 @@ public abstract class StarterBot2027Teleop extends OpMode {
     @Override
     public void init() {
         robot = new StarterBot2027Robot(hardwareMap, telemetry, config());
+        readyBuzz = new Rumble(gamepad1, 1);
         telemetry.addData("Status", "Initialized: %s", robot.config.robotName);
     }
 
@@ -47,6 +51,7 @@ public abstract class StarterBot2027Teleop extends OpMode {
         double intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
         intakePower += handleLauncher();
         robot.intake.setPower(intakePower);
+        readyBuzz.update(gamepad1.right_bumper && robot.launcher.isReady());
 
         if (gamepad1.backWasPressed()) {
             robot.drive.resetPosition();

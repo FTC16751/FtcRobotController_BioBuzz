@@ -16,8 +16,10 @@ import java.util.List;
  * This is a "dead reckoning" system and is prone to drift from wheel slip,
  * but serves as an excellent "second opinion" or fallback localizer.
  *
- * This is the localizer for a robot with no Pinpoint (RobotConfig.hardware.pinpoint == null).
- * Nothing calls it today; it stays live in drive/ for the robot that needs it.
+ * This is the localizer for a robot with no Pinpoint (RobotConfig.hardware.pinpoint == null), and
+ * the third opinion for OdometryWatchdog on a robot that has one. Building it only takes the
+ * encoders' and the IMU's current readings as its zero: it does not reset the encoders, change
+ * motor modes or reset the IMU yaw, so it can run beside DriveUtil. reset() still does all three.
  */
 public class EncoderOdometry {
 
@@ -69,8 +71,19 @@ public class EncoderOdometry {
         // Initialize the current pose at the origin
         this.currentPose = new Pose2D(DistanceUnit.INCH,0, 0, AngleUnit.RADIANS,0);
 
-        // Reset the encoders and store their initial positions
-        reset();
+        // Take the encoders' and the IMU's current readings as zero without touching them.
+        resetToOriginAtCurrentHeading();
+    }
+
+    /**
+     * From the chassis calibration instead of motor and wheel specs: encoderCountsPerInch is
+     * RobotConfig.Calibration.encoderCountsPerInch, and lateralMultiplier is 1 / strafeScale
+     * (strafeScale > 1 means the wheels turn more than the robot moves sideways).
+     */
+    public EncoderOdometry(DcMotorEx lf, DcMotorEx rf, DcMotorEx lr, DcMotorEx rr, IMU imu,
+                           double encoderCountsPerInch, double lateralMultiplier) {
+        // ticksPerRev = counts per inch and a wheel diameter of 1/pi inch make inchesPerTick = 1 / counts per inch
+        this(lf, rf, lr, rr, imu, encoderCountsPerInch, 1.0 / Math.PI, 0.0, lateralMultiplier);
     }
 
     /**
