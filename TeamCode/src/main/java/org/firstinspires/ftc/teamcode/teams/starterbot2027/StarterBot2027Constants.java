@@ -25,9 +25,9 @@ public final class StarterBot2027Constants {
      * feeds it once the wheel is fast enough.
      */
     public static final class Launcher {
-        public static final double TARGET_VELOCITY = 1250;
+        public static final double TARGET_VELOCITY = 1400;
         /** Feed only above this. 1200 of 1250 is 96%, the ready fraction below. */
-        public static final double MIN_VELOCITY    = 1200;
+        public static final double MIN_VELOCITY    = 1350;
         public static final double READY_FRACTION  = MIN_VELOCITY / TARGET_VELOCITY;
         // The velocity PIDF is per robot (GG needs a gentler P than P3): StarterBotConfig.launcherPidf.
         /** While the windmill feeds, the intake runs this much harder to shake loose a stuck element. */

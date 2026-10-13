@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.common.RobotConfig;
  * WHAT a goBILDA BIOBUZZ StarterBot IS, all in this one file: every device name as typed in the
  * Control Hub configuration, which way each one spins, how the hub is mounted, and the drive
  * calibration. Two robots are built from the same kit, P3's and GearGirls': {@link #p3()} and
- * {@link #gg()}. Three differences so far: GG's intake gear is mounted on the other side of the
- * robot, so its intake motor runs reversed; GG's launcher needs a gentler velocity PIDF; and P3's
- * windmill feeder is a motor instead of goBILDA's servo.
+ * {@link #gg()}. Two differences so far: GG's intake gear is mounted on the other side of the
+ * robot, so its intake motor runs reversed, and GG's launcher needs a gentler velocity PIDF.
+ * Both use goBILDA's windmill servo (P3 tried a motor for a while and went back).
  *
  * Rewired or renamed something? Edit here. Want it to drive or shoot differently? That is
  * StarterBot2027Constants.
@@ -30,8 +30,7 @@ public final class StarterBotConfig {
     public static final String INTAKE_LEFT  = "left_intake_servo";   // corner servos that pull elements in
     public static final String INTAKE_RIGHT = "right_intake_servo";
     public static final String LAUNCHER     = "launcher";            // flywheel motor, encoder plugged in beside it
-    public static final String WINDMILL_SERVO = "windmillServo";     // the feeder, goBILDA's servo (GG)
-    public static final String WINDMILL_MOTOR = "windmill";          // the feeder, a motor (P3)
+    public static final String WINDMILL_SERVO = "windmillServo";     // the feeder, goBILDA's servo
 
     // ---- Directions that are the same on both robots. The intake motor's is per robot, below.
     public static final DcMotorSimple.Direction INTAKE_LEFT_DIR  = FORWARD;
@@ -49,13 +48,12 @@ public final class StarterBotConfig {
     public final PIDFCoefficients launcherPidf;
 
     /**
-     * P3 shoots fine on goBILDA's shipped PIDF. Its windmill servo was swapped for a motor
-     * (2026-09-23). Direction UNVERIFIED, kept the servo's REVERSE: hold right bumper with the wheel
-     * up to speed; if the windmill pushes elements away from the wheel, flip it to FORWARD.
+     * P3 shoots fine on goBILDA's shipped PIDF. Its windmill was swapped to a motor (2026-09-23)
+     * and is back on goBILDA's servo (2026-10-11), REVERSE like goBILDA's code.
      */
     public static StarterBotConfig p3() {
-        return new StarterBotConfig("P3 Starterbot", FORWARD, WINDMILL_MOTOR, REVERSE,
-                new PIDFCoefficients(40, 0, 0, 12.5));
+        return new StarterBotConfig("P3 Starterbot", FORWARD, WINDMILL_SERVO, REVERSE,
+                new PIDFCoefficients(40, 0, 0, 12.5), "odo");   // Pinpoint fitted (2026-10-12)
     }
 
     /**
@@ -68,12 +66,12 @@ public final class StarterBotConfig {
      */
     public static StarterBotConfig gg() {
         return new StarterBotConfig("GG Starterbot", REVERSE, WINDMILL_SERVO, REVERSE,
-                new PIDFCoefficients(10, 0, 0, 12.6));
+                new PIDFCoefficients(10, 0, 0, 12.6), null);
     }
 
     private StarterBotConfig(String name, DcMotorSimple.Direction intakeDir,
                              String windmill, DcMotorSimple.Direction windmillDir,
-                             PIDFCoefficients launcherPidf) {
+                             PIDFCoefficients launcherPidf, String pinpoint) {
         this.intakeDir = intakeDir;
         this.windmill = windmill;
         this.windmillDir = windmillDir;
@@ -84,11 +82,12 @@ public final class StarterBotConfig {
                 new RobotConfig.DrivetrainConfig(
                         REVERSE, FORWARD,     // left front, right front
                         REVERSE, FORWARD),    // left rear,  right rear
-                // Pinpoint: none yet, so these are ignored. When one is fitted: pod offsets from the
-                // robot centre in mm (X pod left positive, Y pod forward positive) and pod directions.
-                new RobotConfig.OdometryConfig(0, 0,
-                        GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                        GoBildaPinpointDriver.EncoderDirection.FORWARD),
+                // Pinpoint (P3 only): pod offsets from the robot centre in mm (X pod left positive,
+                // Y pod forward positive) and pod directions. MEASURE these and run the three
+                // checks in learning Lesson 25; 0 / FORWARD / FORWARD are placeholders.
+                new RobotConfig.OdometryConfig(-152.4, -63.5,   // X pod 6 in right of centre, Y pod 2.5 in behind centre
+                        GoBildaPinpointDriver.EncoderDirection.REVERSED,   // push check 2026-10-12: forward read negative
+                        GoBildaPinpointDriver.EncoderDirection.FORWARD),   // left read positive: correct
                 // Control Hub mounting: which way the REV logo and the USB ports face. UNVERIFIED,
                 // goBILDA's code never reads the IMU; a commanded 90 degree turn should read about 90.
                 new RobotConfig.ImuConfig(
@@ -98,7 +97,7 @@ public final class StarterBotConfig {
                 null)                                   // no Pedro Pathing (needs a Pinpoint first)
             .named(name)
             .withHardware(new RobotConfig.HardwareNames()
-                    .pinpoint(null)      // none yet; "odo" when fitted
+                    .pinpoint(pinpoint)  // null = none; null = none, "odo" when fitted
                     .limelight(null))    // none yet; "limelight" when fitted
             // Starting guesses for the encoder moves: goBILDA 312 rpm motor (537.7 ticks/rev) on a
             // 96 mm mecanum wheel. Measure each with the Encoder Move Check before an auto trusts them.
