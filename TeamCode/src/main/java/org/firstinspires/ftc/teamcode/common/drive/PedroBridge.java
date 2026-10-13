@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.drivetrains.MecanumConfig;
 import com.pedropathing.revhub.localizers.PinpointConfig;
+import org.firstinspires.ftc.teamcode.common.SharedState;
 import com.pedropathing.revhub.localizers.PinpointLocalizer;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -66,9 +67,14 @@ public final class PedroBridge {
             c.globalDistanceUnit.set(DistanceUnit.INCH);            // Pedro poses in inches, like the rest of our code
             c.xPodDirection.set(config.odometry.pinpointXPodDirection);
             c.yPodDirection.set(config.odometry.pinpointYPodDirection);
-            // Pedro's default only recalibrates the IMU; the Pinpoint read no heading until another OpMode
-            // (the SDK Pinpoint sample) had run resetPosAndIMU. Our non-Pedro path always did the full reset.
-            c.resetMode.set(PinpointLocalizer.ResetMode.RESET_AND_RECALIBRATE_IMU);
+            // First OpMode since the Robot Controller started: the full reset (Pedro's default only recalibrates
+            // the IMU, and the Pinpoint read no heading until the SDK sample had run resetPosAndIMU). After
+            // that the Pinpoint is already calibrated and holds its pose, so leave it alone: recalibrating
+            // the gyro while someone is still handling the robot after an auto would spoil the heading.
+            // SharedState.endPose is set by the first DriveUtil.stop(), so non-null means "already initialized".
+            c.resetMode.set(SharedState.endPose != null
+                    ? PinpointLocalizer.ResetMode.NONE
+                    : PinpointLocalizer.ResetMode.RESET_AND_RECALIBRATE_IMU);
         });
     }
 

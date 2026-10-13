@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
 
 /**
  * A goBILDA BIOBUZZ StarterBot: mecanum drive, an intake (one motor and two servos), and a
- * launcher (one flywheel motor and the windmill feeder: a servo on GG, a motor on P3). Both StarterBots use this one
+ * launcher (one flywheel motor and the windmill feeder servo). Both StarterBots use this one
  * class; which robot it is comes from the StarterBotConfig handed in (p3() or gg()).
  * Every device name and direction is in StarterBotConfig; every speed and launcher number is in
  * StarterBot2027Constants.
@@ -45,7 +45,7 @@ public class StarterBot2027Robot extends RobotBase {
                               config.launcherPidf.d, config.launcherPidf.f)   // per robot: GG's is gentler
                         .readyFraction(StarterBot2027Constants.Launcher.READY_FRACTION),
                 new Roller(hardwareMap, config.windmill, config.windmillDir)
-                        .brake(),   // P3's windmill motor stops dead instead of coasting a ball in; no effect on GG's servo
+                        .brake(),   // no effect on a servo; kept so a motor swapped in stops dead
                 new LaunchController.Settings()
                         .feedTimeSec(StarterBot2027Constants.Launcher.FEED_TIME_SEC)
                         .readyFraction(StarterBot2027Constants.Launcher.READY_FRACTION)
