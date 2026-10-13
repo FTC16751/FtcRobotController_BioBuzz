@@ -53,7 +53,7 @@ public final class StarterBotConfig {
      */
     public static StarterBotConfig p3() {
         return new StarterBotConfig("P3 Starterbot", FORWARD, WINDMILL_SERVO, REVERSE,
-                new PIDFCoefficients(40, 0, 0, 12.5));
+                new PIDFCoefficients(40, 0, 0, 12.5), "odo");   // Pinpoint fitted (2026-10-12)
     }
 
     /**
@@ -66,12 +66,12 @@ public final class StarterBotConfig {
      */
     public static StarterBotConfig gg() {
         return new StarterBotConfig("GG Starterbot", REVERSE, WINDMILL_SERVO, REVERSE,
-                new PIDFCoefficients(10, 0, 0, 12.6));
+                new PIDFCoefficients(10, 0, 0, 12.6), null);
     }
 
     private StarterBotConfig(String name, DcMotorSimple.Direction intakeDir,
                              String windmill, DcMotorSimple.Direction windmillDir,
-                             PIDFCoefficients launcherPidf) {
+                             PIDFCoefficients launcherPidf, String pinpoint) {
         this.intakeDir = intakeDir;
         this.windmill = windmill;
         this.windmillDir = windmillDir;
@@ -82,11 +82,12 @@ public final class StarterBotConfig {
                 new RobotConfig.DrivetrainConfig(
                         REVERSE, FORWARD,     // left front, right front
                         REVERSE, FORWARD),    // left rear,  right rear
-                // Pinpoint: none yet, so these are ignored. When one is fitted: pod offsets from the
-                // robot centre in mm (X pod left positive, Y pod forward positive) and pod directions.
+                // Pinpoint (P3 only): pod offsets from the robot centre in mm (X pod left positive,
+                // Y pod forward positive) and pod directions. MEASURE these and run the three
+                // checks in learning Lesson 25; 0 / FORWARD / FORWARD are placeholders.
                 new RobotConfig.OdometryConfig(0, 0,
-                        GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                        GoBildaPinpointDriver.EncoderDirection.FORWARD),
+                        GoBildaPinpointDriver.EncoderDirection.REVERSED,   // push check 2026-10-12: forward read negative
+                        GoBildaPinpointDriver.EncoderDirection.FORWARD),   // left read positive: correct
                 // Control Hub mounting: which way the REV logo and the USB ports face. UNVERIFIED,
                 // goBILDA's code never reads the IMU; a commanded 90 degree turn should read about 90.
                 new RobotConfig.ImuConfig(
@@ -96,7 +97,7 @@ public final class StarterBotConfig {
                 null)                                   // no Pedro Pathing (needs a Pinpoint first)
             .named(name)
             .withHardware(new RobotConfig.HardwareNames()
-                    .pinpoint(null)      // none yet; "odo" when fitted
+                    .pinpoint(pinpoint)  // null = none; null = none, "odo" when fitted
                     .limelight(null))    // none yet; "limelight" when fitted
             // Starting guesses for the encoder moves: goBILDA 312 rpm motor (537.7 ticks/rev) on a
             // 96 mm mecanum wheel. Measure each with the Encoder Move Check before an auto trusts them.
