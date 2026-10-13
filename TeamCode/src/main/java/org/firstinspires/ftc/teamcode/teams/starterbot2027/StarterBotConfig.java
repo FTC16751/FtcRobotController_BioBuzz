@@ -85,7 +85,7 @@ public final class StarterBotConfig {
                 // Pinpoint (P3 only): pod offsets from the robot centre in mm (X pod left positive,
                 // Y pod forward positive) and pod directions. MEASURE these and run the three
                 // checks in learning Lesson 25; 0 / FORWARD / FORWARD are placeholders.
-                new RobotConfig.OdometryConfig(0, 0,
+                new RobotConfig.OdometryConfig(-152.4, -63.5,   // X pod 6 in right of centre, Y pod 2.5 in behind centre
                         GoBildaPinpointDriver.EncoderDirection.REVERSED,   // push check 2026-10-12: forward read negative
                         GoBildaPinpointDriver.EncoderDirection.FORWARD),   // left read positive: correct
                 // Control Hub mounting: which way the REV logo and the USB ports face. UNVERIFIED,
