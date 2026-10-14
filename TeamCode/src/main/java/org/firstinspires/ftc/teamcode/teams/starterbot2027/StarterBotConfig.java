@@ -31,6 +31,7 @@ public final class StarterBotConfig {
     public static final String INTAKE_RIGHT = "right_intake_servo";
     public static final String LAUNCHER     = "launcher";            // flywheel motor, encoder plugged in beside it
     public static final String WINDMILL_SERVO = "windmillServo";     // the feeder, goBILDA's servo
+    public static final String WEBCAM       = "Webcam 1";            // USB webcam for the Hive AprilTags
 
     // ---- Directions that are the same on both robots. The intake motor's is per robot, below.
     public static final DcMotorSimple.Direction INTAKE_LEFT_DIR  = FORWARD;
