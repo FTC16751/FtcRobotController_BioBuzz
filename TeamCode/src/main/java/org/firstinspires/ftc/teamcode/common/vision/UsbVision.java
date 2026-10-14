@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teams.starterbot2027;
+package org.firstinspires.ftc.teamcode.common.vision;
 
 import android.util.Size;
 
@@ -50,11 +50,12 @@ public class UsbVision {
     private boolean everSeen;
     private AprilTagDetection best;       // closest of our alliance's detections, null if none
 
-    public UsbVision(HardwareMap hardwareMap, boolean redAlliance) {
+    /** webcamName is the camera's name in the Control Hub configuration. */
+    public UsbVision(HardwareMap hardwareMap, String webcamName, boolean redAlliance) {
         red = redAlliance;
         tags.setDecimation(DECIMATION);
         portal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, StarterBotConfig.WEBCAM))
+                .setCamera(hardwareMap.get(WebcamName.class, webcamName))
                 .setCameraResolution(new Size(640, 480))
                 .addProcessor(tags)
                 .build();

@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027.test;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.teams.starterbot2027.UsbVision;
+import org.firstinspires.ftc.teamcode.common.vision.UsbVision;
+import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
 
 /**
  * Bench test: can the goBILDA USB webcam see the BIOBUZZ Hive AprilTags, and at what range?
@@ -40,7 +41,7 @@ public class StarterBotWebcamTagTest extends OpMode {
 
     @Override
     public void init() {
-        vision = new UsbVision(hardwareMap, red);
+        vision = new UsbVision(hardwareMap, StarterBotConfig.WEBCAM, red);
     }
 
     @Override
