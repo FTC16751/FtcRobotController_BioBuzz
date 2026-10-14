@@ -44,8 +44,8 @@ public class StarterBotWebcamTagTest extends OpMode {
     private VisionPortal portal;
 
     private boolean manual = true;
-    private long exposureMs = 10;
-    private int gain = 0;
+    private long exposureMs = 25;
+    private int gain = 50;
     private float decimation = 2;
     private boolean applied;           // camera controls can only be set once it is streaming
     private double farthest;
