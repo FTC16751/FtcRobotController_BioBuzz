@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * Exposure and gain: the defaults below were picked on the bench (garage, dim). Retune with the
  * Starterbot: Webcam Tag Test OpMode and change them here.
  */
-public class StarterBotVision {
+public class UsbVision {
 
     public static final long EXPOSURE_MS = 25;
     public static final int  GAIN = 50;
@@ -50,7 +50,7 @@ public class StarterBotVision {
     private boolean everSeen;
     private AprilTagDetection best;       // closest of our alliance's detections, null if none
 
-    public StarterBotVision(HardwareMap hardwareMap, boolean redAlliance) {
+    public UsbVision(HardwareMap hardwareMap, boolean redAlliance) {
         red = redAlliance;
         tags.setDecimation(DECIMATION);
         portal = new VisionPortal.Builder()

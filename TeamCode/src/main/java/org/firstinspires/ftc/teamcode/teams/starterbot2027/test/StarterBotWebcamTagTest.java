@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027.test;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotVision;
+import org.firstinspires.ftc.teamcode.teams.starterbot2027.UsbVision;
 
 /**
  * Bench test: can the goBILDA USB webcam see the BIOBUZZ Hive AprilTags, and at what range?
- * Nothing on the robot moves. Uses StarterBotVision, the same class the autos and teleop use.
+ * Nothing on the robot moves. Uses UsbVision, the same class the autos and teleop use.
  * Print a Hive tag cluster (3.25 in tags, ids 30-45), hold it in front
  * of the camera, and back away until the tags drop out.
  *
@@ -27,12 +27,12 @@ import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotVision;
 @TeleOp(name = "Starterbot: Webcam Tag Test", group = "StarterBot2027")
 public class StarterBotWebcamTagTest extends OpMode {
 
-    private StarterBotVision vision;
+    private UsbVision vision;
 
     private boolean manual = true;
-    private long exposureMs = StarterBotVision.EXPOSURE_MS;
-    private int gain = StarterBotVision.GAIN;
-    private float decimation = StarterBotVision.DECIMATION;
+    private long exposureMs = UsbVision.EXPOSURE_MS;
+    private int gain = UsbVision.GAIN;
+    private float decimation = UsbVision.DECIMATION;
     private boolean red = true;
     private double farthest;
     private String controlsStatus = "";
@@ -40,7 +40,7 @@ public class StarterBotWebcamTagTest extends OpMode {
 
     @Override
     public void init() {
-        vision = new StarterBotVision(hardwareMap, red);
+        vision = new UsbVision(hardwareMap, red);
     }
 
     @Override
