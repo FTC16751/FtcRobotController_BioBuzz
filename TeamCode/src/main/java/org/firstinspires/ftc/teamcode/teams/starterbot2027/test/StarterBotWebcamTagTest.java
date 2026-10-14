@@ -85,27 +85,4 @@ public class StarterBotWebcamTagTest extends OpMode {
     public void stop() {
         vision.close();
     }
-
-    /** Push exposure, gain and decimation to the camera and read the limits back. */
-    private void applyControls() {
-        applied = true;
-        tags.setDecimation(decimation);
-
-        ExposureControl exp = portal.getCameraControl(ExposureControl.class);
-        GainControl g = portal.getCameraControl(GainControl.class);
-        if (exp == null || g == null) { controlsStatus = "no exposure/gain control"; return; }
-
-        if (!manual) {
-            exp.setMode(ExposureControl.Mode.AperturePriority);
-        } else if (exp.setMode(ExposureControl.Mode.Manual)) {
-            long lo = exp.getMinExposure(TimeUnit.MILLISECONDS), hi = exp.getMaxExposure(TimeUnit.MILLISECONDS);
-            exposureMs = Math.max(lo, Math.min(hi, exposureMs));
-            exp.setExposure(exposureMs, TimeUnit.MILLISECONDS);
-            gain = Math.max(g.getMinGain(), Math.min(g.getMaxGain(), gain));
-            g.setGain(gain);
-            controlsStatus = String.format("exposure %d-%d ms, gain %d-%d", lo, hi, g.getMinGain(), g.getMaxGain());
-        } else {
-            controlsStatus = "manual exposure not supported by this camera";
-        }
-    }
 }
