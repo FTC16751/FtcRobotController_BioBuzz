@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teams.starterbot2027.test;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.common.CommonConstants;
 import org.firstinspires.ftc.teamcode.common.vision.UsbVision;
 import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
 
@@ -41,7 +42,7 @@ public class StarterBotWebcamTagTest extends OpMode {
 
     @Override
     public void init() {
-        vision = new UsbVision(hardwareMap, StarterBotConfig.WEBCAM, red);
+        vision = new UsbVision(hardwareMap, telemetry, StarterBotConfig.WEBCAM);
     }
 
     @Override
@@ -63,14 +64,14 @@ public class StarterBotWebcamTagTest extends OpMode {
         else if (gamepad1.leftBumperWasPressed())  { gain = Math.max(0, gain - 5); changed = true; }
         else if (gamepad1.dpadRightWasPressed())   { decimation = Math.min(4, decimation + 1); changed = true; }
         else if (gamepad1.dpadLeftWasPressed())    { decimation = Math.max(1, decimation - 1); changed = true; }
-        if (gamepad1.xWasPressed()) { red = !red; vision.setRed(red); farthest = 0; }
+        if (gamepad1.xWasPressed()) { red = !red; vision.setTargetingAlliance(red ? CommonConstants.Alliance.RED : CommonConstants.Alliance.BLUE); farthest = 0; }
         if (gamepad1.bWasPressed()) farthest = 0;
         if (changed) {
             vision.setDecimation(decimation);
             controlsStatus = vision.setExposure(manual, exposureMs, gain);
         }
 
-        if (vision.seen()) farthest = Math.max(farthest, vision.range());
+        if (vision.isTargetVisible()) farthest = Math.max(farthest, vision.getDistanceToTagInches());
 
         telemetry.addData("camera", "%.0f fps", vision.fps());
         telemetry.addData("exposure (Y, D-pad up/down)", manual ? exposureMs + " ms  MANUAL" : "AUTO");
@@ -78,12 +79,12 @@ public class StarterBotWebcamTagTest extends OpMode {
         telemetry.addData("decimation (D-pad left/right)", "%.0f", decimation);
         telemetry.addData("camera says", controlsStatus);
         telemetry.addData("goal is up (sees a " + (red ? "RED" : "BLUE") + " tag, X)", vision.goalIsUp());
-        telemetry.addData("range / bearing", "%.1f in   %.0f deg", vision.range(), vision.bearing());
+        telemetry.addData("range / angle (+ = right)", "%.1f in   %.0f deg", vision.getDistanceToTagInches(), vision.getTargetAngleX());
         telemetry.addData("farthest range seen (B clears)", "%.1f in", farthest);
     }
 
     @Override
     public void stop() {
-        vision.close();
+        vision.stop();
     }
 }
