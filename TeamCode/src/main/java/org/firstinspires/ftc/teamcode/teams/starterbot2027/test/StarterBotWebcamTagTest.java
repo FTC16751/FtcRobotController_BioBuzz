@@ -1,28 +1,14 @@
 package org.firstinspires.ftc.teamcode.teams.starterbot2027.test;
 
-import android.util.Size;
-
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotConfig;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import org.firstinspires.ftc.teamcode.teams.starterbot2027.StarterBotVision;
 
 /**
  * Bench test: can the goBILDA USB webcam see the BIOBUZZ Hive AprilTags, and at what range?
- * Nothing on the robot moves. Print a Hive tag cluster (3.25 in tags, ids 30-45), hold it in front
+ * Nothing on the robot moves. Uses StarterBotVision, the same class the autos and teleop use.
+ * Print a Hive tag cluster (3.25 in tags, ids 30-45), hold it in front
  * of the camera, and back away until the tags drop out.
  *
  * Watch the picture on the Driver Station (3 dots, Camera Stream) or FTC Dashboard
@@ -33,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  *   D-pad up/down  exposure +/- 1 ms
  *   bumper right/left  gain +/- 5
  *   D-pad right/left   decimation up / down (higher = faster and sees farther away tags less)
+ *   X              look for RED / BLUE alliance tags
  *   B              clear "farthest range seen"
  *
  * When a setting works, note exposure / gain / decimation for the real vision code.
@@ -40,82 +27,63 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name = "Starterbot: Webcam Tag Test", group = "StarterBot2027")
 public class StarterBotWebcamTagTest extends OpMode {
 
-    private AprilTagProcessor tags;
-    private VisionPortal portal;
+    private StarterBotVision vision;
 
     private boolean manual = true;
-    private long exposureMs = 25;
-    private int gain = 50;
-    private float decimation = 2;
-    private boolean applied;           // camera controls can only be set once it is streaming
+    private long exposureMs = StarterBotVision.EXPOSURE_MS;
+    private int gain = StarterBotVision.GAIN;
+    private float decimation = StarterBotVision.DECIMATION;
+    private boolean red = true;
     private double farthest;
     private String controlsStatus = "";
+    private boolean firstFrame = true;   // push the starting settings once the camera is up
 
     @Override
     public void init() {
-        tags = new AprilTagProcessor.Builder()
-                .setTagLibrary(AprilTagGameDatabase.getBioBuzzTagLibrary())
-                .setDrawTagOutline(true)
-                .build();
-        tags.setDecimation(decimation);
-        portal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, StarterBotConfig.WEBCAM))
-                .setCameraResolution(new Size(640, 480))
-                .addProcessor(tags)
-                .build();
-        FtcDashboard.getInstance().startCameraStream(portal, 15);
+        vision = new StarterBotVision(hardwareMap, red);
     }
 
     @Override
     public void init_loop() {
-        telemetry.addData("camera", portal.getCameraState());
+        telemetry.addData("camera", vision.streaming() ? "STREAMING" : "starting");
     }
 
     @Override
     public void loop() {
-        if (portal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("camera", portal.getCameraState());
-            return;
-        }
+        vision.update();
+        if (!vision.streaming()) { telemetry.addData("camera", "starting"); return; }
 
-        boolean changed = true;
-        if      (gamepad1.yWasPressed())           manual = !manual;
-        else if (gamepad1.dpadUpWasPressed())      exposureMs++;
-        else if (gamepad1.dpadDownWasPressed())    exposureMs = Math.max(1, exposureMs - 1);
-        else if (gamepad1.rightBumperWasPressed()) gain += 5;
-        else if (gamepad1.leftBumperWasPressed())  gain = Math.max(0, gain - 5);
-        else if (gamepad1.dpadRightWasPressed())   decimation = Math.min(4, decimation + 1);
-        else if (gamepad1.dpadLeftWasPressed())    decimation = Math.max(1, decimation - 1);
-        else changed = !applied;
+        boolean changed = firstFrame;
+        firstFrame = false;
+        if      (gamepad1.yWasPressed())           { manual = !manual; changed = true; }
+        else if (gamepad1.dpadUpWasPressed())      { exposureMs++; changed = true; }
+        else if (gamepad1.dpadDownWasPressed())    { exposureMs = Math.max(1, exposureMs - 1); changed = true; }
+        else if (gamepad1.rightBumperWasPressed()) { gain += 5; changed = true; }
+        else if (gamepad1.leftBumperWasPressed())  { gain = Math.max(0, gain - 5); changed = true; }
+        else if (gamepad1.dpadRightWasPressed())   { decimation = Math.min(4, decimation + 1); changed = true; }
+        else if (gamepad1.dpadLeftWasPressed())    { decimation = Math.max(1, decimation - 1); changed = true; }
+        if (gamepad1.xWasPressed()) { red = !red; vision.setRed(red); farthest = 0; }
         if (gamepad1.bWasPressed()) farthest = 0;
-        if (changed) applyControls();
-
-        List<AprilTagDetection> seen = tags.getDetections();
-        for (AprilTagDetection d : seen) {
-            if (d.ftcPose != null) farthest = Math.max(farthest, d.ftcPose.range);
+        if (changed) {
+            vision.setDecimation(decimation);
+            controlsStatus = vision.setExposure(manual, exposureMs, gain);
         }
 
-        telemetry.addData("camera", "%s   %.0f fps", portal.getCameraState(), portal.getFps());
+        if (vision.seen()) farthest = Math.max(farthest, vision.range());
+
+        telemetry.addData("camera", "%.0f fps", vision.fps());
         telemetry.addData("exposure (Y, D-pad up/down)", manual ? exposureMs + " ms  MANUAL" : "AUTO");
         telemetry.addData("gain (bumpers)", gain);
         telemetry.addData("decimation (D-pad left/right)", "%.0f", decimation);
         telemetry.addData("camera says", controlsStatus);
-        telemetry.addData("tags in view", seen.size());
-        for (AprilTagDetection d : seen) {
-            String who = d instanceof AprilTagClusterDetection
-                    ? "CLUSTER " + ((AprilTagClusterDetection) d).metadata.name
-                        + " " + ((AprilTagClusterDetection) d).percentClusterFound + "%"
-                    : "tag " + ((AprilTagSingleDetection) d).id
-                        + " margin " + (int) ((AprilTagSingleDetection) d).decisionMargin;
-            telemetry.addLine(String.format("%s  range %.1f in  bearing %.0f  yaw %.0f",
-                    who, d.ftcPose.range, d.ftcPose.bearing, d.ftcPose.yaw));
-        }
+        telemetry.addData("goal is up (sees a " + (red ? "RED" : "BLUE") + " tag, X)", vision.goalIsUp());
+        telemetry.addData("range / bearing", "%.1f in   %.0f deg", vision.range(), vision.bearing());
         telemetry.addData("farthest range seen (B clears)", "%.1f in", farthest);
     }
 
     @Override
     public void stop() {
-        portal.close();
+        vision.close();
     }
 
     /** Push exposure, gain and decimation to the camera and read the limits back. */
