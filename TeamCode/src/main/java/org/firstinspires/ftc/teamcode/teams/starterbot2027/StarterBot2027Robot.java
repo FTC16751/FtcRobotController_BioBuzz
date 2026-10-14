@@ -8,6 +8,8 @@ import org.firstinspires.ftc.teamcode.common.launch.LaunchController;
 import org.firstinspires.ftc.teamcode.common.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.common.subsystems.Roller;
 import org.firstinspires.ftc.teamcode.common.subsystems.VelocityMotor;
+import org.firstinspires.ftc.teamcode.common.vision.Vision;
+import org.firstinspires.ftc.teamcode.common.vision.VisionUtil;
 
 /**
  * A goBILDA BIOBUZZ StarterBot: mecanum drive, an intake (one motor and two servos), and a
@@ -29,7 +31,13 @@ public class StarterBot2027Robot extends RobotBase {
     public final Roller intake;           // the roller motor plus the two corner servos
 
     public StarterBot2027Robot(HardwareMap hardwareMap, Telemetry telemetry, StarterBotConfig config) {
-        super(hardwareMap, telemetry, config.chassis, false);   // no log for the StarterBots yet; true turns it on
+        this(hardwareMap, telemetry, config,
+                new VisionUtil(hardwareMap, telemetry, config.chassis.hardware.limelight));   // none in the config: vision off
+    }
+
+    /** With another camera, e.g. a UsbVision webcam. */
+    public StarterBot2027Robot(HardwareMap hardwareMap, Telemetry telemetry, StarterBotConfig config, Vision vision) {
+        super(hardwareMap, telemetry, config.chassis, false, vision);   // no log for the StarterBots yet; true turns it on
 
         // The intake: one motor (its direction is the one thing that differs between the two
         // robots) and two continuous servos that all pull elements in together.
