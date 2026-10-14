@@ -29,7 +29,8 @@ public class CommonConstants {
     public static final double METERS_TO_INCHES = 39.3701;
 
     /**
-     * DECODE field geometry in Limelight field-space coordinates (meters).
+     * LAST SEASON'S (DECODE) field geometry in Limelight field-space coordinates (meters). Nothing
+     * here describes the BIOBUZZ field; for the Hive see FieldAim (common/vision).
      * The goal AprilTags are tag 20 (blue) and tag 24 (red).
      */
     public static final class Field {

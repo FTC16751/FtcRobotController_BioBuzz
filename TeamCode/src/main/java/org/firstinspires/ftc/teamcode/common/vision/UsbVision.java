@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class UsbVision implements Vision {
 
-    public static final long EXPOSURE_MS = 25;
+    public static final long EXPOSURE_MS = 45;
     public static final int  GAIN = 50;
     public static final float DECIMATION = 2;
 
@@ -130,6 +130,15 @@ public class UsbVision implements Vision {
     @Override public double forwardInches() { return sighted == null ? 0 : sighted.ftcPose.y; }
     @Override public double rightInches()   { return sighted == null ? 0 : sighted.ftcPose.x; }
     @Override public double squareUpDegrees() { return sighted == null ? 0 : TAG_SQUARE_SIGN * sighted.ftcPose.yaw; }
+
+    /**
+     * Where the sighted tag is from the robot's centre as {forward, right} inches, using where the
+     * camera is mounted; null when no tag is seen. For FieldAim (aim by position, fix the odometry).
+     */
+    public double[] tagInRobot(FieldAim.CameraMount mount) {
+        if (best == null) return null;
+        return FieldAim.tagInRobot(mount, best.ftcPose.x, best.ftcPose.y, best.ftcPose.z);
+    }
 
     // ---- Vision
 
